@@ -12,8 +12,8 @@ export const djs = [
   { name: 'Deif', genres: ['Techno Groove'], stage: 'exterior', arrival: '2026-10-04T11:00:00.000Z', bpm: [138, 148] },
   { name: 'Zai!', genres: ['Bounce Techno', 'HardTech'], stage: 'exterior', arrival: '2026-10-03T21:10:00.000Z', bpm: [140, 165] },
   { name: 'ALES GUT', genres: ['Por confirmar'], stage: 'exterior', bpm: ['?', '?'] },
+  { name: 'SKB', genres: ['Hardgroove'], stage: 'exterior', arrival: '2026-10-04T16:00:00.000Z', bpm: [145, 155] },
   { name: 'FØBIA', genres: ['Hard bounce', 'Hypnotic groove', 'Groove bounce'], stage: 'exterior', arrival: '2026-10-03T22:00:00.000Z', bpm: [145, 160] },
-  { name: 'FLAMENKØ', genres: ['Hardbounce', 'Hardgroove'], stage: 'exterior', arrival: '2026-10-04T10:00:00.000Z', bpm: [140, 165] },
   { name: 'Leks', genres: ['Hard Groove', 'Hard Techno'], stage: 'exterior', arrival: '2026-10-04T18:00:00.000Z', bpm: [148, 160] },
   { name: 'EmeGe', genres: ['Hard techno'], stage: 'exterior', arrival: '2026-10-03T22:00:00.000Z', bpm: [160, 180] },
   { name: 'K-BRY', genres: ['Hardtechno', 'Schranz'], stage: 'exterior', arrival: '2026-10-04T08:00:00.000Z', bpm: [150, 160] },
@@ -21,7 +21,7 @@ export const djs = [
   // Interior: 23:00–07:00.
   { name: 'CARDAN', genres: ['Hardgroove', 'Acid Hard Techno'], stage: 'interior', arrival: '2026-10-04T14:00:00.000Z', bpm: [145, 165] },
   { name: 'Romaniko', genres: ['Acidcore', 'Tribe', 'Mental'], stage: 'interior', arrival: '2026-10-04T14:00:00.000Z', bpm: [160, 175] },
-  { name: 'SKB', genres: ['Hardgroove'], stage: 'interior', arrival: '2026-10-04T16:00:00.000Z', bpm: [145, 155] },
+  { name: 'FLAMENKØ', genres: ['Hardbounce', 'Hardgroove'], stage: 'interior', arrival: '2026-10-04T10:00:00.000Z', bpm: [140, 165] },
   { name: 'SENDA', genres: ['Hardtechno', 'Schranz'], stage: 'interior', arrival: '2026-10-04T08:00:00.000Z', bpm: [160, 160] },
   { name: 'DRIWISH', genres: ['Schranz', 'Hardgroove'], stage: 'interior', arrival: '2026-10-04T16:00:00.000Z', bpm: [140, 160] },
   { name: 'Ann Blacksmith', genres: ['Hardtechno', 'Industrial', 'Bochka'], stage: 'interior', arrival: '2026-10-04T10:00:00.000Z', bpm: [160, 165] },
