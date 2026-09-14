@@ -7,9 +7,10 @@ const interiorDjs = djs.filter((dj) => dj.stage === 'interior')
 const schedule = buildSchedule(interiorDjs, { eventStart: '2026-10-03T21:00:00.000Z' }) // 23:00 Madrid, sábado
 const genres = uniqueGenres(interiorDjs)
 
-// Sesión b2b de cierre, sin hora de fin fija ("hasta que se cansen").
+// Sesión b2b de cierre, sin hora de fin fija ("hasta que se cansen"),
+// justo a continuación del último set con hora fija.
 const closingSets = [
-  { start: new Date('2026-10-04T05:00:00.000Z'), names: ['Leks', 'FLAMENKØ', 'CARDAN'] }, // 07:00 Madrid, domingo
+  { start: schedule[schedule.length - 1].end, names: ['Leks', 'FLAMENKØ', 'CARDAN'] },
 ]
 
 document.querySelector('#app').innerHTML = `
