@@ -20,7 +20,7 @@ export const djs = [
 
   // Interior: 23:00–07:00.
   { name: 'CARDAN', genres: ['Hard Groove', 'Acid Hard Techno'], stage: 'interior', arrival: '2026-10-04T14:00:00.000Z', bpm: [145, 165] },
-  { name: 'Romaniko', genres: ['Acidcore', 'Tribe', 'Mental'], stage: 'interior', arrival: '2026-10-04T14:00:00.000Z', bpm: [160, 175], instagram: '@romaniko_o' },
+  { name: 'Romaniko', genres: ['Acidcore', 'Tribe', 'Mental'], stage: 'interior', arrival: '2026-10-04T14:00:00.000Z', bpm: [160, 175], instagram: '@romanico_o' },
   { name: 'FLAMENKØ', genres: ['Hardbounce', 'Hard Groove'], stage: 'interior', arrival: '2026-10-04T10:00:00.000Z', bpm: [140, 165] },
   { name: 'SENDA', genres: ['Hardtechno', 'Schranz'], stage: 'interior', arrival: '2026-10-04T08:00:00.000Z', bpm: [160, 160] },
   { name: 'NVЯR', genres: ['Hard Groove', 'Schranz', 'Hard dance'], stage: 'interior', arrival: '2026-10-04T14:30:00.000Z', bpm: [140, 170], instagram: '@nvrr.music' },
