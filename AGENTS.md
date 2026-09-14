@@ -4,10 +4,10 @@ Contexto y convenciones para cualquier agente (o persona) que trabaje en este re
 
 ## Qué es esto
 
-SPA de una sola página (Vite, JS vanilla, sin framework) con el cartel/horario de la fiesta UMBRA-L. Hay tres "vistas" — portada, escenario exterior, escenario interior — pero **una sola página real** (`index.html` + `src/main.js`); `/exterior` e `/interior` NO son rutas del servidor, son solo estado interno del router reflejado en la URL vía `pushState` (para que la barra de direcciones se vea bien durante la sesión). Si alguien entra directo a esas URLs (marcador, enlace viejo, recarga), el servidor las redirige (302) a la raíz — ver `redirectOldRoutes()` en `vite.config.js`. Esto fue una decisión explícita: antes eran tres páginas HTML reales, se cambió a SPA para poder hacer una transición fiable entre vistas (ver más abajo) sin coordinar dos cargas de página distintas.
+SPA de una sola página (Vite, JS vanilla, sin framework) con el cartel/horario de la fiesta UMBRA-L. Hay tres "vistas" — portada, escenario exterior, escenario interior — pero **una sola página real y una sola URL**: `/exterior` e `/interior` no son rutas del servidor ni cambian la barra de direcciones (nada de `pushState`, a propósito — se probó y daba la sensación de "seguir siendo páginas separadas"), son solo estado interno del router en memoria. Si alguien entra directo a esas URLs de todos modos (marcador o enlace viejo de cuando sí eran páginas reales), el servidor las redirige (302) a la raíz — ver `redirectOldRoutes()` en `vite.config.js`. Antes eran tres páginas HTML reales; se cambió a SPA para poder hacer una transición fiable entre vistas (ver más abajo) sin coordinar dos cargas de página distintas.
 
-- `src/router.js` (`initRouter()`) monta la vista actual en `#app`, intercepta clics en `a[data-view]`, actualiza la URL con `history.pushState`/`popstate`, y vuelve a llamar `startGenreDance()`/`startCursorTilt()` en cada montaje (esos módulos seleccionan elementos del DOM recién creado, no quedan "enganchados" a la vista anterior).
-- `src/views.js` (`VIEWS`) define las tres vistas: cada una es una función que devuelve el HTML de `<main class="cartel">...</main>`, más `path` (para la URL) e `isHome` (activa el modo "sin scroll" de la portada, ver más abajo).
+- `src/router.js` (`initRouter()`) monta la vista actual en `#app`, intercepta clics en `a[data-view]`, y vuelve a llamar `startGenreDance()`/`startCursorTilt()` en cada montaje (esos módulos seleccionan elementos del DOM recién creado, no quedan "enganchados" a la vista anterior). No toca `history` para nada — la URL no existe como concepto dentro de la SPA, solo el estado `currentViewKey` en memoria.
+- `src/views.js` (`VIEWS`) define las tres vistas: cada una es una función que devuelve el HTML de `<main class="cartel">...</main>`, más `isHome` (activa el modo "sin scroll" de la portada, ver más abajo).
 - Los datos de los DJs se rellenan a mano en `src/djs.js` (campo `stage: 'interior' | 'exterior'`) a partir de un formulario externo (Notion) que no forma parte de este repo. La lógica de renderizado compartida (chips de género, logo, lineup, horas totales) vive en `src/render.js`.
 
 ## Reglas de privacidad
@@ -51,7 +51,7 @@ Dos ajustes más, específicos de móvil (`max-width: 640px`), para que la porta
 
 ## Transición diagonal entre vistas
 
-`src/page-transition.js` añade una máscara verde diagonal (`.page-mask`, `<div>` creado una vez por `initPageMask()` y reutilizado toda la sesión) que cubre la pantalla al cambiar de vista y se retira tras el cambio. Al ser SPA, todo ocurre en el mismo documento — sin recargas reales que coordinar entre sí, todo el ciclo cubrir → cambiar contenido → retirar pasa por una sola función async (`wipeTransition(swapContent)`), llamada desde `router.js` tanto en clics como en `popstate` (atrás/adelante del navegador).
+`src/page-transition.js` añade una máscara verde diagonal (`.page-mask`, `<div>` creado una vez por `initPageMask()` y reutilizado toda la sesión) que cubre la pantalla al cambiar de vista y se retira tras el cambio. Al ser SPA, todo ocurre en el mismo documento — sin recargas reales que coordinar entre sí, todo el ciclo cubrir → cambiar contenido → retirar pasa por una sola función async (`wipeTransition(swapContent)`), llamada desde `router.js` en cada clic sobre `a[data-view]`.
 
 - La dirección del barrido es aleatoria en cada transición (`DIRECTIONS`: 4 combinaciones de `skewX`/`skewY` con signo) — a petición explícita, antes siempre iba igual y se veía repetitivo.
 - Al cambiar de dirección, hace falta quitar la clase `--animate`, fijar la posición oculta de la nueva dirección, forzar reflow (`void mask.offsetWidth`) y solo entonces reactivar la transición y animar a "cubriendo" — si no, el navegador puede saltar directo sin animar (la máscara podía llevar el skew de la dirección anterior).
@@ -69,7 +69,7 @@ El scrollbar (`scrollbar-color` + `::-webkit-scrollbar-*`) y la selección de te
 Antes de dar por terminado un cambio visual:
 1. `npm run build` debe compilar sin errores.
 2. Si es posible, verifica visualmente el resultado. Este entorno no tiene un navegador integrado, pero suele haber `playwright-core` instalado globalmente junto con una build de Chromium cacheada (buscar en `~/.cache/ms-playwright/`), utilizable para tomar capturas de pantalla headless sin depender de un paquete del proyecto.
-3. Para esta SPA en concreto, comprueba también la navegación entre vistas (clic + `popstate`) y que `/interior` y `/exterior` siguen redirigiendo (302) a la raíz — es fácil romper una de las dos cosas sin querer al tocar `router.js` o `vite.config.js`.
+3. Para esta SPA en concreto, comprueba también la navegación entre vistas (clic en cada `a[data-view]`, la URL debe permanecer siempre igual) y que `/interior` y `/exterior` siguen redirigiendo (302) a la raíz — es fácil romper una de las dos cosas sin querer al tocar `router.js` o `vite.config.js`.
 
 ## Control de versiones
 

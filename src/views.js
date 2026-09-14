@@ -114,11 +114,10 @@ function renderInterior() {
   `
 }
 
-// `path` es lo que se refleja en la URL vía pushState (solo para la barra de
-// direcciones/compartir dentro de la sesión) — no son rutas reales: el
-// servidor redirige /exterior y /interior a la portada (ver vite.config.js).
+// `isHome` activa el modo "sin scroll" de la portada (ver router.js/style.css).
+// No hay rutas reales: la URL nunca cambia, solo el contenido de #app.
 export const VIEWS = {
-  home: { render: renderHome, path: '', isHome: true },
-  exterior: { render: renderExterior, path: 'exterior', isHome: false },
-  interior: { render: renderInterior, path: 'interior', isHome: false },
+  home: { render: renderHome, isHome: true },
+  exterior: { render: renderExterior, isHome: false },
+  interior: { render: renderInterior, isHome: false },
 }
