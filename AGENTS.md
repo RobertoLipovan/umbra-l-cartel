@@ -36,9 +36,15 @@ Dos detalles que costó descubrir y no hay que deshacer:
 
 `src/genre-dance.js` (`startGenreDance()`, llamado desde las tres páginas) hace que cada 500ms, 5 chips de `.genres__item` elegidos al azar pasen a `.genres__item--active` (fondo verde relleno) y los 5 de la ronda anterior vuelvan al estado normal; la ronda siguiente evita repetir los mismos 5 (salvo que no haya suficientes chips para evitarlo). Es puramente decorativo — no toca el PDF de forma especial, así que "Imprimir cartel" puede capturar cualquier combinación de chips activos en el momento del clic; eso es intencional, no un bug.
 
+## Tilt del cursor
+
+`src/tilt.js` (`startCursorTilt()`, llamado desde las tres páginas) inclina el `<body>` en 3D según la posición del cursor (`rotateX`/`rotateY`, `MAX_TILT_DEG = 2.5`). Necesita `perspective` en `html` y `transform-style: preserve-3d` en `body` (`style.css`). Al rotar en 3D, las esquinas del `body` se salen del viewport y provocan scroll horizontal fantasma — por eso `html` y `body` llevan `overflow-x: hidden` (no toques esto sin entender por qué está: `overflow-y` debe seguir libre, las páginas de escenario son largas y necesitan scroll vertical). Si vuelves a subir `MAX_TILT_DEG`, vigila que no reaparezca ese scroll horizontal.
+
 ## Diseño
 
 Paleta e identidad tomadas de un branding real (logo tipo retícula/mira, negro + verde ácido `#c6ff1a`, tipografía Orbitron para títulos y Oswald para el resto). Si tienes acceso al archivo de fuente original del branding, esa es una mejora pendiente frente a la aproximación actual con Google Fonts.
+
+El scrollbar (`scrollbar-color` + `::-webkit-scrollbar-*`) y la selección de texto (`::selection`) también están en verde ácido en vez de los estilos por defecto del navegador — mantener esto si tocas `style.css`.
 
 ## Verificación
 
