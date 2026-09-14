@@ -63,6 +63,31 @@ body {
   padding-inline: 1.5rem;
 }
 
+/* Portada: sin scroll nunca (evita el parpadeo de la scrollbar al inclinar
+   el body con el tilt del cursor). El body se fija a 100vh y .cartel reparte
+   cabecera/pie con space-between en vez de depender de margin-bottom.
+   El overflow real lo provoca el body rotado saliéndose de <html> (su
+   padre) — por eso overflow:hidden hace falta en los DOS, no solo en body. */
+html.page-home {
+  overflow: hidden;
+}
+
+body.page-home {
+  height: 100vh;
+  overflow: hidden;
+}
+
+body.page-home .cartel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+body.page-home .cartel__header {
+  margin-bottom: 0;
+}
+
 .cartel__header {
   position: relative;
   text-align: center;

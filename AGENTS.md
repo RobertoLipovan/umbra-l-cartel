@@ -38,7 +38,9 @@ Dos detalles que costó descubrir y no hay que deshacer:
 
 ## Tilt del cursor
 
-`src/tilt.js` (`startCursorTilt()`, llamado desde las tres páginas) inclina el `<body>` en 3D según la posición del cursor (`rotateX`/`rotateY`, `MAX_TILT_DEG = 2.5`). Necesita `perspective` en `html` y `transform-style: preserve-3d` en `body` (`style.css`). Al rotar en 3D, las esquinas del `body` se salen del viewport y provocan scroll horizontal fantasma — por eso `html` y `body` llevan `overflow-x: hidden` (no toques esto sin entender por qué está: `overflow-y` debe seguir libre, las páginas de escenario son largas y necesitan scroll vertical). Si vuelves a subir `MAX_TILT_DEG`, vigila que no reaparezca ese scroll horizontal.
+`src/tilt.js` (`startCursorTilt()`, llamado desde las tres páginas) inclina el `<body>` en 3D según la posición del cursor (`rotateX`/`rotateY`, `MAX_TILT_DEG = 2.5`). Necesita `perspective` en `html` y `transform-style: preserve-3d` en `body` (`style.css`). Al rotar en 3D, las esquinas del `body` se salen del viewport y provocan scroll fantasma — por eso `html` **y** `body` llevan `overflow-x: hidden` (el overflow lo causa el `body` rotado saliéndose de `html`, su padre; poner `overflow:hidden` solo en `body` no basta, hace falta en los dos). Las páginas de escenario necesitan `overflow-y` libre (son largas), así que esto NO se generaliza a `overflow: hidden` a secas en ninguno de los dos.
+
+La portada (`index.html`, clase `page-home` en `<html>` y `<body>`) va un paso más allá: nunca debe tener scroll ni siquiera vertical (con `min-height:100vh` normal, el tilt hacía parpadear la scrollbar al aparecer/desaparecer unos px de overflow). Por eso `html.page-home`/`body.page-home` fijan `overflow: hidden` en ambos ejes y `height: 100vh` (no `min-height`), y `.cartel` pasa a `display:flex; flex-direction:column; justify-content:space-between` para repartir cabecera y pie en el alto exacto del viewport en vez de depender de `margin-bottom`. Si la portada crece con más contenido, vigila que siga cabiendo en 100vh — con `overflow:hidden` un desbordamiento se recorta en vez de scrollear.
 
 ## Diseño
 
