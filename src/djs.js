@@ -21,10 +21,10 @@ export const djs = [
   // Interior: 23:00–07:00.
   { name: 'CARDAN', genres: ['Hardgroove', 'Acid Hard Techno'], stage: 'interior', arrival: '2026-10-04T14:00:00.000Z', bpm: [145, 165] },
   { name: 'Romaniko', genres: ['Acidcore', 'Tribe', 'Mental'], stage: 'interior', arrival: '2026-10-04T14:00:00.000Z', bpm: [160, 175] },
-  { name: 'NVЯR', genres: ['Hardgroove', 'Schranz', 'Hard dance'], stage: 'interior', arrival: '2026-10-04T14:30:00.000Z', bpm: [140, 170] },
+  { name: 'SKB', genres: ['Hardgroove'], stage: 'interior', arrival: '2026-10-04T16:00:00.000Z', bpm: [145, 155] },
   { name: 'SENDA', genres: ['Hardtechno', 'Schranz'], stage: 'interior', arrival: '2026-10-04T08:00:00.000Z', bpm: [160, 160] },
   { name: 'DRIWISH', genres: ['Schranz', 'Hardgroove'], stage: 'interior', arrival: '2026-10-04T16:00:00.000Z', bpm: [140, 160] },
   { name: 'Ann Blacksmith', genres: ['Hardtechno', 'Industrial', 'Bochka'], stage: 'interior', arrival: '2026-10-04T10:00:00.000Z', bpm: [160, 165] },
-  { name: 'SKB', genres: ['Hardgroove'], stage: 'interior', arrival: '2026-10-04T16:00:00.000Z', bpm: [145, 155] },
+  { name: 'NVЯR', genres: ['Hardgroove', 'Schranz', 'Hard dance'], stage: 'interior', arrival: '2026-10-04T14:30:00.000Z', bpm: [140, 170] },
   { name: 'Eiren', genres: ['Hardgroove', 'Techno'], stage: 'interior', arrival: '2026-10-04T19:00:00.000Z', bpm: [135, 148] },
 ]
