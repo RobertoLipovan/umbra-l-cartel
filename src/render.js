@@ -32,6 +32,18 @@ function renderInstagramLink(instagram, djName) {
   return `<a class="lineup__instagram" href="https://instagram.com/${handle}" target="_blank" rel="noopener noreferrer" aria-label="Instagram de ${djName}">${INSTAGRAM_ICON}</a>`
 }
 
+// El icono va pegado a la primera palabra del nombre (no al final del todo)
+// para que, si el nombre se parte en dos líneas en pantallas estrechas
+// ("ANN" / "BLACKSMITH"), se quede en la primera línea en vez de saltar
+// a la segunda junto con el resto del nombre.
+function renderNameWithInstagram(name, instagram) {
+  const link = renderInstagramLink(instagram, name)
+  if (!link) return renderName(name)
+  const spaceIndex = name.indexOf(' ')
+  if (spaceIndex === -1) return `${renderName(name)}${link}`
+  return `${renderName(name.slice(0, spaceIndex))}${link}${renderName(name.slice(spaceIndex))}`
+}
+
 const PLACEHOLDER_GENRES = new Set(['por confirmar'])
 
 export function uniqueGenres(djs) {
@@ -74,7 +86,7 @@ export function renderLineup(schedule, { id, closingSets = [] } = {}) {
             <span class="lineup__time-range">${formatTime(slot.start)}–${formatTime(slot.end)}</span>
             <span class="lineup__duration">${formatDuration(slot.start, slot.end)}</span>
           </span>
-          <span class="lineup__name">${renderName(slot.name)}${renderInstagramLink(slot.instagram, slot.name)}</span>
+          <span class="lineup__name">${renderNameWithInstagram(slot.name, slot.instagram)}</span>
           <span class="lineup__genres">${slot.genres.join(' · ')}</span>
           <span class="lineup__bpm">${formatBpm(slot.bpm)}</span>
         </li>
