@@ -18,6 +18,20 @@ function renderName(name) {
   return name.replace(/[ЯØ]/g, (char) => `<span class="glyph-fallback">${char}</span>`)
 }
 
+const INSTAGRAM_ICON = `
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2" />
+    <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="2" />
+    <circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" />
+  </svg>
+`
+
+function renderInstagramLink(instagram, djName) {
+  if (!instagram) return ''
+  const handle = instagram.replace(/^@/, '')
+  return `<a class="lineup__instagram" href="https://instagram.com/${handle}" target="_blank" rel="noopener noreferrer" aria-label="Instagram de ${djName}">${INSTAGRAM_ICON}</a>`
+}
+
 const PLACEHOLDER_GENRES = new Set(['por confirmar'])
 
 export function uniqueGenres(djs) {
@@ -60,7 +74,7 @@ export function renderLineup(schedule, { id, closingSets = [] } = {}) {
             <span class="lineup__time-range">${formatTime(slot.start)}–${formatTime(slot.end)}</span>
             <span class="lineup__duration">${formatDuration(slot.start, slot.end)}</span>
           </span>
-          <span class="lineup__name">${renderName(slot.name)}</span>
+          <span class="lineup__name">${renderName(slot.name)}${renderInstagramLink(slot.instagram, slot.name)}</span>
           <span class="lineup__genres">${slot.genres.join(' · ')}</span>
           <span class="lineup__bpm">${formatBpm(slot.bpm)}</span>
         </li>

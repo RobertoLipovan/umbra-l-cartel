@@ -6,9 +6,11 @@
 // llegada declarada por cada DJ (UTC) en el formulario original — se
 // conserva solo como referencia histórica, no se usa para el horario.
 // `bpm` es [mínimo, máximo]; ALES GUT aún no tiene datos de género/BPM.
+// `instagram` (opcional) es el @ público del DJ — a diferencia de `arrival`,
+// este SÍ está pensado para mostrarse (enlaza a su perfil desde el cartel).
 export const djs = [
   // Exterior: 16:00–01:00 sábado.
-  { name: 'Eiren', genres: ['Tech House'], stage: 'exterior', arrival: '2026-10-04T19:00:00.000Z', bpm: [135, 148] },
+  { name: 'Eiren', genres: ['Tech House'], stage: 'exterior', arrival: '2026-10-04T19:00:00.000Z', bpm: [135, 148], instagram: '@eiren.lf' },
   { name: 'Deif', genres: ['Techno Groove'], stage: 'exterior', arrival: '2026-10-04T11:00:00.000Z', bpm: [138, 148] },
   { name: 'Zai!', genres: ['Bounce Techno', 'HardTech'], stage: 'exterior', arrival: '2026-10-03T21:10:00.000Z', bpm: [140, 165] },
   { name: 'ALES GUT', genres: ['Por confirmar'], stage: 'exterior', bpm: ['?', '?'] },
@@ -26,6 +28,6 @@ export const djs = [
   { name: 'EmeGe', genres: ['Hard techno'], stage: 'interior', arrival: '2026-10-03T22:00:00.000Z', bpm: [160, 180] },
   { name: 'Ann Blacksmith', genres: ['Hardtechno', 'Industrial', 'Bochka'], stage: 'interior', arrival: '2026-10-04T10:00:00.000Z', bpm: [160, 165] },
   { name: 'K-BRY', genres: ['Hardtechno', 'Schranz'], stage: 'interior', arrival: '2026-10-04T08:00:00.000Z', bpm: [150, 160] },
-  { name: 'Eiren', genres: ['Hard Groove', 'Techno'], stage: 'interior', arrival: '2026-10-04T19:00:00.000Z', bpm: [135, 148] },
+  { name: 'Eiren', genres: ['Hard Groove', 'Techno'], stage: 'interior', arrival: '2026-10-04T19:00:00.000Z', bpm: [135, 148], instagram: '@eiren.lf' },
   { name: 'NØT', genres: ['Groove', 'Hypnotic Techno'], stage: 'interior', arrival: '2026-10-03T17:00:00.000Z', bpm: [135, 145] },
 ]

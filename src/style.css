@@ -305,6 +305,18 @@ body {
   letter-spacing: 0.02em;
 }
 
+.lineup__instagram {
+  display: inline-flex;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.lineup__instagram:hover {
+  color: var(--accent);
+}
+
 .glyph-fallback {
   /* Orbitron no cubre cirílico; el fallback se ve más grande sin esto. */
   font-size: 0.9em;

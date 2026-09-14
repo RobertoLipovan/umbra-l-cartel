@@ -12,6 +12,6 @@ export function buildSchedule(djs, { eventStart, setMinutes = SET_MINUTES }) {
     const start = new Date(cursor)
     const end = addMinutes(start, setMinutes)
     cursor = end
-    return { name: dj.name, genres: dj.genres, bpm: dj.bpm, start, end }
+    return { name: dj.name, genres: dj.genres, bpm: dj.bpm, instagram: dj.instagram, start, end }
   })
 }

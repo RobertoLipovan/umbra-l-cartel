@@ -14,10 +14,11 @@ Las rutas `/interior` y `/exterior` (sin `.html`) solo funcionan gracias al plug
 ## Reglas de privacidad
 
 Los DJs rellenan un formulario con más campos de los que se muestran aquí. **Nunca añadas al cartel público:**
-- Contacto (WhatsApp u otro)
 - La hora de llegada tal cual la escribió el DJ (`arrival` en `djs.js`) — solo se usa como dato interno para ordenar/calcular el horario mostrado, nunca se imprime literalmente
 
-Si en el futuro se conecta este proyecto a una fuente de datos real (API, export de Notion, etc.), estos dos campos deben seguir tratándose como internos.
+El formulario tenía un campo de contacto por WhatsApp (privado, nunca se mostró) que la organización sustituyó por un campo de **Instagram** — ese sí está pensado para ser público: se muestra como icono enlazado junto al nombre del DJ (`instagram` en `djs.js`, ver `renderInstagramLink()` en `src/render.js`) solo cuando el DJ lo ha rellenado.
+
+Si en el futuro se conecta este proyecto a una fuente de datos real (API, export de Notion, etc.), `arrival` debe seguir tratándose como interno.
 
 ## Cómo se construye el horario
 
