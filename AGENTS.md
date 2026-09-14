@@ -4,7 +4,12 @@ Contexto y convenciones para cualquier agente (o persona) que trabaje en este re
 
 ## Qué es esto
 
-Página estática (Vite, JS vanilla) que muestra el cartel/horario de la fiesta UMBRA-L: lista de DJs, horario, BPM y géneros. Los datos de los DJs se rellenan a mano en `src/djs.js` a partir de un formulario externo (Notion) que no forma parte de este repo.
+Sitio estático multi-página (Vite, JS vanilla) con el cartel/horario de la fiesta UMBRA-L. Hay dos escenarios, cada uno con su propia página y horario independiente:
+- `/` (`index.html` + `src/main.js`) — portada: enlaza a los dos escenarios, sin horario propio.
+- `/exterior` (`exterior.html` + `src/exterior-main.js`) — sábado 16:00–00:00.
+- `/interior` (`interior.html` + `src/interior-main.js`) — sábado 22:00 en adelante.
+
+Las rutas `/interior` y `/exterior` (sin `.html`) solo funcionan gracias al plugin `cleanUrls` en `vite.config.js`, que reescribe la petición al archivo `.html` correspondiente — necesario tanto en el dev server como en `vite preview`. Los datos de los DJs se rellenan a mano en `src/djs.js` (campo `stage: 'interior' | 'exterior'`) a partir de un formulario externo (Notion) que no forma parte de este repo. La lógica de renderizado común a ambas páginas vive en `src/render.js`.
 
 ## Reglas de privacidad
 
@@ -16,7 +21,7 @@ Si en el futuro se conecta este proyecto a una fuente de datos real (API, export
 
 ## Cómo se construye el horario
 
-`src/schedule.js` NO usa horas de llegada para fijar el horario mostrado: el evento empieza a una hora fija (`EVENT_START`) y encadena sets consecutivos de `SET_MINUTES` sin huecos. El campo `arrival` de cada DJ en `djs.js` solo determina el **orden** de actuación entre ellos. Si cambias esto, mantén la propiedad de "sin huecos" salvo que se pida explícitamente lo contrario.
+`src/schedule.js` NO usa horas de llegada para fijar el horario mostrado: cada escenario pasa su propia `eventStart` a `buildSchedule()`, que encadena sets consecutivos de `SET_MINUTES` sin huecos. El **orden** de actuación es directamente el orden de los DJs en el array `djs.js` (filtrado por `stage`) — es una curación manual, no un sort automático. Al reordenar, ten en cuenta el criterio ya aplicado: no abrir con schranz (desgasta pronto al público), subir la intensidad/BPM progresivamente, dejar los géneros más duros para el tramo final de cada escenario. Si cambias esto, mantén la propiedad de "sin huecos" salvo que se pida explícitamente lo contrario.
 
 ## Diseño
 

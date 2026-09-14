@@ -1,6 +1,10 @@
 # UMBRA-L — Casa Techno 3.0
 
-Cartel/lineup en vivo para la fiesta UMBRA-L, construido con [Vite](https://vite.dev/) (vanilla JS, sin framework).
+Cartel/lineup en vivo para la fiesta UMBRA-L, construido con [Vite](https://vite.dev/) (vanilla JS, sin framework). Dos escenarios, cada uno con su propia página y horario:
+
+- `/` — portada, enlaza a los dos escenarios
+- `/exterior` — sábado 16:00–00:00
+- `/interior` — sábado 22:00 en adelante
 
 ## Desarrollo
 
@@ -13,10 +17,11 @@ npm run preview  # sirve el build de producción
 
 ## Estructura
 
-- `src/djs.js` — datos de los DJs (nombre, géneros, BPM, hora de llegada)
-- `src/schedule.js` — construye el horario (sets consecutivos, sin huecos, desde una hora de inicio fija)
+- `src/djs.js` — datos de los DJs (nombre, géneros, BPM, escenario, hora de llegada de referencia); el orden en el array es el orden de actuación
+- `src/schedule.js` — construye el horario de un escenario (sets consecutivos, sin huecos, desde una hora de inicio dada)
 - `src/format.js` — helpers de formato (hora, duración, BPM, horas totales) en zona horaria Europe/Madrid
-- `src/main.js` — renderizado de la página
+- `src/render.js` — piezas de HTML compartidas entre páginas (logo, géneros, lineup, horas totales)
+- `src/main.js`, `src/exterior-main.js`, `src/interior-main.js` — entrada de cada página
 - `src/style.css` — estilos (paleta negro + verde ácido, tipografía Orbitron/Oswald)
 
 ## Despliegue

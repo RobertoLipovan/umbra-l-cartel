@@ -90,6 +90,16 @@ body {
   text-shadow: 0 0 30px rgba(198, 255, 26, 0.4);
 }
 
+.cartel__stage {
+  position: relative;
+  z-index: 1;
+  margin: 0.75rem 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 1rem;
+  color: var(--fg);
+}
+
 .cartel__hours {
   position: relative;
   z-index: 1;
@@ -161,6 +171,52 @@ body {
   50% {
     transform: translateY(6px);
   }
+}
+
+.stage-nav {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+
+.stage-nav--footer {
+  margin-top: 3rem;
+}
+
+.stage-nav__link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 10rem;
+  padding: 1rem 1.5rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-family: 'Orbitron', 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--fg);
+  border: 1px solid rgba(198, 255, 26, 0.5);
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.stage-nav__link:hover {
+  background-color: rgba(198, 255, 26, 0.1);
+}
+
+.stage-nav__hint {
+  text-transform: none;
+  letter-spacing: 0.05em;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--muted);
 }
 
 .cartel__footer {
