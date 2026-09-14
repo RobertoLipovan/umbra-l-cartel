@@ -66,6 +66,9 @@ body {
   justify-content: center;
   padding-block: 4rem;
   overflow-x: hidden;
+}
+
+#app {
   transform-style: preserve-3d;
   transition: transform 0.15s ease-out;
   will-change: transform;
@@ -114,13 +117,13 @@ body {
 }
 
 /* Por debajo de 641px la portada fluye con scroll normal (ver arriba), pero
-   el tilt del cursor seguía rotando el body unos grados y esa rotación por
+   el tilt del cursor seguía rotando #app unos grados y esa rotación por
    sí sola añade overflow vertical residual — un scroll "de sobra" que antes
    quedaba oculto por el truco de 100vh. Anulamos el transform con
    !important porque tilt.js lo fija inline (mayor especificidad que una
    regla normal). */
 @media (max-width: 640px) {
-  body.page-home {
+  body.page-home #app {
     transform: none !important;
   }
 }
