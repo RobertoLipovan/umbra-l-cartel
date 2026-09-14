@@ -24,6 +24,10 @@ Si en el futuro se conecta este proyecto a una fuente de datos real (API, export
 
 `src/schedule.js` NO usa horas de llegada para fijar el horario mostrado: cada escenario pasa su propia `eventStart` a `buildSchedule()`, que encadena sets consecutivos de `SET_MINUTES` sin huecos. El **orden** de actuación es directamente el orden de los DJs en el array `djs.js` (filtrado por `stage`) — es una curación manual, no un sort automático. Al reordenar, ten en cuenta el criterio ya aplicado: no abrir con schranz (desgasta pronto al público), subir la intensidad/BPM progresivamente, dejar los géneros más duros para el tramo final de cada escenario. Si cambias esto, mantén la propiedad de "sin huecos" salvo que se pida explícitamente lo contrario.
 
+## Botón "Imprimir cartel"
+
+Cada página tiene un botón en el pie (`src/print.js`, `setupPrintButton()`) que genera un PDF con `html2pdf.js` (cargado con `import()` dinámico solo al pulsar el botón, para no meter ~900 KB en el bundle inicial) y lo descarga siempre como `umbral3.pdf`, sea cual sea la página. Captura `.cartel`, ignorando cualquier elemento con la clase `no-print` (navegación, el propio botón, el aviso de scroll "CARTEL"). El fondo oscuro vive en `<body>` (radial-gradient), así que antes de capturar se fuerza `background-color` inline en `.cartel` — si no, html2canvas captura ese elemento con fondo blanco y el texto claro queda ilegible.
+
 ## Diseño
 
 Paleta e identidad tomadas de un branding real (logo tipo retícula/mira, negro + verde ácido `#c6ff1a`, tipografía Orbitron para títulos y Oswald para el resto). Si tienes acceso al archivo de fuente original del branding, esa es una mejora pendiente frente a la aproximación actual con Google Fonts.

@@ -230,6 +230,20 @@ body {
   border-top: 1px solid rgba(198, 255, 26, 0.25);
 }
 
+.print-button {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--accent);
+  text-decoration: none;
+  letter-spacing: 0.35em;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.print-button:hover {
+  border-bottom-color: var(--accent);
+}
+
 .lineup {
   list-style: none;
   margin: 0;

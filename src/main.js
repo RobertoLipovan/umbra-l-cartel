@@ -1,6 +1,7 @@
 import './style.css'
 import { djs } from './djs.js'
 import { RETICLE_ICON, uniqueGenres, renderGenres } from './render.js'
+import { PRINT_BUTTON, setupPrintButton } from './print.js'
 
 const genres = uniqueGenres(djs)
 
@@ -13,7 +14,7 @@ document.querySelector('#app').innerHTML = `
 
       ${renderGenres(genres)}
 
-      <nav class="stage-nav">
+      <nav class="stage-nav no-print">
         <a class="stage-nav__link" href="exterior">
           Exterior
           <span class="stage-nav__hint">16:00 — 00:00 sáb</span>
@@ -25,6 +26,12 @@ document.querySelector('#app').innerHTML = `
       </nav>
     </header>
 
-    <footer class="cartel__footer">✕ Desert Music Unity ✕</footer>
+    <footer class="cartel__footer">
+      ✕ Desert Music Unity ✕
+      <br />
+      ${PRINT_BUTTON}
+    </footer>
   </main>
 `
+
+setupPrintButton()

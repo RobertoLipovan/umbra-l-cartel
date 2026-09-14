@@ -22,6 +22,7 @@ npm run preview  # sirve el build de producción
 - `src/format.js` — helpers de formato (hora, duración, BPM, horas totales) en zona horaria Europe/Madrid
 - `src/render.js` — piezas de HTML compartidas entre páginas (logo, géneros, lineup, horas totales)
 - `src/main.js`, `src/exterior-main.js`, `src/interior-main.js` — entrada de cada página
+- `src/print.js` — botón "Imprimir cartel" del pie, descarga la página como `umbral3.pdf` (`html2pdf.js`)
 - `src/style.css` — estilos (paleta negro + verde ácido, tipografía Orbitron/Oswald)
 
 ## Despliegue
