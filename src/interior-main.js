@@ -4,8 +4,13 @@ import { buildSchedule } from './schedule.js'
 import { RETICLE_ICON, uniqueGenres, renderGenres, renderLineup, renderHoursLine } from './render.js'
 
 const interiorDjs = djs.filter((dj) => dj.stage === 'interior')
-const schedule = buildSchedule(interiorDjs, { eventStart: '2026-10-03T20:00:00.000Z' }) // 22:00 Madrid, sábado
+const schedule = buildSchedule(interiorDjs, { eventStart: '2026-10-03T21:00:00.000Z' }) // 23:00 Madrid, sábado
 const genres = uniqueGenres(interiorDjs)
+
+// Sesión b2b de cierre, sin hora de fin fija ("hasta que se cansen").
+const closingSets = [
+  { start: new Date('2026-10-04T05:00:00.000Z'), names: ['Leks', 'FLAMENKØ', 'CARDAN'] }, // 07:00 Madrid, domingo
+]
 
 document.querySelector('#app').innerHTML = `
   <main class="cartel">
@@ -26,7 +31,7 @@ document.querySelector('#app').innerHTML = `
       </a>
     </header>
 
-    ${renderLineup(schedule, { id: 'lineup' })}
+    ${renderLineup(schedule, { id: 'lineup', closingSets })}
 
     <nav class="stage-nav stage-nav--footer">
       <a class="stage-nav__link" href=".">Portada</a>

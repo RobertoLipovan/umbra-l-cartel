@@ -6,8 +6,8 @@ Contexto y convenciones para cualquier agente (o persona) que trabaje en este re
 
 Sitio estático multi-página (Vite, JS vanilla) con el cartel/horario de la fiesta UMBRA-L. Hay dos escenarios, cada uno con su propia página y horario independiente:
 - `/` (`index.html` + `src/main.js`) — portada: enlaza a los dos escenarios, sin horario propio.
-- `/exterior` (`exterior.html` + `src/exterior-main.js`) — sábado 16:00–00:00.
-- `/interior` (`interior.html` + `src/interior-main.js`) — sábado 22:00 en adelante.
+- `/exterior` (`exterior.html` + `src/exterior-main.js`) — sábado 16:00 en adelante.
+- `/interior` (`interior.html` + `src/interior-main.js`) — sábado 23:00 en adelante, termina en un b2b de cierre sin hora fija (`closingSets` en `src/interior-main.js`).
 
 Las rutas `/interior` y `/exterior` (sin `.html`) solo funcionan gracias al plugin `cleanUrls` en `vite.config.js`, que reescribe la petición al archivo `.html` correspondiente — necesario tanto en el dev server como en `vite preview`. Los datos de los DJs se rellenan a mano en `src/djs.js` (campo `stage: 'interior' | 'exterior'`) a partir de un formulario externo (Notion) que no forma parte de este repo. La lógica de renderizado común a ambas páginas vive en `src/render.js`.
 
@@ -32,6 +32,10 @@ Paleta e identidad tomadas de un branding real (logo tipo retícula/mira, negro 
 Antes de dar por terminado un cambio visual:
 1. `npm run build` debe compilar sin errores.
 2. Si es posible, verifica visualmente el resultado. Este entorno no tiene un navegador integrado, pero suele haber `playwright-core` instalado globalmente junto con una build de Chromium cacheada (buscar en `~/.cache/ms-playwright/`), utilizable para tomar capturas de pantalla headless sin depender de un paquete del proyecto.
+
+## Control de versiones
+
+Cada cambio se commitea y se sube (`git add`, `git commit`, `git push`) sin esperar a que se pida explícitamente — no dejar cambios sueltos sin subir al terminar una tarea.
 
 ## Despliegue local
 

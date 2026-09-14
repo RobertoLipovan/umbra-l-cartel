@@ -36,7 +36,7 @@ export function renderGenres(genres) {
   `
 }
 
-export function renderLineup(schedule, { id } = {}) {
+export function renderLineup(schedule, { id, closingSets = [] } = {}) {
   let currentDay = null
   const rows = schedule
     .map((slot) => {
@@ -59,7 +59,28 @@ export function renderLineup(schedule, { id } = {}) {
     })
     .join('')
 
-  return `<ul class="lineup"${id ? ` id="${id}"` : ''}>${rows}</ul>`
+  // Sesión de cierre sin hora de fin fija (b2b hasta que decidan parar).
+  const closingRows = closingSets
+    .map(({ start, names }) => {
+      const day = formatDay(start)
+      const dayHeading = day !== currentDay ? `<li class="lineup__day">${day}</li>` : ''
+      currentDay = day
+
+      return `
+        ${dayHeading}
+        <li class="lineup__item lineup__item--open">
+          <span class="lineup__time">
+            <span class="lineup__time-range">${formatTime(start)} →</span>
+            <span class="lineup__duration">Indefinido</span>
+          </span>
+          <span class="lineup__name">${names.join(' · ')}</span>
+          <span class="lineup__genres">B2B de cierre</span>
+        </li>
+      `
+    })
+    .join('')
+
+  return `<ul class="lineup"${id ? ` id="${id}"` : ''}>${rows}${closingRows}</ul>`
 }
 
 export function renderHoursLine(schedule) {

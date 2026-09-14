@@ -263,6 +263,16 @@ body {
   border-bottom: 1px solid rgba(242, 244, 238, 0.12);
 }
 
+.lineup__item--open {
+  border-bottom-style: dashed;
+  border-bottom-color: rgba(198, 255, 26, 0.4);
+}
+
+.lineup__item--open .lineup__time-range,
+.lineup__item--open .lineup__genres {
+  color: var(--accent);
+}
+
 .lineup__time {
   grid-column: 1;
   grid-row: 1 / 3;
