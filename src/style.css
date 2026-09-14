@@ -305,6 +305,11 @@ body {
   letter-spacing: 0.02em;
 }
 
+.glyph-fallback {
+  /* Orbitron no cubre cirílico; el fallback se ve más grande sin esto. */
+  font-size: 0.8em;
+}
+
 .lineup__genres {
   grid-column: 2;
   font-size: 0.85rem;

@@ -11,6 +11,13 @@ export const RETICLE_ICON = `
   </svg>
 `
 
+// Orbitron no tiene glifos cirílicos, así que el navegador sustituye la "Я"
+// (p. ej. en NVЯR) por una fuente de reserva a un tamaño distinto, y se ve
+// más grande que el resto del nombre. La envolvemos para achicarla a mano.
+function renderName(name) {
+  return name.replace(/Я/g, '<span class="glyph-fallback">Я</span>')
+}
+
 export function uniqueGenres(djs) {
   const seen = new Set()
   const genres = []
@@ -51,7 +58,7 @@ export function renderLineup(schedule, { id, closingSets = [] } = {}) {
             <span class="lineup__time-range">${formatTime(slot.start)}–${formatTime(slot.end)}</span>
             <span class="lineup__duration">${formatDuration(slot.start, slot.end)}</span>
           </span>
-          <span class="lineup__name">${slot.name}</span>
+          <span class="lineup__name">${renderName(slot.name)}</span>
           <span class="lineup__genres">${slot.genres.join(' · ')}</span>
           <span class="lineup__bpm">${formatBpm(slot.bpm)}</span>
         </li>
@@ -73,7 +80,7 @@ export function renderLineup(schedule, { id, closingSets = [] } = {}) {
             <span class="lineup__time-range">${formatTime(start)} →</span>
             <span class="lineup__duration">Indefinido</span>
           </span>
-          <span class="lineup__name">${names.join(' · ')}</span>
+          <span class="lineup__name">${names.map(renderName).join(' · ')}</span>
           <span class="lineup__genres">B2B de cierre</span>
         </li>
       `
