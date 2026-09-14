@@ -26,22 +26,30 @@ const INSTAGRAM_ICON = `
   </svg>
 `
 
-function renderInstagramLink(instagram, djName) {
+function renderInstagramLink(instagram, djName, variant) {
   if (!instagram) return ''
   const handle = instagram.replace(/^@/, '')
-  return `<a class="lineup__instagram" href="https://instagram.com/${handle}" target="_blank" rel="noopener noreferrer" aria-label="Instagram de ${djName}">${INSTAGRAM_ICON}</a>`
+  const className = variant ? `lineup__instagram lineup__instagram--${variant}` : 'lineup__instagram'
+  return `<a class="${className}" href="https://instagram.com/${handle}" target="_blank" rel="noopener noreferrer" aria-label="Instagram de ${djName}">${INSTAGRAM_ICON}</a>`
 }
 
-// El icono va pegado a la primera palabra del nombre (no al final del todo)
-// para que, si el nombre se parte en dos líneas en pantallas estrechas
-// ("ANN" / "BLACKSMITH"), se quede en la primera línea en vez de saltar
-// a la segunda junto con el resto del nombre.
+// En nombres de una palabra el icono simplemente va al final. En nombres de
+// dos palabras hace falta cubrir dos casos con CSS (ver .lineup__instagram--*):
+// en pantallas anchas cabe todo en una línea ("ANN BLACKSMITH [icono]"), pero
+// en pantallas estrechas el nombre se parte en dos líneas y, si el icono
+// sigue al final, cae solo en la segunda línea. Por eso se renderizan dos
+// copias del enlace (una tras la primera palabra, otra tras el nombre
+// completo) y una media query en el CSS decide cuál mostrar.
 function renderNameWithInstagram(name, instagram) {
-  const link = renderInstagramLink(instagram, name)
-  if (!link) return renderName(name)
   const spaceIndex = name.indexOf(' ')
-  if (spaceIndex === -1) return `${renderName(name)}${link}`
-  return `${renderName(name.slice(0, spaceIndex))}${link}${renderName(name.slice(spaceIndex))}`
+  if (spaceIndex === -1) return `${renderName(name)}${renderInstagramLink(instagram, name)}`
+  if (!instagram) return renderName(name)
+
+  const first = renderName(name.slice(0, spaceIndex))
+  const rest = renderName(name.slice(spaceIndex))
+  const mobileLink = renderInstagramLink(instagram, name, 'mobile')
+  const desktopLink = renderInstagramLink(instagram, name, 'desktop')
+  return `${first}${mobileLink}${rest}${desktopLink}`
 }
 
 const PLACEHOLDER_GENRES = new Set(['por confirmar'])

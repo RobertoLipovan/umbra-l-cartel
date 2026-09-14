@@ -308,7 +308,7 @@ body {
 .lineup__instagram {
   display: inline-flex;
   position: relative;
-  top: -0.15em;
+  top: -0.08em;
   vertical-align: middle;
   margin-left: 0.5rem;
   color: var(--muted);
@@ -317,6 +317,23 @@ body {
 
 .lineup__instagram:hover {
   color: var(--accent);
+}
+
+/* Nombres de dos palabras: el icono va al final si cabe en una línea, o
+   pegado a la primera palabra si el nombre se parte en dos (ver
+   renderNameWithInstagram en render.js). */
+.lineup__instagram--mobile {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .lineup__instagram--desktop {
+    display: none;
+  }
+
+  .lineup__instagram--mobile {
+    display: inline-flex;
+  }
 }
 
 .glyph-fallback {
