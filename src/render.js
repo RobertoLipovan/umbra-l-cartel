@@ -18,13 +18,15 @@ function renderName(name) {
   return name.replace(/[ЯØ]/g, (char) => `<span class="glyph-fallback">${char}</span>`)
 }
 
+const PLACEHOLDER_GENRES = new Set(['por confirmar'])
+
 export function uniqueGenres(djs) {
   const seen = new Set()
   const genres = []
   for (const dj of djs) {
     for (const genre of dj.genres) {
       const key = genre.trim().toLowerCase()
-      if (!seen.has(key)) {
+      if (!seen.has(key) && !PLACEHOLDER_GENRES.has(key)) {
         seen.add(key)
         genres.push(genre)
       }
