@@ -20,6 +20,35 @@
   transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
+/* Franja fija con el nombre del escenario, visible solo mientras la frase
+   ".cartel__stage" está fuera de la pantalla (ver stage-banner.js). Cuelga
+   de <body>, igual que .page-mask, por la misma razón: dentro de #app
+   heredaría su `transform` (tilt del cursor) como containing block y dejaría
+   de fijarse al viewport real. */
+.stage-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 500;
+  padding: 0.9rem 1rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-family: 'Orbitron', 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--bg);
+  background-color: var(--accent);
+  pointer-events: none;
+  transform: translateY(-100%);
+  transition: transform 0.35s ease;
+}
+
+.stage-banner--visible {
+  transform: translateY(0);
+}
+
 html {
   scroll-behavior: smooth;
   perspective: 1200px;

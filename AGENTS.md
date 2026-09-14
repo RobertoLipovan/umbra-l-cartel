@@ -53,6 +53,15 @@ Dos ajustes más, específicos de móvil (`max-width: 640px`), para que la porta
 - `body.page-home #app { transform: none !important }` anula la rotación del tilt (con `!important` porque `tilt.js` fija el transform inline) — la propia rotación, aunque sea de solo unos grados, ya añadía overflow vertical residual.
 - `body { padding-block: 2rem }` en vez de los `4rem` de desktop — con `4rem` (128px totales) el contenido de la portada se pasaba del alto de un móvil normal por ~36px; no es un bug del tilt, simplemente sobraba padding para esa pantalla.
 
+## Franja del nombre de escenario al hacer scroll
+
+`src/stage-banner.js` muestra una franja verde fija arriba de toda la pantalla con "EXTERIOR" o "INTERIOR" en cuanto la frase `.cartel__stage` ("Escenario exterior/interior", en la cabecera) deja de verse al hacer scroll, y la oculta en cuanto vuelve a verse. Se implementa con un `IntersectionObserver` sobre `.cartel__stage`: `!entry.isIntersecting` → mostrar.
+
+- El `<div class="stage-banner">` se crea **una sola vez** (`initStageBanner()`, llamado desde `initRouter()`) y cuelga de `<body>`, **no de `#app`** — mismo motivo que `.page-mask` (ver sección de tilt más arriba): si viviera dentro de `#app` heredaría su `transform` como containing block y su `position: fixed` dejaría de fijarse al viewport real.
+- `updateStageBanner(viewKey)` se llama en cada `mount()` (`router.js`). Reconecta el observer al `.cartel__stage` de la vista recién montada (el anterior queda desconectado — el elemento viejo ya no existe, `IntersectionObserver` no lo "sigue" solo). En portada no existe `.cartel__stage`, así que simplemente oculta la franja y no observa nada.
+- Mostrar/ocultar es una transición CSS de `transform` (`translateY(-100%)` ↔ `translateY(0)`, 0.35s) en `.stage-banner`/`.stage-banner--visible` — se desliza hacia abajo para aparecer y hacia arriba para desaparecer, a petición explícita.
+- `z-index: 500`, por debajo de `.page-mask` (9999): durante una transición de vista la máscara verde debe tapar también la franja.
+
 ## Transición diagonal entre vistas
 
 `src/page-transition.js` añade una máscara verde diagonal (`.page-mask`, `<div>` creado una vez por `initPageMask()` y reutilizado toda la sesión) que cubre la pantalla al cambiar de vista y se retira tras el cambio. Al ser SPA, todo ocurre en el mismo documento — sin recargas reales que coordinar entre sí, todo el ciclo cubrir → cambiar contenido → retirar pasa por una sola función async (`wipeTransition(swapContent)`), llamada desde `router.js` en cada clic sobre `a[data-view]`.

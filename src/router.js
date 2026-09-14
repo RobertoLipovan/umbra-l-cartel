@@ -2,6 +2,7 @@ import { VIEWS } from './views.js'
 import { startGenreDance } from './genre-dance.js'
 import { startCursorTilt } from './tilt.js'
 import { initPageMask, wipeTransition } from './page-transition.js'
+import { initStageBanner, updateStageBanner } from './stage-banner.js'
 
 let currentViewKey = 'home'
 
@@ -13,15 +14,17 @@ function mount(viewKey) {
   document.documentElement.classList.toggle('page-home', view.isHome)
   document.body.classList.toggle('page-home', view.isHome)
 
-  // Se vuelven a llamar en cada montaje: genre-dance/tilt seleccionan
-  // elementos del DOM recién creado, no quedan "enganchados" de la vista
-  // anterior.
+  // Se vuelven a llamar en cada montaje: genre-dance/tilt/stage-banner
+  // seleccionan elementos del DOM recién creado, no quedan "enganchados" de
+  // la vista anterior.
   startGenreDance()
   startCursorTilt()
+  updateStageBanner(viewKey)
 }
 
 export function initRouter() {
   initPageMask()
+  initStageBanner()
   mount('home')
 
   // La URL no cambia nunca (sigue siendo una sola página de verdad, sin
