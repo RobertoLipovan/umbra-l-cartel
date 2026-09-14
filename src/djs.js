@@ -26,5 +26,5 @@ export const djs = [
   { name: 'DRIWISH', genres: ['Schranz', 'Hardgroove'], stage: 'interior', arrival: '2026-10-04T16:00:00.000Z', bpm: [140, 160] },
   { name: 'Ann Blacksmith', genres: ['Hardtechno', 'Industrial', 'Bochka'], stage: 'interior', arrival: '2026-10-04T10:00:00.000Z', bpm: [160, 165] },
   { name: 'SKB', genres: ['Hardgroove'], stage: 'interior', arrival: '2026-10-04T16:00:00.000Z', bpm: [145, 155] },
-  { name: 'Eiren', genres: ['Hardgroove'], stage: 'interior', arrival: '2026-10-04T19:00:00.000Z', bpm: [135, 148] },
+  { name: 'Eiren', genres: ['Hardgroove', 'Techno'], stage: 'interior', arrival: '2026-10-04T19:00:00.000Z', bpm: [135, 148] },
 ]
