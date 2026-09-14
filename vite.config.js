@@ -1,23 +1,25 @@
 import { defineConfig } from 'vite'
-import { resolve } from 'node:path'
 
-// Permite entrar a /interior y /exterior sin extensión .html, tanto en el
-// servidor de desarrollo como sirviendo el build (vite preview).
-function cleanUrls() {
-  const routes = {
-    '/umbral3/interior': '/umbral3/interior.html',
-    '/umbral3/exterior': '/umbral3/exterior.html',
-  }
+// SPA de una sola página: /interior y /exterior ya no son rutas reales, solo
+// existen como estado interno de src/router.js (vía pushState, para que la
+// barra de direcciones se vea bien durante la sesión). Si alguien entra a
+// esas URLs directamente (marcador, enlace viejo), se redirige a la raíz en
+// vez de intentar servir nada ahí.
+function redirectOldRoutes() {
+  const oldPaths = new Set(['/umbral3/interior', '/umbral3/exterior'])
 
   const middleware = (req, res, next) => {
     const path = req.url.split('?')[0].replace(/\/$/, '')
-    const target = routes[path]
-    if (target) req.url = target
+    if (oldPaths.has(path)) {
+      res.writeHead(302, { Location: '/umbral3/' })
+      res.end()
+      return
+    }
     next()
   }
 
   return {
-    name: 'clean-urls',
+    name: 'redirect-old-routes',
     configureServer(server) {
       server.middlewares.use(middleware)
     },
@@ -29,16 +31,7 @@ function cleanUrls() {
 
 export default defineConfig({
   base: '/umbral3/',
-  plugins: [cleanUrls()],
-  build: {
-    rollupOptions: {
-      input: {
-        main: resolve(import.meta.dirname, 'index.html'),
-        interior: resolve(import.meta.dirname, 'interior.html'),
-        exterior: resolve(import.meta.dirname, 'exterior.html'),
-      },
-    },
-  },
+  plugins: [redirectOldRoutes()],
   server: {
     host: true, // escucha en todas las interfaces, incluida la de Tailscale
     port: 5173,
