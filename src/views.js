@@ -18,6 +18,16 @@ const FOOTER = `
   </footer>
 `
 
+// El logo de las vistas de escenario es un enlace de vuelta a la portada:
+// lleva `data-view="home"`, así que lo intercepta router.js como el resto de
+// la navegación (transición diagonal incluida) y la URL no cambia. En la
+// portada el logo se queda decorativo, sin enlace.
+const LOGO_LINK = `
+  <a class="cartel__logo-link" data-view="home" href="." aria-label="Volver a la portada">
+    ${RETICLE_ICON}
+  </a>
+`
+
 function renderHome() {
   const genres = uniqueGenres(djs)
   return `
@@ -54,7 +64,7 @@ function renderExterior() {
   return `
     <main class="cartel">
       <header class="cartel__header">
-        ${RETICLE_ICON}
+        ${LOGO_LINK}
         <p class="cartel__kicker">Casa Techno 3.0</p>
         <h1 class="cartel__title">UMBRA-L</h1>
         <p class="cartel__stage">Escenario exterior</p>
@@ -91,7 +101,7 @@ function renderInterior() {
   return `
     <main class="cartel">
       <header class="cartel__header">
-        ${RETICLE_ICON}
+        ${LOGO_LINK}
         <p class="cartel__kicker">Casa Techno 3.0</p>
         <h1 class="cartel__title">UMBRA-L</h1>
         <p class="cartel__stage">Escenario interior</p>

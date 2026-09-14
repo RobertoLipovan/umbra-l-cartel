@@ -51,7 +51,14 @@
 
 html {
   scroll-behavior: smooth;
-  perspective: 1200px;
+  /* Aquí NO va `perspective`: igual que `transform`, `perspective` convierte
+     al elemento en el "containing block" de sus descendientes
+     `position: fixed`. Con la perspectiva en <html>, .stage-banner y
+     .page-mask (que cuelgan de <body>) dejaban de fijarse al viewport y se
+     anclaban al documento entero: la franja de escenario iba con el scroll
+     (rect.y = -scrollY) y nunca se veía, y la máscara inflaba el alto de la
+     página (scroll fantasma). La perspectiva 3D del tilt vive ahora como
+     función del transform de #app (ver tilt.js). */
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--accent) transparent;
@@ -98,6 +105,11 @@ body {
 }
 
 #app {
+  /* La perspectiva 3D del tilt del cursor llega como función del propio
+     transform (`perspective(1200px) rotateX(...) rotateY(...)`, ver tilt.js),
+     no como `perspective` en <html> — ver el comentario en la regla `html`,
+     arriba: allí convertía a <html> en containing block de los elementos
+     fixed de <body> y rompía .stage-banner y .page-mask. */
   transform-style: preserve-3d;
   transition: transform 0.15s ease-out;
   will-change: transform;
@@ -192,6 +204,23 @@ body {
   z-index: 1;
   color: var(--accent);
   margin-bottom: 0.5rem;
+}
+
+/* Envoltura del logo cuando es enlace de vuelta a la portada (vistas de
+   escenario, ver `LOGO_LINK` en views.js). Se queda como inline, sin
+   `display` propio, para que el hueco del icono en la cabecera sea idéntico
+   al del logo suelto de la portada; solo se quita el subrayado por defecto
+   del enlace. El color lo sigue poniendo `.cartel__logo`. */
+.cartel__logo-link {
+  text-decoration: none;
+}
+
+.cartel__logo-link .cartel__logo {
+  transition: color 0.2s ease;
+}
+
+.cartel__logo-link:hover .cartel__logo {
+  color: var(--fg);
 }
 
 .cartel__kicker {
