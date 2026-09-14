@@ -148,9 +148,9 @@ body {
 }
 
 .genres__item--active {
-  background-color: var(--accent);
+  background-color: rgba(198, 255, 26, 0.15);
   border-color: var(--accent);
-  color: #050505;
+  color: var(--fg);
 }
 
 .cartel__scroll {
