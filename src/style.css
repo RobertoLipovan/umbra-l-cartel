@@ -307,7 +307,7 @@ body {
 
 .glyph-fallback {
   /* Orbitron no cubre cirílico; el fallback se ve más grande sin esto. */
-  font-size: 0.8em;
+  font-size: 0.9em;
 }
 
 .lineup__genres {
