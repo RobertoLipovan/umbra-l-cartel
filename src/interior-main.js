@@ -4,7 +4,7 @@ import { buildSchedule } from './schedule.js'
 import { RETICLE_ICON, uniqueGenres, renderGenres, renderLineup, renderHoursLine } from './render.js'
 
 const interiorDjs = djs.filter((dj) => dj.stage === 'interior')
-const schedule = buildSchedule(interiorDjs, { eventStart: '2026-10-03T21:00:00.000Z' }) // 23:00 Madrid, sábado
+const schedule = buildSchedule(interiorDjs, { eventStart: '2026-10-03T20:00:00.000Z' }) // 22:00 Madrid, sábado
 const genres = uniqueGenres(interiorDjs)
 
 // Sesión b2b de cierre, sin hora de fin fija ("hasta que se cansen"),

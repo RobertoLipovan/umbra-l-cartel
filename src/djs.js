@@ -15,7 +15,6 @@ export const djs = [
   { name: 'SKB', genres: ['Hard Groove'], stage: 'exterior', arrival: '2026-10-04T16:00:00.000Z', bpm: [145, 155] },
   { name: 'FØBIA', genres: ['Hard bounce', 'Hypnotic groove', 'Groove bounce'], stage: 'exterior', arrival: '2026-10-03T22:00:00.000Z', bpm: [145, 160] },
   { name: 'Leks', genres: ['Hard Groove', 'Hard Techno'], stage: 'exterior', arrival: '2026-10-04T18:00:00.000Z', bpm: [148, 160] },
-  { name: 'EmeGe', genres: ['Hard techno'], stage: 'exterior', arrival: '2026-10-03T22:00:00.000Z', bpm: [160, 180] },
   { name: 'K-BRY', genres: ['Hardtechno', 'Schranz'], stage: 'exterior', arrival: '2026-10-04T08:00:00.000Z', bpm: [150, 160] },
 
   // Interior: 23:00–07:00.
@@ -25,6 +24,7 @@ export const djs = [
   { name: 'SENDA', genres: ['Hardtechno', 'Schranz'], stage: 'interior', arrival: '2026-10-04T08:00:00.000Z', bpm: [160, 160] },
   { name: 'NVЯR', genres: ['Hard Groove', 'Schranz', 'Hard dance'], stage: 'interior', arrival: '2026-10-04T14:30:00.000Z', bpm: [140, 170] },
   { name: 'DRIWISH', genres: ['Schranz', 'Hard Groove'], stage: 'interior', arrival: '2026-10-04T16:00:00.000Z', bpm: [140, 160] },
+  { name: 'EmeGe', genres: ['Hard techno'], stage: 'interior', arrival: '2026-10-03T22:00:00.000Z', bpm: [160, 180] },
   { name: 'Ann Blacksmith', genres: ['Hardtechno', 'Industrial', 'Bochka'], stage: 'interior', arrival: '2026-10-04T10:00:00.000Z', bpm: [160, 165] },
   { name: 'Eiren', genres: ['Hard Groove', 'Techno'], stage: 'interior', arrival: '2026-10-04T19:00:00.000Z', bpm: [135, 148] },
   { name: 'NØT', genres: ['Groove', 'Hypnotic Techno'], stage: 'interior', arrival: '2026-10-03T17:00:00.000Z', bpm: [135, 145] },
