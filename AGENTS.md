@@ -26,7 +26,11 @@ Si en el futuro se conecta este proyecto a una fuente de datos real (API, export
 
 ## Botón "Imprimir cartel"
 
-Cada página tiene un botón en el pie (`src/print.js`, `setupPrintButton()`) que genera un PDF con `html2pdf.js` (cargado con `import()` dinámico solo al pulsar el botón, para no meter ~900 KB en el bundle inicial) y lo descarga siempre como `umbral3.pdf`, sea cual sea la página. Captura `.cartel`, ignorando cualquier elemento con la clase `no-print` (navegación, el propio botón, el aviso de scroll "CARTEL"). El fondo oscuro vive en `<body>` (radial-gradient), así que antes de capturar se fuerza `background-color` inline en `.cartel` — si no, html2canvas captura ese elemento con fondo blanco y el texto claro queda ilegible.
+Cada página tiene un botón en el pie (`src/print.js`, `setupPrintButton()`) que genera un PDF y lo descarga siempre como `umbral3.pdf`, sea cual sea la página. Captura `.cartel` con `html2canvas`, ignorando cualquier elemento con la clase `no-print` (navegación, el propio botón, el aviso de scroll "CARTEL"), y mete esa imagen en un PDF de **una sola página de `jsPDF`** con el tamaño exacto del contenido — nada de paginación automática tipo A4: se probó con `html2pdf.js` primero y su lógica de reparto en páginas está pensada para documentos, no para un elemento largo y estrecho como este cartel (salía una página en blanco con una miniatura diminuta arriba). `html2canvas` y `jspdf` se cargan con `import()` dinámico solo al pulsar el botón, para no meter ~600 KB en el bundle inicial.
+
+Dos detalles que costó descubrir y no hay que deshacer:
+- El fondo oscuro vive en `<body>` (radial-gradient), así que antes de capturar se fuerza `background-color` inline en `.cartel` — si no, html2canvas lo captura con fondo blanco y el texto claro queda ilegible.
+- La imagen se exporta como **JPEG** (calidad 0.92), no PNG: el degradado de fondo comprime fatal sin pérdida (PNG daba >15 MB para este mismo cartel; JPEG da ~400 KB sin diferencia visible).
 
 ## Diseño
 
