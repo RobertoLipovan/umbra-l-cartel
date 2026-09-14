@@ -11,11 +11,11 @@ export const RETICLE_ICON = `
   </svg>
 `
 
-// Orbitron no tiene glifos cirílicos, así que el navegador sustituye la "Я"
-// (p. ej. en NVЯR) por una fuente de reserva a un tamaño distinto, y se ve
-// más grande que el resto del nombre. La envolvemos para achicarla a mano.
+// Orbitron no cubre ni cirílico ni la Ø nórdica, así que el navegador las
+// sustituye por una fuente de reserva a un tamaño distinto (p. ej. en NVЯR,
+// FØBIA, FLAMENKØ). Las envolvemos para achicarlas a mano.
 function renderName(name) {
-  return name.replace(/Я/g, '<span class="glyph-fallback">Я</span>')
+  return name.replace(/[ЯØ]/g, (char) => `<span class="glyph-fallback">${char}</span>`)
 }
 
 export function uniqueGenres(djs) {
