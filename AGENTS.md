@@ -32,6 +32,10 @@ Dos detalles que costó descubrir y no hay que deshacer:
 - El fondo oscuro vive en `<body>` (radial-gradient), así que antes de capturar se fuerza `background-color` inline en `.cartel` — si no, html2canvas lo captura con fondo blanco y el texto claro queda ilegible.
 - La imagen se exporta como **JPEG** (calidad 0.92), no PNG: el degradado de fondo comprime fatal sin pérdida (PNG daba >15 MB para este mismo cartel; JPEG da ~400 KB sin diferencia visible).
 
+## Baile de los chips de género
+
+`src/genre-dance.js` (`startGenreDance()`, llamado desde las tres páginas) hace que cada 500ms, 5 chips de `.genres__item` elegidos al azar pasen a `.genres__item--active` (fondo verde relleno) y los 5 de la ronda anterior vuelvan al estado normal; la ronda siguiente evita repetir los mismos 5 (salvo que no haya suficientes chips para evitarlo). Es puramente decorativo — no toca el PDF de forma especial, así que "Imprimir cartel" puede capturar cualquier combinación de chips activos en el momento del clic; eso es intencional, no un bug.
+
 ## Diseño
 
 Paleta e identidad tomadas de un branding real (logo tipo retícula/mira, negro + verde ácido `#c6ff1a`, tipografía Orbitron para títulos y Oswald para el resto). Si tienes acceso al archivo de fuente original del branding, esa es una mejora pendiente frente a la aproximación actual con Google Fonts.

@@ -3,6 +3,7 @@ import { djs } from './djs.js'
 import { buildSchedule } from './schedule.js'
 import { RETICLE_ICON, uniqueGenres, renderGenres, renderLineup, renderHoursLine } from './render.js'
 import { PRINT_BUTTON, setupPrintButton } from './print.js'
+import { startGenreDance } from './genre-dance.js'
 
 const interiorDjs = djs.filter((dj) => dj.stage === 'interior')
 const schedule = buildSchedule(interiorDjs, { eventStart: '2026-10-03T20:00:00.000Z' }) // 22:00 Madrid, sábado
@@ -49,3 +50,4 @@ document.querySelector('#app').innerHTML = `
 `
 
 setupPrintButton()
+startGenreDance()

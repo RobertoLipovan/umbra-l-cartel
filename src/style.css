@@ -140,9 +140,17 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--fg);
+  background-color: transparent;
   border: 1px solid rgba(198, 255, 26, 0.4);
   border-radius: 999px;
   padding: 0.35rem 0.9rem;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.genres__item--active {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #050505;
 }
 
 .cartel__scroll {

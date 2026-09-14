@@ -2,6 +2,7 @@ import './style.css'
 import { djs } from './djs.js'
 import { RETICLE_ICON, uniqueGenres, renderGenres } from './render.js'
 import { PRINT_BUTTON, setupPrintButton } from './print.js'
+import { startGenreDance } from './genre-dance.js'
 
 const genres = uniqueGenres(djs)
 
@@ -35,3 +36,4 @@ document.querySelector('#app').innerHTML = `
 `
 
 setupPrintButton()
+startGenreDance()
