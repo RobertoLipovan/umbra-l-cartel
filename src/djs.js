@@ -12,11 +12,11 @@ export const djs = [
   // Exterior: 16:00–01:00 sábado.
   { name: 'Eiren', genres: ['Tech House'], stage: 'exterior', arrival: '2026-10-04T19:00:00.000Z', bpm: [135, 148], instagram: '@eiren.lf' },
   { name: 'Deif', genres: ['Techno Groove'], stage: 'exterior', arrival: '2026-10-04T11:00:00.000Z', bpm: [138, 148] },
-  { name: 'Zai!', genres: ['Bounce Techno', 'HardTech'], stage: 'exterior', arrival: '2026-10-03T21:10:00.000Z', bpm: [140, 165] },
+  { name: 'Zai!', genres: ['Bounce Techno', 'HardTech'], stage: 'exterior', arrival: '2026-10-03T21:10:00.000Z', bpm: [140, 165], instagram: '@esloquezai' },
   { name: 'ALES GUT', genres: ['Por confirmar'], stage: 'exterior', bpm: ['?', '?'] },
   { name: 'SKB', genres: ['Hard Groove'], stage: 'exterior', arrival: '2026-10-04T16:00:00.000Z', bpm: [145, 155] },
   { name: 'FØBIA', genres: ['Hard bounce', 'Hypnotic groove', 'Groove bounce'], stage: 'exterior', arrival: '2026-10-03T22:00:00.000Z', bpm: [145, 160] },
-  { name: 'Leks', genres: ['Hard Groove', 'Hard Techno'], stage: 'exterior', arrival: '2026-10-04T18:00:00.000Z', bpm: [148, 160] },
+  { name: 'Leks', genres: ['Hard Groove', 'Hard Techno'], stage: 'exterior', arrival: '2026-10-04T18:00:00.000Z', bpm: [148, 160], instagram: '@ruso_xd' },
 
   // Interior: 23:00–07:00.
   { name: 'CARDAN', genres: ['Hard Groove', 'Acid Hard Techno'], stage: 'interior', arrival: '2026-10-04T14:00:00.000Z', bpm: [145, 165] },
