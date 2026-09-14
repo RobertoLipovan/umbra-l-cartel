@@ -50,6 +50,16 @@ Dos ajustes más, específicos de móvil (`max-width: 640px`), para que la porta
 - `body.page-home { transform: none !important }` anula la rotación del tilt (con `!important` porque `tilt.js` fija el transform inline, de mayor especificidad) — la propia rotación, aunque sea de solo unos grados, ya añadía overflow vertical residual.
 - `body { padding-block: 2rem }` en vez de los `4rem` de desktop — con `4rem` (128px totales) el contenido de la portada se pasaba del alto de un móvil normal por ~36px; no es un bug del tilt, simplemente sobraba padding para esa pantalla.
 
+## Transición diagonal entre páginas
+
+`src/page-transition.js` (`setupPageTransition()`, llamado desde las tres páginas) añade una máscara verde diagonal (`.page-mask`, `<div>` creado por JS y añadido a `document.body`) que cubre la pantalla al hacer clic en un enlace interno y se retira al cargar la página destino. Es un sitio multi-página real (no SPA ni View Transitions API), así que salida y entrada son dos animaciones independientes coordinadas a mano con `setTimeout`/`sessionStorage`, no una transición nativa del navegador.
+
+- La dirección del barrido es aleatoria en cada clic (`DIRECTIONS`: 4 combinaciones de `skewX`/`skewY` con signo), a petición explícita — antes siempre iba en la misma dirección y se veía repetitivo.
+- La dirección elegida al salir se guarda en `sessionStorage` (`STORAGE_KEY`) y la página siguiente la lee al entrar, para que el barrido se sienta continuo entre una página y la otra en vez de dar un salto visual; si no hay nada guardado (carga directa, refresco), la entrada elige una dirección al azar.
+- Al cambiar de dirección en el `click`, hace falta quitar la clase `--animate`, fijar la posición oculta de la nueva dirección, forzar reflow (`void mask.offsetWidth`) y solo entonces reactivar la transición — si no, el navegador puede saltar directo a la posición final sin animar (la máscara podía llevar el skew de otra dirección de un ciclo anterior).
+- `TRANSITION_MS` (500) debe coincidir con la duración del `transition` en `.page-mask--animate` en `style.css` — es el tiempo que se espera antes de navegar de verdad con `window.location.href`.
+- Excluye de la intercepción los enlaces con `href="#..."` (anclas dentro de la misma página, como el aviso "CARTEL") y los que abren en pestaña nueva o apuntan a otro origen (Instagram).
+
 ## Diseño
 
 Paleta e identidad tomadas de un branding real (logo tipo retícula/mira, negro + verde ácido `#c6ff1a`, tipografía Orbitron para títulos y Oswald para el resto). Si tienes acceso al archivo de fuente original del branding, esa es una mejora pendiente frente a la aproximación actual con Google Fonts.

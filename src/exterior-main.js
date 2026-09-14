@@ -5,6 +5,7 @@ import { RETICLE_ICON, uniqueGenres, renderGenres, renderLineup, renderHoursLine
 // import { PRINT_BUTTON, setupPrintButton } from './print.js' // desactivado por ahora
 import { startGenreDance } from './genre-dance.js'
 import { startCursorTilt } from './tilt.js'
+import { setupPageTransition } from './page-transition.js'
 
 const exteriorDjs = djs.filter((dj) => dj.stage === 'exterior')
 const schedule = buildSchedule(exteriorDjs, { eventStart: '2026-10-03T14:00:00.000Z' }) // 16:00 Madrid, sábado
@@ -46,3 +47,4 @@ document.querySelector('#app').innerHTML = `
 // setupPrintButton() // desactivado por ahora
 startGenreDance()
 startCursorTilt()
+setupPageTransition()

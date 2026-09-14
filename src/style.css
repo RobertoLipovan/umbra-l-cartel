@@ -6,6 +6,20 @@
   color-scheme: dark;
 }
 
+.page-mask {
+  position: fixed;
+  inset: -25%;
+  background: var(--accent);
+  z-index: 9999;
+  pointer-events: none;
+  /* la dirección (skew + posición oculta) la fija src/page-transition.js
+     por JS en línea, es aleatoria en cada transición */
+}
+
+.page-mask--animate {
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
 html {
   scroll-behavior: smooth;
   perspective: 1200px;

@@ -4,6 +4,7 @@ import { RETICLE_ICON, uniqueGenres, renderGenres } from './render.js'
 // import { PRINT_BUTTON, setupPrintButton } from './print.js' // desactivado por ahora
 import { startGenreDance } from './genre-dance.js'
 import { startCursorTilt } from './tilt.js'
+import { setupPageTransition } from './page-transition.js'
 
 const genres = uniqueGenres(djs)
 
@@ -38,3 +39,4 @@ document.querySelector('#app').innerHTML = `
 // setupPrintButton() // desactivado por ahora
 startGenreDance()
 startCursorTilt()
+setupPageTransition()
