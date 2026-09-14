@@ -2,7 +2,7 @@ import './style.css'
 import { djs } from './djs.js'
 import { buildSchedule } from './schedule.js'
 import { RETICLE_ICON, uniqueGenres, renderGenres, renderLineup, renderHoursLine } from './render.js'
-import { PRINT_BUTTON, setupPrintButton } from './print.js'
+// import { PRINT_BUTTON, setupPrintButton } from './print.js' // desactivado por ahora
 import { startGenreDance } from './genre-dance.js'
 import { startCursorTilt } from './tilt.js'
 
@@ -44,12 +44,11 @@ document.querySelector('#app').innerHTML = `
 
     <footer class="cartel__footer">
       ✕ Desert Music Unity ✕
-      <br />
-      ${PRINT_BUTTON}
+      <!-- botón "Imprimir cartel" desactivado por ahora, ver src/print.js -->
     </footer>
   </main>
 `
 
-setupPrintButton()
+// setupPrintButton() // desactivado por ahora
 startGenreDance()
 startCursorTilt()

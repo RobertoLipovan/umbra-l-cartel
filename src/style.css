@@ -57,6 +57,12 @@ body {
   will-change: transform;
 }
 
+@media (max-width: 640px) {
+  body {
+    padding-block: 2rem;
+  }
+}
+
 .cartel {
   width: 100%;
   max-width: 720px;
@@ -90,6 +96,18 @@ body {
 
   body.page-home .cartel__header {
     margin-bottom: 0;
+  }
+}
+
+/* Por debajo de 641px la portada fluye con scroll normal (ver arriba), pero
+   el tilt del cursor seguía rotando el body unos grados y esa rotación por
+   sí sola añade overflow vertical residual — un scroll "de sobra" que antes
+   quedaba oculto por el truco de 100vh. Anulamos el transform con
+   !important porque tilt.js lo fija inline (mayor especificidad que una
+   regla normal). */
+@media (max-width: 640px) {
+  body.page-home {
+    transform: none !important;
   }
 }
 
