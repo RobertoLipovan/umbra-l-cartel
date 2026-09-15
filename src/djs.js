@@ -27,7 +27,7 @@ export const djs = [
   { name: 'DRIWISH', genres: ['Schranz', 'Hard Groove'], stage: 'interior', arrival: '2026-10-04T16:00:00.000Z', bpm: [140, 160], instagram: '@_driwish_' },
   { name: 'EmeGe', genres: ['Hard techno'], stage: 'interior', arrival: '2026-10-03T22:00:00.000Z', bpm: [160, 180] },
   { name: 'Ann Blacksmith', genres: ['Hardtechno', 'Industrial', 'Bochka'], stage: 'interior', arrival: '2026-10-04T10:00:00.000Z', bpm: [160, 165], instagram: '@annblacksmith_' },
-  { name: 'K-BRY', genres: ['Hardtechno', 'Schranz'], stage: 'interior', arrival: '2026-10-04T08:00:00.000Z', bpm: [150, 160] },
+  { name: 'K-BRY', genres: ['Hardtechno', 'Schranz'], stage: 'interior', arrival: '2026-10-04T08:00:00.000Z', bpm: [150, 160], instagram: '@joanep98' },
   { name: 'Eiren', genres: ['Hard Groove', 'Techno'], stage: 'interior', arrival: '2026-10-04T19:00:00.000Z', bpm: [135, 148], instagram: '@eiren.lf' },
   { name: 'NØT', genres: ['Groove', 'Hypnotic Techno'], stage: 'interior', arrival: '2026-10-03T17:00:00.000Z', bpm: [135, 145] },
 ]
