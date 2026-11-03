@@ -9,7 +9,13 @@ function redirectOldRoutes() {
   const oldPaths = new Set(['/umbral3/interior', '/umbral3/exterior'])
 
   const middleware = (req, res, next) => {
-    const path = req.url.split('?')[0].replace(/\/$/, '')
+    const rawPath = req.url.split('?')[0]
+    if (rawPath === '/umbral3') {
+      res.writeHead(302, { Location: '/umbral3/' })
+      res.end()
+      return
+    }
+    const path = rawPath.replace(/\/$/, '')
     if (oldPaths.has(path)) {
       res.writeHead(302, { Location: '/umbral3/' })
       res.end()
