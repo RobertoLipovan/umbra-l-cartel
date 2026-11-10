@@ -93,7 +93,7 @@ Todo esto ya no se usa; queda documentado porque explica decisiones que siguen e
 - `router.js` reseteaba el scroll en cada `mount()` (`resetScroll()`), porque en una SPA el navegador no lo reinicia solo. El salto tenía que ser **instantáneo**: con `scroll-behavior: smooth` en `html`, un `scrollTo(0,0)` normal se anima y se vería al retirar la máscara. Poner `scroll-behavior: auto` inline **no basta** sin forzar el recálculo de estilos (`void getComputedStyle(root).scrollBehavior`) antes del `scrollTo`.
 - La portada usaba la clase `page-home` en `<html>`/`<body>` para no tener scroll nunca (100vh + `overflow: hidden`). **Se eliminó del HTML y del CSS**: con la landing impedía hacer scroll y dejaba la página muerta.
 
-## Dos pantallas: cartel y lineup, con imán
+## Dos pantallas: cartel y lineup
 
 La landing son **dos pantallas en el mismo documento**, no dos páginas:
 
@@ -102,15 +102,22 @@ La landing son **dos pantallas en el mismo documento**, no dos páginas:
 
 `100dvh` y no `100vh` para que en móvil cuente el alto realmente visible (con `vh` el cartel quedaba más alto que la pantalla y asomaba el lineup, que es justo lo que se quería evitar).
 
-El "imán" entre las dos lo hace **`src/scroll-snap.js`**, no CSS:
-
-- **No uses `scroll-snap-type` de CSS para esto.** Se probó primero (`y proximity` y `y mandatory` en `html`, con `scroll-snap-align: start` en las secciones) y en Chromium la página quedaba **clavada a 16px** sin dejarte avanzar: con secciones de 100vh el cálculo de snap posiciones se queda pinzado. Se descartó por eso, no por gusto.
-- Regla del imán: al terminar el gesto de scroll (`SETTLE_MS = 140ms` sin eventos) si la página está **entre** las dos pantallas (por debajo del cartel pero sin llegar al lineup), salta a la más cercana. Dentro del lineup **no se toca nada**, el scroll es libre.
-- Mientras corre el `scrollTo` suave programático llegan eventos de scroll, así que hay una bandera `programmatic` con liberación a los `RELEASE_MS = 800ms`; sin eso el imán se dispararía en bucle.
-- Se respeta `prefers-reduced-motion`: en ese caso el salto es instantáneo.
-- El borde entre pantallas se mide con `hero.getBoundingClientRect().bottom + window.scrollY`, no con un `100vh` hardcodeado, para que siga bien si el cartel crece (más artistas, más filas en móvil).
-
 Consecuencia para el CSS: **el padding vertical vive en las pantallas, no en el `body`** (`body { padding-block: 0 }`). Si estuviera en el `body`, la primera pantalla mediría `100dvh` + padding y el cartel quedaría descentrado.
+
+### Botones de bajar y subir (`src/scroll-buttons.js`)
+
+El cambio de pantalla es **manual**: un botón para bajar y otro para subir. El scroll normal es libre, no hay nada que lo fuerce.
+
+- **Bajar**: `.scroll-btn--down`, en el HTML de la cabecera, `position: absolute` al pie del cartel. Lleva al inicio de `.stages`. Tiene una animación de "respiración" (bob de 4px); con `prefers-reduced-motion` se desactiva.
+- **Subir**: `.scroll-btn--up`, **lo crea el JS y cuelga de `<body>`**, no de `#app` — `#app` tiene `will-change: transform`, que lo convierte en containing block de sus descendientes `position: fixed` (misma razón que `.stage-banner`); dentro de `#app` el botón se iría con el scroll en vez de quedarse fijo. Aparece cuando `scrollY > altura del cartel * 0.5` y sube a `0`.
+- Ambos son `<button>` (no `<a href="#...">`) para no ensuciar la URL con hashes.
+
+**Historial: lo que no funcionó.** Antes de los botones se intentó un "imán" que colocaba la página sola al soltar el scroll:
+
+- Con `scroll-snap-type` de CSS (`y proximity` y `y mandatory` en `html` + `scroll-snap-align: start`): en Chromium la página quedaba **clavada a 16px** sin dejar avanzar. Descartado tras medirlo.
+- Con JS (`scroll-snap.js`, ya borrado): funcionaba, pero el salto forzado al soltar no terminaba de ir fino. Retirado a petición explícita ("no va fino el scroll automático, quítalo, y mejor pon botones").
+
+Si alguien vuelve a querer el automático, que lea esto antes: ya se probaron las dos vías.
 
 ## Cartel tipográfico de la cabecera
 
@@ -134,7 +141,7 @@ El scrollbar (`scrollbar-color` + `::-webkit-scrollbar-*`) y la selección de te
 Antes de dar por terminado un cambio visual:
 1. `npm run build` debe compilar sin errores.
 2. Si es posible, verifica visualmente el resultado. Este entorno no tiene un navegador integrado, pero suele haber `playwright-core` instalado globalmente junto con una build de Chromium cacheada (buscar en `~/.cache/ms-playwright/`), utilizable para tomar capturas de pantalla headless sin depender de un paquete del proyecto.
-3. Para esta landing en concreto, comprueba además: que al cargar el cartel ocupa el viewport entero y **no asoma nada del lineup**; que al hacer scroll y soltar entre las dos pantallas la página se coloca sola en una de ellas (imán) y que dentro del lineup el scroll es libre; que las dos secciones (`#exterior`, `#interior`) existen; que la franja de escenario cambia a INTERIOR al llegar abajo; que **la página hace scroll** (el fallo clásico es dejar `page-home` o un `overflow: hidden` heredado en `<html>`/`<body>`, y entonces todo parece "roto" porque nada se mueve); y que `/interior` y `/exterior` siguen devolviendo 302 a la raíz.
+3. Para esta landing en concreto, comprueba además: que al cargar el cartel ocupa el viewport entero y **no asoma nada del lineup**; que el botón de bajar lleva al inicio del lineup y el de subir vuelve arriba (y que el de subir, al hacer scroll, se queda **fijo** en su sitio — si se va con la página, está dentro de `#app`); que el scroll normal es libre y no se fuerza solo; que las dos secciones (`#exterior`, `#interior`) existen; que la franja de escenario cambia a INTERIOR al llegar abajo; que **la página hace scroll** (el fallo clásico es dejar `page-home` o un `overflow: hidden` heredado en `<html>`/`<body>`, y entonces todo parece "roto" porque nada se mueve); y que `/interior` y `/exterior` siguen devolviendo 302 a la raíz.
 
 ## Control de versiones
 

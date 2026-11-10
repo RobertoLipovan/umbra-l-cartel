@@ -139,11 +139,85 @@ body {
   position: relative;
   text-align: center;
   margin-bottom: 0;
-  padding-block: 4rem;
+  /* Más aire abajo que arriba: ahí vive el botón de bajar, que va posicionado
+     en absoluto y no debe pisar el cartel de artistas. */
+  padding: 4rem 0 6.5rem;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+/* --- Botones de bajar / subir --- */
+
+.scroll-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border: 1px solid rgba(198, 255, 26, 0.45);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease,
+    opacity 0.25s ease;
+}
+
+.scroll-btn:hover,
+.scroll-btn:focus-visible {
+  background: rgba(198, 255, 26, 0.12);
+  border-color: var(--accent);
+}
+
+/* Bajar: anclado al pie de la primera pantalla. */
+.scroll-btn--down {
+  position: absolute;
+  left: 50%;
+  bottom: 1.75rem;
+  transform: translateX(-50%);
+  animation: scroll-btn-hint 2.4s ease-in-out infinite;
+}
+
+.scroll-btn--down:hover {
+  transform: translateX(-50%) translateY(2px);
+}
+
+@keyframes scroll-btn-hint {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(4px);
+  }
+}
+
+/* Subir: fijo en la esquina, aparece al entrar en el lineup. */
+.scroll-btn--up {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 400;
+  background: rgba(8, 11, 6, 0.82);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.6rem);
+}
+
+.scroll-btn--up.scroll-btn--visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-btn--down {
+    animation: none;
+  }
 }
 
 /* SEGUNDA PANTALLA: el lineup empieza justo en el pliegue. También es punto
@@ -162,7 +236,7 @@ body {
 
 @media (max-width: 640px) {
   .cartel__header {
-    padding-block: 2rem;
+    padding: 2rem 0 6rem;
   }
 }
 
