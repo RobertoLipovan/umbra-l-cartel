@@ -1,6 +1,8 @@
 import { VIEWS } from './views.js'
-import { startGenreDance } from './genre-dance.js'
-import { startCursorTilt } from './tilt.js'
+// Animaciones retiradas a petición (ver AGENTS.md): el baile de chips de
+// género (genre-dance.js) y el tilt del cursor (tilt.js). Los módulos siguen
+// en el repo intactos por si se quieren reactivar; basta volver a importarlos
+// y llamarlos en mount(), como estaba antes.
 import { initPageMask, wipeTransition } from './page-transition.js'
 import { initStageBanner, updateStageBanner } from './stage-banner.js'
 
@@ -47,11 +49,8 @@ function mount(viewKey) {
   document.documentElement.classList.toggle('page-home', view.isHome)
   document.body.classList.toggle('page-home', view.isHome)
 
-  // Se vuelven a llamar en cada montaje: genre-dance/tilt/stage-banner
-  // seleccionan elementos del DOM recién creado, no quedan "enganchados" de
-  // la vista anterior.
-  startGenreDance()
-  startCursorTilt()
+  // Se vuelve a llamar en cada montaje: stage-banner selecciona elementos del
+  // DOM recién creado, no queda "enganchado" de la vista anterior.
   updateStageBanner(viewKey)
 }
 

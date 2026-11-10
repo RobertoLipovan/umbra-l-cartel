@@ -1,5 +1,5 @@
-import { djs } from './djs.js'
-import { buildSchedule } from './schedule.js'
+import { djs, EVENT, getStage } from './djs.js'
+import { buildSchedule, resolveTime } from './schedule.js'
 import { RETICLE_ICON, uniqueGenres, renderGenres, renderLineup, renderHoursLine } from './render.js'
 
 const SCROLL_HINT = `
@@ -30,23 +30,24 @@ const LOGO_LINK = `
 
 function renderHome() {
   const genres = uniqueGenres(djs)
+  const [first, second] = getStages()
   return `
     <main class="cartel">
       <header class="cartel__header">
         ${RETICLE_ICON}
-        <p class="cartel__kicker">Casa Techno 3.0</p>
-        <h1 class="cartel__title">UMBRA-L</h1>
+        <p class="cartel__kicker">${EVENT.edition}</p>
+        <h1 class="cartel__title">${EVENT.name}</h1>
 
         ${renderGenres(genres)}
 
         <nav class="stage-nav no-print">
-          <a class="stage-nav__link" data-view="exterior" href="exterior">
-            Exterior
-            <span class="stage-nav__hint">16:00 — 00:00 sáb</span>
+          <a class="stage-nav__link" data-view="${first.id}" href="${first.id}">
+            ${first.nav}
+            <span class="stage-nav__hint">${first.hint}</span>
           </a>
-          <a class="stage-nav__link" data-view="interior" href="interior">
-            Interior
-            <span class="stage-nav__hint">22:00 — 05:00</span>
+          <a class="stage-nav__link" data-view="${second.id}" href="${second.id}">
+            ${second.nav}
+            <span class="stage-nav__hint">${second.hint}</span>
           </a>
         </nav>
       </header>
@@ -56,55 +57,34 @@ function renderHome() {
   `
 }
 
-function renderExterior() {
-  const exteriorDjs = djs.filter((dj) => dj.stage === 'exterior')
-  const schedule = buildSchedule(exteriorDjs, { eventStart: '2026-10-03T14:00:00.000Z' }) // 16:00 Madrid, sábado
-  const genres = uniqueGenres(exteriorDjs)
-
-  return `
-    <main class="cartel">
-      <header class="cartel__header">
-        ${LOGO_LINK}
-        <p class="cartel__kicker">Casa Techno 3.0</p>
-        <h1 class="cartel__title">UMBRA-L</h1>
-        <p class="cartel__stage">Escenario exterior</p>
-
-        ${renderHoursLine(schedule)}
-        ${renderGenres(genres)}
-
-        ${SCROLL_HINT}
-      </header>
-
-      ${renderLineup(schedule, { id: 'lineup' })}
-
-      <nav class="stage-nav stage-nav--footer no-print">
-        <a class="stage-nav__link" data-view="home" href=".">Portada</a>
-        <a class="stage-nav__link" data-view="interior" href="interior">Interior</a>
-      </nav>
-
-      ${FOOTER}
-    </main>
-  `
+function getStages() {
+  const exterior = getStage('exterior')
+  const interior = getStage('interior')
+  return [
+    { id: exterior.id, nav: 'Exterior', hint: exterior.hint },
+    { id: interior.id, nav: 'Interior', hint: interior.hint },
+  ]
 }
 
-function renderInterior() {
-  const interiorDjs = djs.filter((dj) => dj.stage === 'interior')
-  const schedule = buildSchedule(interiorDjs, { eventStart: '2026-10-03T20:00:00.000Z' }) // 22:00 Madrid, sábado
-  const genres = uniqueGenres(interiorDjs)
+function renderStage(stageId, { otherStage }) {
+  const stage = getStage(stageId)
+  const schedule = buildSchedule(stage.sets, EVENT)
+  const genres = uniqueGenres(djs.filter((dj) => dj.stage === stageId))
 
-  // Sesión b2b de cierre, sin hora de fin fija ("hasta que se cansen"),
-  // justo a continuación del último set con hora fija.
-  const closingSets = [
-    { start: schedule[schedule.length - 1].end, names: ['Leks', 'FLAMENKØ', 'CARDAN'] },
-  ]
+  // Cierre con hora de fin abierta (secret line up): se resuelve igual que los
+  // sets, pero solo se usa la hora de inicio.
+  const closing = (stage.closing || []).map((slot) => ({
+    ...slot,
+    start: resolveTime(slot.start, EVENT),
+  }))
 
   return `
     <main class="cartel">
       <header class="cartel__header">
         ${LOGO_LINK}
-        <p class="cartel__kicker">Casa Techno 3.0</p>
-        <h1 class="cartel__title">UMBRA-L</h1>
-        <p class="cartel__stage">Escenario interior</p>
+        <p class="cartel__kicker">${EVENT.edition}</p>
+        <h1 class="cartel__title">${EVENT.name}</h1>
+        <p class="cartel__stage">${stage.label}</p>
 
         ${renderHoursLine(schedule)}
         ${renderGenres(genres)}
@@ -112,11 +92,11 @@ function renderInterior() {
         ${SCROLL_HINT}
       </header>
 
-      ${renderLineup(schedule, { id: 'lineup', closingSets })}
+      ${renderLineup(schedule, { id: 'lineup', closing })}
 
       <nav class="stage-nav stage-nav--footer no-print">
         <a class="stage-nav__link" data-view="home" href=".">Portada</a>
-        <a class="stage-nav__link" data-view="exterior" href="exterior">Exterior</a>
+        <a class="stage-nav__link" data-view="${otherStage}" href="${otherStage}">${otherStage === 'interior' ? 'Interior' : 'Exterior'}</a>
       </nav>
 
       ${FOOTER}
@@ -128,6 +108,6 @@ function renderInterior() {
 // No hay rutas reales: la URL nunca cambia, solo el contenido de #app.
 export const VIEWS = {
   home: { render: renderHome, isHome: true },
-  exterior: { render: renderExterior, isHome: false },
-  interior: { render: renderInterior, isHome: false },
+  exterior: { render: () => renderStage('exterior', { otherStage: 'interior' }), isHome: false },
+  interior: { render: () => renderStage('interior', { otherStage: 'exterior' }), isHome: false },
 }

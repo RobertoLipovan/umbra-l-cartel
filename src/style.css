@@ -105,12 +105,8 @@ body {
 }
 
 #app {
-  /* La perspectiva 3D del tilt del cursor llega como función del propio
-     transform (`perspective(1200px) rotateX(...) rotateY(...)`, ver tilt.js),
-     no como `perspective` en <html> — ver el comentario en la regla `html`,
-     arriba: allí convertía a <html> en containing block de los elementos
-     fixed de <body> y rompía .stage-banner y .page-mask. */
-  transform-style: preserve-3d;
+  /* Sin animaciones de transform: el tilt del cursor se retiró a petición
+     (ver AGENTS.md). Se deja la regla por si se reactiva. */
   transition: transform 0.15s ease-out;
   will-change: transform;
 }
@@ -127,11 +123,8 @@ body {
   padding-inline: 1.5rem;
 }
 
-/* Portada: sin scroll nunca (evita el parpadeo de la scrollbar al inclinar
-   el body con el tilt del cursor). El body se fija a 100vh y .cartel reparte
+/* Portada: sin scroll nunca. El body se fija a 100vh y .cartel reparte
    cabecera/pie con space-between en vez de depender de margin-bottom.
-   El overflow real lo provoca el body rotado saliéndose de <html> (su
-   padre) — por eso overflow:hidden hace falta en los DOS, no solo en body.
    Solo se aplica a partir de cierto ancho: en móvil los chips y los botones
    de escenario ocupan más filas (más alto), y forzar 100vh recortaba el
    final del pie en vez de dejarlo simplemente fluir con scroll normal. */
@@ -157,12 +150,9 @@ body {
   }
 }
 
-/* Por debajo de 641px la portada fluye con scroll normal (ver arriba), pero
-   el tilt del cursor seguía rotando #app unos grados y esa rotación por
-   sí sola añade overflow vertical residual — un scroll "de sobra" que antes
-   quedaba oculto por el truco de 100vh. Anulamos el transform con
-   !important porque tilt.js lo fija inline (mayor especificidad que una
-   regla normal). */
+/* Se deja la anulación del transform por si se reactiva el tilt del cursor:
+   con él activo, la rotación de #app añadía overflow vertical residual en
+   móvil. Inofensiva mientras no haya transform inline. */
 @media (max-width: 640px) {
   body.page-home #app {
     transform: none !important;
@@ -299,13 +289,6 @@ body {
   border: 1px solid rgba(198, 255, 26, 0.4);
   border-radius: 999px;
   padding: 0.35rem 0.9rem;
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
-.genres__item--active {
-  background-color: rgba(198, 255, 26, 0.15);
-  border-color: var(--accent);
-  color: var(--fg);
 }
 
 .cartel__scroll {
@@ -524,6 +507,34 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--muted);
+}
+
+/* Sets sin datos confirmados (TBA, "por confirmar"): se atenúan para que no
+   compitan visualmente con los que sí tienen cartel cerrado. */
+.lineup__genres--tba {
+  color: rgba(242, 244, 238, 0.35);
+  letter-spacing: 0.16em;
+}
+
+.lineup__item--tba {
+  border-bottom-style: dashed;
+}
+
+.lineup__item--tba .lineup__name {
+  color: var(--muted);
+}
+
+/* B2B: "Deif b2b Will•Y" en un mismo set. */
+.lineup__b2b {
+  display: inline-block;
+  margin: 0 0.4em;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.5em;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  color: var(--muted);
+  vertical-align: middle;
 }
 
 .lineup__bpm {

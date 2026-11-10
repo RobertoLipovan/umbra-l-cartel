@@ -6,27 +6,35 @@ Contexto y convenciones para cualquier agente (o persona) que trabaje en este re
 
 SPA de una sola página (Vite, JS vanilla, sin framework) con el cartel/horario de la fiesta UMBRA-L. Hay tres "vistas" — portada, escenario exterior, escenario interior — pero **una sola página real y una sola URL**: `/exterior` e `/interior` no son rutas del servidor ni cambian la barra de direcciones (nada de `pushState`, a propósito — se probó y daba la sensación de "seguir siendo páginas separadas"), son solo estado interno del router en memoria. Si alguien entra directo a esas URLs de todos modos (marcador o enlace viejo de cuando sí eran páginas reales), el servidor las redirige (302) a la raíz — ver `redirectOldRoutes()` en `vite.config.js`. Antes eran tres páginas HTML reales; se cambió a SPA para poder hacer una transición fiable entre vistas (ver más abajo) sin coordinar dos cargas de página distintas.
 
-- `src/router.js` (`initRouter()`) monta la vista actual en `#app`, intercepta clics en `a[data-view]`, y vuelve a llamar `startGenreDance()`/`startCursorTilt()` en cada montaje (esos módulos seleccionan elementos del DOM recién creado, no quedan "enganchados" a la vista anterior). No toca `history` para nada — la URL no existe como concepto dentro de la SPA, solo el estado `currentViewKey` en memoria. Cada `mount()` reinicia el scroll al principio de la página (`resetScroll()`, ver la sección "Scroll al cambiar de vista").
+- `src/router.js` (`initRouter()`) monta la vista actual en `#app`, intercepta clics en `a[data-view]`, y vuelve a llamar `updateStageBanner()` en cada montaje (ese módulo selecciona elementos del DOM recién creado, no queda "enganchado" a la vista anterior). No toca `history` para nada — la URL no existe como concepto dentro de la SPA, solo el estado `currentViewKey` en memoria. Cada `mount()` reinicia el scroll al principio de la página (`resetScroll()`, ver la sección "Scroll al cambiar de vista").
 - `src/views.js` (`VIEWS`) define las tres vistas: cada una es una función que devuelve el HTML de `<main class="cartel">...</main>`, más `isHome` (activa el modo "sin scroll" de la portada, ver más abajo).
 - El logo de la cabecera (`RETICLE_ICON` en `render.js`) es decorativo en la portada, pero **en las vistas de escenario va envuelto en un enlace de vuelta a la portada** (`LOGO_LINK` en `views.js`: `<a class="cartel__logo-link" data-view="home" href=".">`). Lleva `data-view="home"` a propósito, así que lo intercepta el mismo listener de `router.js` que el resto de la navegación (transición diagonal incluida, URL sin cambios); no hay que añadir nada más para que funcione. El `<a>` se queda inline y sin `display` propio para que el hueco del icono sea idéntico al del logo suelto (verificado pixel a pixel), y `.cartel__logo-link` en `style.css` solo quita el subrayado y añade el cambio de color al pasar el ratón.
-- Los datos de los DJs se rellenan a mano en `src/djs.js` (campo `stage: 'interior' | 'exterior'`) a partir de un formulario externo (Notion) que no forma parte de este repo. La lógica de renderizado compartida (chips de género, logo, lineup, horas totales) vive en `src/render.js`.
+- El cartel se edita en `src/lineup.json`, la **fuente de verdad única**: un objeto `event` (nombre, edición, fecha, desfase horario) y una lista de `stages`, cada uno con sus `sets` (`start`/`end` en hora local `HH:MM`, `artists`, `genres`, `bpm`) y opcionalmente `closing` (cierre de hora abierta). Un set con varios `artists` se pinta como B2B. `src/djs.js` es solo un adaptador que deriva de ahí un registro plano de artistas (para los chips de género de la portada) y expone `EVENT`/`getStage()`. La lógica de renderizado compartida (chips de género, logo, lineup, horas totales) vive en `src/render.js`.
 
 ## Reglas de privacidad
 
 Los DJs rellenan un formulario con más campos de los que se muestran aquí. **Nunca añadas al cartel público:**
-- La hora de llegada tal cual la escribió el DJ (`arrival` en `djs.js`) — solo se usa como dato interno para ordenar/calcular el horario mostrado, nunca se imprime literalmente
+- La hora de llegada tal cual la escribió el DJ (el antiguo campo `arrival`, ya eliminado del JSON) — era un dato interno para ordenar/calcular, nunca se imprimía literalmente
 
-El formulario tenía un campo de contacto por WhatsApp (privado, nunca se mostró) que la organización sustituyó por un campo de **Instagram** — ese sí está pensado para ser público: se muestra como icono enlazado junto al nombre del DJ (`instagram` en `djs.js`, ver `renderInstagramLink()` en `src/render.js`) solo cuando el DJ lo ha rellenado.
+El formulario tenía un campo de contacto por WhatsApp (privado, nunca se mostró) que la organización sustituyó por un campo de **Instagram** — ese sí está pensado para ser público: se muestra como icono enlazado junto al nombre del DJ (`instagram` en `lineup.json`, ver `renderInstagramLink()` en `src/render.js`) solo cuando el DJ lo ha rellenado.
 
-Si en el futuro se conecta este proyecto a una fuente de datos real (API, export de Notion, etc.), `arrival` debe seguir tratándose como interno.
+Si en el futuro se conecta este proyecto a una fuente de datos real (API, export de Notion, etc.), cualquier dato de contacto o de logística debe seguir tratándose como interno y no entrar en `lineup.json`.
 
 ## Cómo se construye el horario
 
-`src/schedule.js` NO usa horas de llegada para fijar el horario mostrado: cada escenario pasa su propia `eventStart` a `buildSchedule()`, que encadena sets consecutivos de `SET_MINUTES` sin huecos. El **orden** de actuación es directamente el orden de los DJs en el array `djs.js` (filtrado por `stage`) — es una curación manual, no un sort automático. Al reordenar, ten en cuenta el criterio ya aplicado: no abrir con schranz (desgasta pronto al público), subir la intensidad/BPM progresivamente, dejar los géneros más duros para el tramo final de cada escenario. Si cambias esto, mantén la propiedad de "sin huecos" salvo que se pida explícitamente lo contrario.
+Las horas son **datos, no cálculo**: cada set de `src/lineup.json` trae su `start` y su `end` en hora local de Madrid (`HH:MM`, sin fecha). `src/schedule.js` (`buildSchedule()`) solo las convierte a `Date` usando `event.day` + `event.utcOffset`, y aplica la regla de cambio de día: cualquier hora anterior a `event.nextDayBefore` (`12:00`) pertenece al día siguiente, porque el evento cruza medianoche. Esa conversión construye el ISO con el desfase explícito (`2026-10-03T15:00:00+02:00`) a propósito: `setHours`/`setDate` operan en la zona del runtime y darían horas equivocadas en un servidor en UTC.
+
+Consecuencias que hay que respetar al editar el JSON:
+
+- **El orden del array ES el orden del cartel.** Es curación manual, no un sort automático. Criterio aplicado: no abrir con schranz (desgasta pronto al público), subir intensidad/BPM progresivamente, dejar los géneros más duros para el tramo final.
+- **Puede haber huecos** (en el cartel de 2026 hay una pausa de 30 min a medianoche). No se pintan como fila, solo se ven en las horas de cada set. Por eso `renderHoursLine()` **suma las duraciones reales** de los sets en lugar de restar último-fin menos primer-inicio, y el texto dice "horas de música", sin "ininterrumpida".
+- **Duración libre por set**: no hay `SET_MINUTES`. Hay bloques de 2h y de 1h.
+- **Cierre abierto**: `stage.closing` (p. ej. `Secret line up` a las 09:30) se pinta con `→` y sin hora de fin, reutilizando el estilo `.lineup__item--open`.
+- **Sin datos todavía**: `genres: ["Por confirmar"]` no aparece en los chips de género (`PLACEHOLDER_GENRES` en `render.js`) y en el lineup se pinta atenuado; `bpm: null` simplemente no pinta el chip de BPM; `tba: true` pinta "Por anunciar" y atenúa la fila entera.
 
 ## Botón "Imprimir cartel" (desactivado temporalmente)
 
-El import de `print.js`, `${PRINT_BUTTON}` en `views.js` (footer compartido) y la llamada a `setupPrintButton()` están comentados/omitidos — desactivado a petición explícita, "por ahora". `print.js` en sí sigue intacto; para reactivarlo, hay que volver a engancharlo (footer en `views.js` + llamada en `router.js`, tras cada `mount()` igual que `startGenreDance`/`startCursorTilt`, porque el botón se recrea en cada cambio de vista). Mientras está desactivado, `html2canvas`/`jspdf` no entran en el bundle (tree-shaking).
+El import de `print.js`, `${PRINT_BUTTON}` en `views.js` (footer compartido) y la llamada a `setupPrintButton()` están comentados/omitidos — desactivado a petición explícita, "por ahora". `print.js` en sí sigue intacto; para reactivarlo, hay que volver a engancharlo (footer en `views.js` + llamada en `router.js`, tras cada `mount()`, porque el botón se recrea en cada cambio de vista). Mientras está desactivado, `html2canvas`/`jspdf` no entran en el bundle (tree-shaking).
 
 Cuando esté activo: genera un PDF con `html2canvas` capturando `.cartel` (ignorando cualquier elemento con la clase `no-print`) y lo mete en un PDF de **una sola página de `jsPDF`** con el tamaño exacto del contenido — nada de paginación automática tipo A4 (se probó con `html2pdf.js` primero y su reparto en páginas está pensado para documentos, no para un elemento largo y estrecho como este cartel). Descarga siempre como `umbral3.pdf`.
 
@@ -34,13 +42,21 @@ Dos detalles que costó descubrir y no hay que deshacer:
 - El fondo oscuro vive en `<body>` (radial-gradient), así que antes de capturar se fuerza `background-color` inline en `.cartel` — si no, html2canvas lo captura con fondo blanco y el texto claro queda ilegible.
 - La imagen se exporta como **JPEG** (calidad 0.92), no PNG: el degradado de fondo comprime fatal sin pérdida (PNG daba >15 MB para este mismo cartel; JPEG da ~400 KB sin diferencia visible).
 
-## Baile de los chips de género
+## Baile de los chips de género — DESACTIVADO
 
-`src/genre-dance.js` (`startGenreDance()`, llamado desde `router.js` en cada `mount()`) hace que cada 500ms, 5 chips de `.genres__item` elegidos al azar pasen a `.genres__item--active` (tinte verde, no relleno sólido — se probó sólido y "mareaba") y los 5 de la ronda anterior vuelvan al estado normal; la ronda siguiente evita repetir los mismos 5 (salvo que no haya suficientes chips para evitarlo). Es puramente decorativo.
+Retirado a petición explícita ("quita la animación de los géneros"). `src/genre-dance.js` (`startGenreDance()`) sigue en el repo intacto, pero **ya no se importa ni se llama** desde `router.js`, así que no entra en el bundle. Mientras está activo: cada 500ms, 5 chips de `.genres__item` elegidos al azar pasan a `.genres__item--active` (tinte verde, no relleno sólido — se probó sólido y "mareaba") y los 5 de la ronda anterior vuelven al estado normal; la ronda siguiente evita repetir los mismos 5 (salvo que no haya suficientes chips para evitarlo). Era puramente decorativo.
 
-## Tilt del cursor
+Para reactivarlo: importar `startGenreDance` en `router.js`, llamarlo dentro de `mount()` y recuperar la regla `.genres__item--active` (y el `transition` de `.genres__item`) en `style.css`, que se quitaron junto con la animación.
 
-`src/tilt.js` (`startCursorTilt()`, llamado desde `router.js` en cada `mount()`) inclina **`#app`** en 3D según la posición del cursor (`rotateX`/`rotateY`, `MAX_TILT_DEG = 2.5`). La perspectiva va **como función del propio transform** — `transform: perspective(1200px) rotateX(...) rotateY(...)`, con `PERSPECTIVE_PX = 1200` en `tilt.js` — y NO como propiedad `perspective` en `html` (que es como estaba antes y rompía la franja de escenario, ver más abajo). `#app` sigue necesitando `transform-style: preserve-3d` (`style.css`).
+## Tilt del cursor — DESACTIVADO
+
+Retirado a petición explícita ("quita la animación de cursor"). `src/tilt.js` (`startCursorTilt()`) sigue en el repo intacto, pero **ya no se importa ni se llama** desde `router.js`, así que no entra en el bundle. `#app` ya no lleva `transform-style: preserve-3d` (se quitó con la animación).
+
+Todo lo que sigue documenta cómo estaba montado, porque es la explicación de por qué `.page-mask` y `.stage-banner` cuelgan de `<body>` y no de `#app` — esa decisión **sigue vigente** aunque el tilt ya no exista:
+
+`src/tilt.js` (`startCursorTilt()`) inclinaba **`#app`** en 3D según la posición del cursor (`rotateX`/`rotateY`, `MAX_TILT_DEG = 2.5`). La perspectiva iba **como función del propio transform** — `transform: perspective(1200px) rotateX(...) rotateY(...)`, con `PERSPECTIVE_PX = 1200` en `tilt.js` — y NO como propiedad `perspective` en `html` (que es como estaba antes y rompía la franja de escenario, ver más abajo). `#app` necesitaba `transform-style: preserve-3d` (`style.css`).
+
+Para reactivarlo: importar `startCursorTilt` en `router.js`, llamarlo dentro de `mount()`, devolver `transform-style: preserve-3d` a `#app` y comprobar que la franja de escenario y la máscara de transición siguen fijándose al viewport.
 
 **Importante: la rotación va en `#app`, nunca en `<body>` directamente.** Se probó sobre `body` primero y causaba un bug serio: cualquier ancestro con `transform` se convierte en el "containing block" de sus descendientes `position: fixed` (regla real de CSS). `.page-mask` (la máscara de la transición, ver más abajo) cuelga de `<body>`; si `<body>` tuviera el transform, la máscara dejaría de fijarse al viewport real y pasaría a fijarse a `<body>` — que en la vista de escenario es altísimo (todo el lineup), inflando la máscara (`inset: -25%` de un `body` de miles de píxeles) hasta el punto de añadir scroll vertical real de sobra: se podía bajar y "colarse" en la zona verde de la animación, con doble scrollbar visible. Rotando `#app` (que NO es ancestro de `.page-mask`, son hermanos bajo `body`) el problema desaparece, porque `<body>` se queda sin transform y `.page-mask` vuelve a fijarse correctamente al viewport.
 
@@ -105,6 +121,16 @@ Antes de dar por terminado un cambio visual:
 
 Cada cambio se commitea y se sube (`git add`, `git commit`, `git push`) sin esperar a que se pida explícitamente — no dejar cambios sueltos sin subir al terminar una tarea.
 
-## Despliegue local
+## Despliegue
 
-El servidor de desarrollo se sirve siempre dentro de una sesión `tmux` llamada `umbral`, nunca como proceso suelto en segundo plano — así es accesible/reiniciable de forma predecible. Se publica vía Tailscale (`tailscale serve` / `tailscale funnel`) bajo la ruta `/umbral3` en el mismo nodo que sirve otras apps — cualquier cambio a la configuración de Tailscale Serve/Funnel en ese nodo puede afectar a esas otras rutas, así que se revisa el `tailscale serve status` completo antes y después de tocarlo.
+Hay **dos** despliegues del mismo código y hay que mantenerlos coherentes:
+
+1. **Producción — `https://umbral.rlip.dev/`** (la URL pública, la que se comparte).
+   - Código: este repo. Runtime: `~/services/umbral-web/` (contenedor `nginx:alpine`, puerto `127.0.0.1:8102`).
+   - `nginx.conf` sirve el **build estático** (`npm run build`) desde `./app`, montado `:ro`. Los cambios no se ven hasta recompilar y copiar.
+   - Se publica por **Cloudflare Tunnel** (`cloudflared`, config en `~/.cloudflared/config.yml`, túnel `rlip`), no por Tailscale.
+   - `vite.config.js` tiene `base: '/'` porque la app va en la raíz del subdominio.
+   - `nginx.conf` incluye dos reglas `location = /interior` y `location = /exterior` que devuelven **302 a `/`** (la SPA no tiene rutas reales). Si se toca el enrutado, hay que mantenerlas: sin ellas nginx sirve la SPA con 200 en esas URLs.
+   - Despliegue: `npm run build`, **borrar `~/services/umbral-web/app/*` antes de copiar** (si no quedan assets viejos con hash huérfanos) y `cp -r dist/* app/`.
+
+2. **Desarrollo — sesión `tmux` `umbral`** (`umbral.service` de systemd --user), Vite dev server en el puerto 5173. Nunca como proceso suelto en segundo plano, así es accesible/reiniciable de forma predecible. Sigue expuesto por Tailscale en `/umbral3`; cualquier cambio a la configuración de Tailscale Serve/Funnel en ese nodo puede afectar a otras rutas, así que se revisa el `tailscale serve status` completo antes y después de tocarlo. **Ojo**: el dev server va con `base: '/'`, así que la ruta `/umbral3` solo funciona por el fallback de Vite, no porque el build esté pensado para esa subruta.

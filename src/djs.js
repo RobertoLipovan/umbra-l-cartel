@@ -1,33 +1,36 @@
-// Line-up corregido a mano por la organización (foto "line_up_rectificado_jefa"),
-// sustituye a la curación automática por BPM que había antes. `stage`:
-// 'exterior' | 'interior' fija en qué escenario toca cada uno; el orden en
-// este array ES el orden de actuación, y algunos artistas repiten en ambos
-// escenarios con géneros distintos (ver Eiren). `arrival` es la hora de
-// llegada declarada por cada DJ (UTC) en el formulario original — se
-// conserva solo como referencia histórica, no se usa para el horario.
-// `bpm` es [mínimo, máximo]; ALES GUT aún no tiene datos de género/BPM.
-// `instagram` (opcional) es el @ público del DJ — a diferencia de `arrival`,
-// este SÍ está pensado para mostrarse (enlaza a su perfil desde el cartel).
-export const djs = [
-  // Exterior: 16:00–01:00 sábado.
-  { name: 'Eiren', genres: ['Tech House'], stage: 'exterior', arrival: '2026-10-04T19:00:00.000Z', bpm: [135, 148], instagram: '@eiren.lf' },
-  { name: 'Deif', genres: ['Techno Groove'], stage: 'exterior', arrival: '2026-10-04T11:00:00.000Z', bpm: [138, 148], instagram: '@__deif__' },
-  { name: 'Zai!', genres: ['Bounce Techno', 'HardTech'], stage: 'exterior', arrival: '2026-10-03T21:10:00.000Z', bpm: [140, 165], instagram: '@esloquezai' },
-  { name: 'ALES GUT', genres: ['Por confirmar'], stage: 'exterior', bpm: ['?', '?'] },
-  { name: 'SKB', genres: ['Hard Groove'], stage: 'exterior', arrival: '2026-10-04T16:00:00.000Z', bpm: [145, 155] },
-  { name: 'FØBIA', genres: ['Hard bounce', 'Hypnotic groove', 'Groove bounce'], stage: 'exterior', arrival: '2026-10-03T22:00:00.000Z', bpm: [145, 160] },
-  { name: 'Leks', genres: ['Hard Groove', 'Hard Techno'], stage: 'exterior', arrival: '2026-10-04T18:00:00.000Z', bpm: [148, 160], instagram: '@ruso_xd' },
+// El horario vive en src/lineup.json (fuente de verdad única: sets con hora
+// explícita de inicio y fin). Antes se calculaba encadenando sets de 60 min
+// desde una hora de arranque, pero el cartel real tiene bloques de 2h, un
+// hueco de 30 min a medianoche y un cierre abierto, así que las horas van
+// escritas a mano en el JSON.
+//
+// `start`/`end` son horas locales de Madrid sin fecha ('HH:MM'). La fecha del
+// evento y el desfase están en `event`; `schedule.js` las convierte a Date.
+// Un set cuya hora de inicio sea anterior a `event.nextDayBefore` pertenece al
+// día siguiente (el evento cruza medianoche).
+//
+// Reglas de privacidad (ver AGENTS.md): nunca añadir al JSON datos internos
+// como la hora de llegada declarada por el DJ. `instagram` sí es público.
+import lineup from './lineup.json'
 
-  // Interior: 23:00–07:00.
-  { name: 'CARDAN', genres: ['Hard Groove', 'Acid Hard Techno'], stage: 'interior', arrival: '2026-10-04T14:00:00.000Z', bpm: [145, 165] },
-  { name: 'Romaniko', genres: ['Acidcore', 'Tribe', 'Mental'], stage: 'interior', arrival: '2026-10-04T14:00:00.000Z', bpm: [160, 175], instagram: '@romanico_o' },
-  { name: 'FLAMENKØ', genres: ['Hard bounce', 'Hard Groove'], stage: 'interior', arrival: '2026-10-04T10:00:00.000Z', bpm: [140, 165] },
-  { name: 'SENDA', genres: ['Hardtechno', 'Schranz'], stage: 'interior', arrival: '2026-10-04T08:00:00.000Z', bpm: [160, 160], instagram: '@daniseno007' },
-  { name: 'NVЯR', genres: ['Hard Groove', 'Schranz', 'Hard dance'], stage: 'interior', arrival: '2026-10-04T14:30:00.000Z', bpm: [140, 170], instagram: '@nvrr.music' },
-  { name: 'DRIWISH', genres: ['Schranz', 'Hard Groove'], stage: 'interior', arrival: '2026-10-04T16:00:00.000Z', bpm: [140, 160], instagram: '@_driwish_' },
-  { name: 'EmeGe', genres: ['Hard techno'], stage: 'interior', arrival: '2026-10-03T22:00:00.000Z', bpm: [160, 180] },
-  { name: 'Ann Blacksmith', genres: ['Hardtechno', 'Industrial', 'Bochka'], stage: 'interior', arrival: '2026-10-04T10:00:00.000Z', bpm: [160, 165], instagram: '@annblacksmith_' },
-  { name: 'K-BRY', genres: ['Hardtechno', 'Schranz'], stage: 'interior', arrival: '2026-10-04T08:00:00.000Z', bpm: [150, 160], instagram: '@joanep98' },
-  { name: 'Eiren', genres: ['Hard Groove', 'Techno'], stage: 'interior', arrival: '2026-10-04T19:00:00.000Z', bpm: [135, 148], instagram: '@eiren.lf' },
-  { name: 'NØT', genres: ['Groove', 'Hypnotic Techno'], stage: 'interior', arrival: '2026-10-03T17:00:00.000Z', bpm: [135, 145] },
-]
+export const EVENT = lineup.event
+export const STAGES = lineup.stages
+
+// Registro plano de artistas (uno por artista, no por set) para lo que trabaja
+// sobre el conjunto del cartel: chips de género de la portada, etc. `stage` es
+// el escenario en el que toca; si un artista repite, aparece una vez por set.
+export const djs = STAGES.flatMap((stage) =>
+  stage.sets.flatMap((set) =>
+    set.artists.map((artist) => ({
+      name: artist.name,
+      instagram: artist.instagram,
+      stage: stage.id,
+      genres: set.genres,
+      bpm: set.bpm,
+    })),
+  ),
+)
+
+export function getStage(id) {
+  return STAGES.find((stage) => stage.id === id)
+}

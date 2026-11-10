@@ -11,11 +11,12 @@ export const RETICLE_ICON = `
   </svg>
 `
 
-// Orbitron no cubre ni cirílico ni la Ø nórdica, así que el navegador las
+// Orbitron no cubre ni cirílico ni la Ø/ø nórdica, así que el navegador las
 // sustituye por una fuente de reserva a un tamaño distinto (p. ej. en NVЯR,
-// FØBIA, FLAMENKØ). Las envolvemos para achicarlas a mano.
+// FØBIA, FLAMENKØ). Las envolvemos para achicarlas a mano. Ojo: la ø
+// minúscula (Flamenkø, Føbia) también cuenta, no solo la mayúscula.
 function renderName(name) {
-  return name.replace(/[ЯØ]/g, (char) => `<span class="glyph-fallback">${char}</span>`)
+  return name.replace(/[ЯØø]/g, (char) => `<span class="glyph-fallback">${char}</span>`)
 }
 
 const INSTAGRAM_ICON = `
@@ -52,6 +53,13 @@ function renderNameWithInstagram(name, instagram) {
   return `${first}${mobileLink}${rest}${desktopLink}`
 }
 
+// Un set puede tener varios artistas (B2B): "Deif b2b Will•Y".
+function renderArtists(artists) {
+  return artists
+    .map((artist) => renderNameWithInstagram(artist.name, artist.instagram))
+    .join('<span class="lineup__b2b">b2b</span>')
+}
+
 const PLACEHOLDER_GENRES = new Set(['por confirmar'])
 
 export function uniqueGenres(djs) {
@@ -79,54 +87,69 @@ export function renderGenres(genres) {
   `
 }
 
-export function renderLineup(schedule, { id, closingSets = [] } = {}) {
-  let currentDay = null
-  const rows = schedule
-    .map((slot) => {
-      const day = formatDay(slot.start)
-      const dayHeading = day !== currentDay ? `<li class="lineup__day">${day}</li>` : ''
-      currentDay = day
+function renderBpm(bpm) {
+  if (!bpm || bpm[0] === '?') return ''
+  return `<span class="lineup__bpm">${formatBpm(bpm)}</span>`
+}
 
-      return `
-        ${dayHeading}
-        <li class="lineup__item">
+function renderGenresCell(genres, { tba }) {
+  const visible = genres.filter((genre) => !PLACEHOLDER_GENRES.has(genre.trim().toLowerCase()))
+  if (tba) return `<span class="lineup__genres lineup__genres--tba">Por anunciar</span>`
+  if (!visible.length) return `<span class="lineup__genres lineup__genres--tba">Por confirmar</span>`
+  return `<span class="lineup__genres">${visible.join(' · ')}</span>`
+}
+
+export function renderLineup(schedule, { id, closing = [] } = {}) {
+  let currentDay = null
+
+  const renderDayHeading = (date) => {
+    const day = formatDay(date)
+    if (day === currentDay) return ''
+    currentDay = day
+    return `<li class="lineup__day">${day}</li>`
+  }
+
+  const rows = schedule
+    .map(
+      (slot) => `
+        ${renderDayHeading(slot.start)}
+        <li class="lineup__item${slot.tba ? ' lineup__item--tba' : ''}">
           <span class="lineup__time">
             <span class="lineup__time-range">${formatTime(slot.start)}–${formatTime(slot.end)}</span>
             <span class="lineup__duration">${formatDuration(slot.start, slot.end)}</span>
           </span>
-          <span class="lineup__name">${renderNameWithInstagram(slot.name, slot.instagram)}</span>
-          <span class="lineup__genres">${slot.genres.join(' · ')}</span>
-          <span class="lineup__bpm">${formatBpm(slot.bpm)}</span>
+          <span class="lineup__name">${renderArtists(slot.artists)}</span>
+          ${renderGenresCell(slot.genres, slot)}
+          ${renderBpm(slot.bpm)}
         </li>
-      `
-    })
+      `,
+    )
     .join('')
 
-  // Sesión de cierre sin hora de fin fija (b2b hasta que decidan parar).
-  const closingRows = closingSets
-    .map(({ start, names }) => {
-      const day = formatDay(start)
-      const dayHeading = day !== currentDay ? `<li class="lineup__day">${day}</li>` : ''
-      currentDay = day
-
-      return `
-        ${dayHeading}
+  // Cierre con hora de fin abierta (secret line up, b2b hasta que paren...).
+  const closingRows = closing
+    .map(
+      ({ start, label, note }) => `
+        ${renderDayHeading(start)}
         <li class="lineup__item lineup__item--open">
           <span class="lineup__time">
             <span class="lineup__time-range">${formatTime(start)} →</span>
-            <span class="lineup__duration">Indefinido</span>
+            <span class="lineup__duration">${note || 'Indefinido'}</span>
           </span>
-          <span class="lineup__name">${names.map(renderName).join(' · ')}</span>
-          <span class="lineup__genres">B2B de cierre</span>
+          <span class="lineup__name">${renderName(label)}</span>
+          <span class="lineup__genres">Hasta el cierre</span>
         </li>
-      `
-    })
+      `,
+    )
     .join('')
 
   return `<ul class="lineup"${id ? ` id="${id}"` : ''}>${rows}${closingRows}</ul>`
 }
 
+// Suma las duraciones reales de los sets en vez de restar último-fin menos
+// primer-inicio: con huecos entre medias (la pausa de medianoche) esa resta
+// contaba tiempo sin música.
 export function renderHoursLine(schedule) {
-  const totalMs = schedule[schedule.length - 1].end - schedule[0].start
-  return `<p class="cartel__hours"><span class="cartel__hours-number">${formatHours(totalMs)}</span> horas de música ininterrumpida</p>`
+  const totalMs = schedule.reduce((total, slot) => total + (slot.end - slot.start), 0)
+  return `<p class="cartel__hours"><span class="cartel__hours-number">${formatHours(totalMs)}</span> horas de música</p>`
 }

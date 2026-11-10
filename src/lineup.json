@@ -1,0 +1,146 @@
+{
+  "event": {
+    "name": "UMBRA-L",
+    "edition": "Casa Techno 3.0",
+    "day": "2026-10-03",
+    "utcOffset": "+02:00",
+    "nextDayBefore": "12:00"
+  },
+  "stages": [
+    {
+      "id": "exterior",
+      "label": "Escenario exterior",
+      "hint": "15:00 — 19:00 sáb",
+      "sets": [
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "artists": [{ "name": "Leks", "instagram": "@ruso_xd" }],
+          "genres": ["Techno", "Hard Groove"],
+          "bpm": [148, 160]
+        },
+        {
+          "start": "16:00",
+          "end": "17:00",
+          "artists": [{ "name": "Perry" }],
+          "genres": ["Por confirmar"],
+          "bpm": null
+        },
+        {
+          "start": "17:00",
+          "end": "19:00",
+          "artists": [{ "name": "TBA" }],
+          "genres": ["Por confirmar"],
+          "bpm": null,
+          "tba": true
+        }
+      ]
+    },
+    {
+      "id": "interior",
+      "label": "Escenario interior",
+      "hint": "19:00 — 09:30",
+      "sets": [
+        {
+          "start": "19:00",
+          "end": "20:00",
+          "artists": [{ "name": "Deif", "instagram": "@__deif__" }, { "name": "Will•Y" }],
+          "genres": ["Techno", "Hard Groove"],
+          "bpm": [138, 148]
+        },
+        {
+          "start": "20:00",
+          "end": "21:00",
+          "artists": [{ "name": "Cardan" }],
+          "genres": ["Por confirmar"],
+          "bpm": [145, 165]
+        },
+        {
+          "start": "21:00",
+          "end": "22:00",
+          "artists": [{ "name": "Flamenkø" }],
+          "genres": ["Hard Groove", "Hard Bounce"],
+          "bpm": [140, 165]
+        },
+        {
+          "start": "22:00",
+          "end": "23:00",
+          "artists": [{ "name": "Føbia" }],
+          "genres": ["Hard Bounce"],
+          "bpm": [145, 160]
+        },
+        {
+          "start": "23:00",
+          "end": "00:00",
+          "artists": [{ "name": "Zaii!", "instagram": "@esloquezai" }],
+          "genres": ["Bounce", "Acid"],
+          "bpm": [140, 165]
+        },
+        {
+          "start": "00:30",
+          "end": "01:30",
+          "artists": [{ "name": "Romaniko", "instagram": "@romanico_o" }],
+          "genres": ["Mental", "Acidcore"],
+          "bpm": [160, 175]
+        },
+        {
+          "start": "01:30",
+          "end": "02:30",
+          "artists": [{ "name": "Leks", "instagram": "@ruso_xd" }],
+          "genres": ["Techno", "Hard Groove"],
+          "bpm": [148, 160]
+        },
+        {
+          "start": "02:30",
+          "end": "03:30",
+          "artists": [{ "name": "Senda", "instagram": "@daniseno007" }],
+          "genres": ["Hard Techno", "Schranz"],
+          "bpm": [160, 160]
+        },
+        {
+          "start": "03:30",
+          "end": "04:30",
+          "artists": [{ "name": "K-Bry", "instagram": "@joanep98" }],
+          "genres": ["Hard Techno", "Schranz"],
+          "bpm": [150, 160]
+        },
+        {
+          "start": "04:30",
+          "end": "05:30",
+          "artists": [{ "name": "Emege" }],
+          "genres": ["Hard Techno"],
+          "bpm": [160, 180]
+        },
+        {
+          "start": "05:30",
+          "end": "06:30",
+          "artists": [{ "name": "Driwish", "instagram": "@_driwish_" }],
+          "genres": ["Schranz"],
+          "bpm": [140, 160]
+        },
+        {
+          "start": "06:30",
+          "end": "07:30",
+          "artists": [{ "name": "NVRR", "instagram": "@nvrr.music" }],
+          "genres": ["Schranz", "Makina"],
+          "bpm": [140, 170]
+        },
+        {
+          "start": "07:30",
+          "end": "08:30",
+          "artists": [{ "name": "Eiren", "instagram": "@eiren.lf" }],
+          "genres": ["Hard Groove"],
+          "bpm": [135, 148]
+        },
+        {
+          "start": "08:30",
+          "end": "09:30",
+          "artists": [{ "name": "0nia" }],
+          "genres": ["Tech House", "Groove"],
+          "bpm": null
+        }
+      ],
+      "closing": [{ "start": "09:30", "label": "Secret line up", "note": "TBC" }]
+    }
+  ]
+}
