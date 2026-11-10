@@ -1,6 +1,7 @@
 import { renderLanding } from './views.js'
 import { initStageBanner } from './stage-banner.js'
 import { initScrollButtons } from './scroll-buttons.js'
+import { initPrintModal } from './print-modal.js'
 
 // La web es una sola landing: se monta una vez y no hay navegación entre
 // vistas. Los enlaces de la cabecera son anclas (`#exterior`, `#interior`) que
@@ -15,4 +16,5 @@ export function initRouter() {
 
   initStageBanner()
   initScrollButtons()
+  initPrintModal()
 }

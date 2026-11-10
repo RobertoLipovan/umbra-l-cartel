@@ -34,11 +34,25 @@ Consecuencias que hay que respetar al editar el JSON:
 - **Cierre abierto**: `stage.closing` (p. ej. `Secret line up` a las 09:30) se pinta con `→` y sin hora de fin, reutilizando el estilo `.lineup__item--open`.
 - **Sin datos todavía**: `genres: ["Por confirmar"]` no aparece en los chips de género (`PLACEHOLDER_GENRES` en `render.js`) y en el lineup se pinta atenuado; `bpm: null` simplemente no pinta el chip de BPM; `tba: true` pinta "Por anunciar" y atenúa la fila entera.
 
-## Botón "Imprimir cartel" (desactivado temporalmente)
+## Imprimir: botón de impresora + modal de tamaño
 
-El import de `print.js`, `${PRINT_BUTTON}` en `views.js` (footer compartido) y la llamada a `setupPrintButton()` están comentados/omitidos — desactivado a petición explícita, "por ahora". `print.js` en sí sigue intacto; para reactivarlo, hay que volver a engancharlo (footer en `views.js` + llamada en `router.js`, tras cada `mount()`, porque el botón se recrea en cada cambio de vista). Mientras está desactivado, `html2canvas`/`jspdf` no entran en el bundle (tree-shaking).
+**Estado actual: el modal funciona, la impresión no está enganchada.** El botón OK no hace nada a propósito ("por ahora ok no hace nada").
 
-Cuando esté activo: genera un PDF con `html2canvas` capturando `.cartel` (ignorando cualquier elemento con la clase `no-print`) y lo mete en un PDF de **una sola página de `jsPDF`** con el tamaño exacto del contenido — nada de paginación automática tipo A4 (se probó con `html2pdf.js` primero y su reparto en páginas está pensado para documentos, no para un elemento largo y estrecho como este cartel). Descarga siempre como `umbral3.pdf`.
+- **Botón** (`.print-btn`): icono de impresora, `position: fixed` arriba a la derecha, `z-index: 450` para quedar **por debajo** de la franja de escenario (500). Cuando la franja baja, el botón se aparta con `body:has(.stage-banner--visible) .print-btn { top: … }` en vez de quedar tapado.
+- **Modal** (`src/print-modal.js`): `<dialog>` nativo con `showModal()`, así el foco queda atrapado, `Esc` cierra y el fondo deja de ser interactivo sin implementar nada. Se cierra con la ×, con `Esc` o con clic en el fondo (se comprueba `event.target === dialog`). Al cerrar, el foco vuelve al botón de la impresora.
+- **Opciones**: radios reales (`name="print-size"`, valores `grande` / `pequena`) ocultas visualmente pero focusables; la tarjeta se pinta con `input:checked + .print-option__body`, que funciona en todos los navegadores (nada de `:has()` aquí a propósito, aunque para el botón sí se use).
+- **OK**: nace `disabled` y se habilita en cuanto hay una opción marcada. Hoy su `click` llama a `confirmarVersion()`, que **está vacía a propósito**.
+- Ni el botón ni el diálogo están en `views.js`: los crea el módulo y los cuelga de `<body>` (mismo motivo que `.stage-banner` y los botones de scroll — `#app` tiene `will-change: transform` y rompe los `position: fixed` de dentro).
+
+### Cuando se enchufe la impresión
+
+El código que genera el PDF ya existe en **`src/print.js`** (`setupPrintButton()`), sin usar: captura `.cartel` con `html2canvas` (ignorando `.no-print`) y lo mete en **una sola página de `jsPDF`** con el tamaño exacto del contenido — nada de paginación automática tipo A4 (se probó con `html2pdf.js` y su reparto está pensado para documentos, no para algo largo y estrecho como este cartel). Descarga como `umbral3.pdf`.
+
+Lo que hay que hacer: en `confirmarVersion(version)` (en `print-modal.js`), borrar el `void version` y llamar a la generación pasando el tamaño (`grande` / `pequena`), que debería traducirse al menos en distinto `scale` de captura y/o tamaño de página.
+
+Dos detalles que costó descubrir y no hay que deshacer:
+- El fondo oscuro vive en `<body>` (radial-gradient), así que antes de capturar se fuerza `background-color` inline en `.cartel` — si no, html2canvas lo captura con fondo blanco y el texto claro queda ilegible.
+- La imagen se exporta como **JPEG** (calidad 0.92), no PNG: el degradado de fondo comprime fatal sin pérdida (PNG daba >15 MB para este mismo cartel; JPEG da ~400 KB sin diferencia visible).
 
 Dos detalles que costó descubrir y no hay que deshacer:
 - El fondo oscuro vive en `<body>` (radial-gradient), así que antes de capturar se fuerza `background-color` inline en `.cartel` — si no, html2canvas lo captura con fondo blanco y el texto claro queda ilegible.

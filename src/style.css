@@ -228,6 +228,186 @@ body {
   pointer-events: none;
 }
 
+/* --- Botón de impresora y modal de tamaño de impresión --- */
+
+.print-btn {
+  position: fixed;
+  top: calc(1rem + env(safe-area-inset-top, 0px));
+  right: 1rem;
+  z-index: 450; /* por debajo de .stage-banner (500) */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid rgba(198, 255, 26, 0.35);
+  border-radius: 999px;
+  background: rgba(8, 11, 6, 0.82);
+  backdrop-filter: blur(4px);
+  color: var(--accent);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, top 0.25s ease;
+}
+
+.print-btn:hover,
+.print-btn:focus-visible {
+  background: rgba(198, 255, 26, 0.12);
+  border-color: var(--accent);
+}
+
+/* Cuando la franja de escenario baja, el botón se aparta para no quedar debajo
+   (la franja tiene z-index mayor). */
+body:has(.stage-banner--visible) .print-btn {
+  top: calc(3.75rem + env(safe-area-inset-top, 0px));
+}
+
+.print-modal {
+  width: min(92vw, 26rem);
+  padding: 0;
+  border: 1px solid rgba(198, 255, 26, 0.45);
+  border-radius: 1rem;
+  background: #0b0f08;
+  color: var(--fg);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+}
+
+.print-modal::backdrop {
+  background: rgba(3, 5, 2, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+.print-modal__inner {
+  position: relative;
+  padding: 1.75rem 1.5rem 1.5rem;
+  text-align: center;
+}
+
+.print-modal__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.print-modal__close:hover,
+.print-modal__close:focus-visible {
+  color: var(--fg);
+  background: rgba(242, 244, 238, 0.08);
+}
+
+.print-modal__title {
+  margin: 0;
+  font-family: 'Orbitron', 'Oswald', sans-serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.print-modal__hint {
+  margin: 0.4rem 0 1.5rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.print-modal__options {
+  display: grid;
+  gap: 0.6rem;
+}
+
+/* Las radios reales van ocultas pero siguen siendo focusables: la tarjeta se
+   pinta con el selector de hermano (:checked + .print-option__body), que
+   funciona en todos los navegadores. */
+.print-option {
+  display: block;
+  cursor: pointer;
+}
+
+.print-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.print-option__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  border: 1px solid rgba(242, 244, 238, 0.16);
+  border-radius: 0.65rem;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.print-option:hover .print-option__body {
+  border-color: rgba(198, 255, 26, 0.45);
+}
+
+.print-option input:checked + .print-option__body {
+  border-color: var(--accent);
+  background: rgba(198, 255, 26, 0.1);
+}
+
+.print-option input:focus-visible + .print-option__body {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.print-option__label {
+  font-family: 'Orbitron', 'Oswald', sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.print-option__desc {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.print-modal__actions {
+  margin-top: 1.5rem;
+}
+
+.print-modal__ok {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: #050505;
+  font-family: 'Orbitron', 'Oswald', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.print-modal__ok:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.print-modal__ok:not(:disabled):hover {
+  background: #d4ff47;
+}
+
 .scroll-btn--up.scroll-btn--visible {
   opacity: 1;
   pointer-events: auto;
