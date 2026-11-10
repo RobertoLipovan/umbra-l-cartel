@@ -1,6 +1,6 @@
 import { djs, EVENT, STAGES, getStage } from './djs.js'
 import { buildSchedule, resolveTime } from './schedule.js'
-import { RETICLE_ICON, renderBilling, renderLineup, renderHoursLine } from './render.js'
+import { renderBilling, renderLineup, renderHoursLine } from './render.js'
 
 // Nombres del cartel de cabecera: una vez cada uno, en el orden en que salen
 // (exterior y luego interior). 'TBA' no es un artista, es un hueco por
@@ -56,22 +56,10 @@ export function renderLanding() {
   return `
     <main class="cartel">
       <header class="cartel__header">
-        ${RETICLE_ICON}
-        <p class="cartel__kicker">${EVENT.edition}</p>
-        <h1 class="cartel__title">${EVENT.name}</h1>
+        <p class="cartel__kicker">${EVENT.name}</p>
+        <h1 class="cartel__title">${EVENT.edition}</h1>
 
         ${renderBilling(billingNames())}
-
-        <nav class="stage-nav">
-          ${STAGES.map(
-            (stage) => `
-              <a class="stage-nav__link" href="#${stage.id}">
-                ${stage.id === 'exterior' ? 'Exterior' : 'Interior'}
-                <span class="stage-nav__hint">${stage.hint}</span>
-              </a>
-            `,
-          ).join('')}
-        </nav>
       </header>
 
       ${STAGES.map((stage) => renderStageSection(stage.id)).join('')}

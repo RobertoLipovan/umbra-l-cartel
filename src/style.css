@@ -128,58 +128,12 @@ body {
    dos escenarios apilados ese modo sobraba y además impedía hacer scroll, así
    que se retiró: la página fluye con scroll normal a cualquier ancho. */
 
+/* Sin isotipo ni líneas diagonales (retirados a petición): la cabecera es
+   solo el nombre pequeño, el título grande y el cartel de artistas. */
 .cartel__header {
   position: relative;
   text-align: center;
   margin-bottom: 3rem;
-}
-
-.cartel__header::before,
-.cartel__header::after {
-  content: '';
-  position: absolute;
-  z-index: 0;
-  width: 3px;
-  background: var(--accent);
-  opacity: 0.45;
-}
-
-.cartel__header::before {
-  height: 70px;
-  top: -10px;
-  left: 18%;
-  transform: rotate(22deg);
-}
-
-.cartel__header::after {
-  height: 50px;
-  top: 6px;
-  right: 20%;
-  transform: rotate(-18deg);
-}
-
-.cartel__logo {
-  position: relative;
-  z-index: 1;
-  color: var(--accent);
-  margin-bottom: 0.5rem;
-}
-
-/* Envoltura del logo cuando es enlace de vuelta a la portada (vistas de
-   escenario, ver `LOGO_LINK` en views.js). Se queda como inline, sin
-   `display` propio, para que el hueco del icono en la cabecera sea idéntico
-   al del logo suelto de la portada; solo se quita el subrayado por defecto
-   del enlace. El color lo sigue poniendo `.cartel__logo`. */
-.cartel__logo-link {
-  text-decoration: none;
-}
-
-.cartel__logo-link .cartel__logo {
-  transition: color 0.2s ease;
-}
-
-.cartel__logo-link:hover .cartel__logo {
-  color: var(--fg);
 }
 
 .cartel__kicker {
@@ -192,15 +146,19 @@ body {
   color: var(--accent);
 }
 
+/* El título es "Casa Techno 3.0" (antes era "UMBRA-L", que pasó a kicker).
+   Al ser mucho más largo que el nombre corto, el tamaño es más contenido para
+   que quepa en una línea en desktop y no se coma la cabecera. */
 .cartel__title {
   position: relative;
   z-index: 1;
   font-family: 'Orbitron', 'Oswald', sans-serif;
   font-weight: 900;
-  font-size: clamp(2.6rem, 11vw, 5.2rem);
-  letter-spacing: 0.05em;
+  font-size: clamp(1.75rem, 6.4vw, 3.3rem);
+  letter-spacing: 0.04em;
   margin: 0;
   text-transform: uppercase;
+  text-wrap: balance;
   text-shadow: 0 0 30px rgba(198, 255, 26, 0.4);
 }
 
@@ -261,6 +219,13 @@ body {
 
 /* --- Cartel tipográfico de la cabecera (sustituye a los chips de género) --- */
 
+/* Huecos homogéneos: el `gap` es absoluto (no en `em` del item), así el aire
+   entre dos nombres es el mismo independientemente de lo grande que sea cada
+   uno. El rango de tamaños es además más estrecho que antes (de 1.75rem a
+   3.3rem en vez de 0.85-3.7rem) para que las líneas no queden tan
+   descompensadas. `align-items: baseline` mantiene los nombres apoyados en la
+   misma línea base dentro de cada fila, que es lo que hace que el bloque se
+   lea como un cartel y no como una lista. */
 .billing {
   position: relative;
   z-index: 1;
@@ -271,11 +236,11 @@ body {
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: center;
-  gap: 0.1rem 0.9rem;
+  gap: 0.55rem 1.15rem;
   font-family: 'Orbitron', 'Oswald', sans-serif;
   font-weight: 900;
   text-transform: uppercase;
-  line-height: 1.02;
+  line-height: 1.05;
 }
 
 .billing__item {
@@ -283,23 +248,23 @@ body {
 }
 
 .billing__item--xl {
-  font-size: clamp(2rem, 7.5vw, 3.7rem);
+  font-size: clamp(1.6rem, 5.2vw, 2.7rem);
 }
 
 .billing__item--lg {
-  font-size: clamp(1.6rem, 5.2vw, 2.6rem);
+  font-size: clamp(1.45rem, 4.4vw, 2.25rem);
 }
 
 .billing__item--md {
-  font-size: clamp(1.25rem, 3.6vw, 1.85rem);
+  font-size: clamp(1.3rem, 3.5vw, 1.85rem);
 }
 
 .billing__item--sm {
-  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  font-size: clamp(1.15rem, 2.8vw, 1.55rem);
 }
 
 .billing__item--xs {
-  font-size: clamp(0.85rem, 1.9vw, 1.05rem);
+  font-size: clamp(1.05rem, 2.4vw, 1.35rem);
 }
 
 .billing__item--solid {
