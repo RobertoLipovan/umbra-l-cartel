@@ -1,15 +1,22 @@
-import { djs, EVENT, getStage } from './djs.js'
+import { djs, EVENT, STAGES, getStage } from './djs.js'
 import { buildSchedule, resolveTime } from './schedule.js'
-import { RETICLE_ICON, uniqueGenres, renderGenres, renderLineup, renderHoursLine } from './render.js'
+import { RETICLE_ICON, renderBilling, renderLineup, renderHoursLine } from './render.js'
 
-const SCROLL_HINT = `
-  <a class="cartel__scroll no-print" href="#lineup">
-    CARTEL
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M4 7L10 13L16 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-  </a>
-`
+// Nombres del cartel de cabecera: una vez cada uno, en el orden en que salen
+// (exterior y luego interior). 'TBA' no es un artista, es un hueco por
+// anunciar, así que no se pinta como nombre.
+const PLACEHOLDER_NAMES = new Set(['TBA'])
+
+function billingNames() {
+  const seen = new Set()
+  const names = []
+  for (const dj of djs) {
+    if (PLACEHOLDER_NAMES.has(dj.name) || seen.has(dj.name)) continue
+    seen.add(dj.name)
+    names.push(dj.name)
+  }
+  return names
+}
 
 const FOOTER = `
   <footer class="cartel__footer">
@@ -18,58 +25,12 @@ const FOOTER = `
   </footer>
 `
 
-// El logo de las vistas de escenario es un enlace de vuelta a la portada:
-// lleva `data-view="home"`, así que lo intercepta router.js como el resto de
-// la navegación (transición diagonal incluida) y la URL no cambia. En la
-// portada el logo se queda decorativo, sin enlace.
-const LOGO_LINK = `
-  <a class="cartel__logo-link" data-view="home" href="." aria-label="Volver a la portada">
-    ${RETICLE_ICON}
-  </a>
-`
-
-function renderHome() {
-  const genres = uniqueGenres(djs)
-  const [first, second] = getStages()
-  return `
-    <main class="cartel">
-      <header class="cartel__header">
-        ${RETICLE_ICON}
-        <p class="cartel__kicker">${EVENT.edition}</p>
-        <h1 class="cartel__title">${EVENT.name}</h1>
-
-        ${renderGenres(genres)}
-
-        <nav class="stage-nav no-print">
-          <a class="stage-nav__link" data-view="${first.id}" href="${first.id}">
-            ${first.nav}
-            <span class="stage-nav__hint">${first.hint}</span>
-          </a>
-          <a class="stage-nav__link" data-view="${second.id}" href="${second.id}">
-            ${second.nav}
-            <span class="stage-nav__hint">${second.hint}</span>
-          </a>
-        </nav>
-      </header>
-
-      ${FOOTER}
-    </main>
-  `
-}
-
-function getStages() {
-  const exterior = getStage('exterior')
-  const interior = getStage('interior')
-  return [
-    { id: exterior.id, nav: 'Exterior', hint: exterior.hint },
-    { id: interior.id, nav: 'Interior', hint: interior.hint },
-  ]
-}
-
-function renderStage(stageId, { otherStage }) {
+// Una sola página (landing): los dos escenarios van uno debajo del otro, sin
+// navegación anidada ni vistas. Los enlaces de la cabecera son anclas
+// normales (`#exterior`, `#interior`), con el scroll suave de `html`.
+function renderStageSection(stageId) {
   const stage = getStage(stageId)
   const schedule = buildSchedule(stage.sets, EVENT)
-  const genres = uniqueGenres(djs.filter((dj) => dj.stage === stageId))
 
   // Cierre con hora de fin abierta (secret line up): se resuelve igual que los
   // sets, pero solo se usa la hora de inicio.
@@ -79,35 +40,43 @@ function renderStage(stageId, { otherStage }) {
   }))
 
   return `
-    <main class="cartel">
-      <header class="cartel__header">
-        ${LOGO_LINK}
-        <p class="cartel__kicker">${EVENT.edition}</p>
-        <h1 class="cartel__title">${EVENT.name}</h1>
-        <p class="cartel__stage">${stage.label}</p>
-
+    <section class="stage" id="${stage.id}">
+      <header class="stage__header">
+        <h2 class="cartel__stage" data-stage="${stage.id}">${stage.label}</h2>
+        <p class="stage__hint">${stage.hint}</p>
         ${renderHoursLine(schedule)}
-        ${renderGenres(genres)}
-
-        ${SCROLL_HINT}
       </header>
 
-      ${renderLineup(schedule, { id: 'lineup', closing })}
+      ${renderLineup(schedule, { id: `lineup-${stage.id}`, closing })}
+    </section>
+  `
+}
 
-      <nav class="stage-nav stage-nav--footer no-print">
-        <a class="stage-nav__link" data-view="home" href=".">Portada</a>
-        <a class="stage-nav__link" data-view="${otherStage}" href="${otherStage}">${otherStage === 'interior' ? 'Interior' : 'Exterior'}</a>
-      </nav>
+export function renderLanding() {
+  return `
+    <main class="cartel">
+      <header class="cartel__header">
+        ${RETICLE_ICON}
+        <p class="cartel__kicker">${EVENT.edition}</p>
+        <h1 class="cartel__title">${EVENT.name}</h1>
+
+        ${renderBilling(billingNames())}
+
+        <nav class="stage-nav">
+          ${STAGES.map(
+            (stage) => `
+              <a class="stage-nav__link" href="#${stage.id}">
+                ${stage.id === 'exterior' ? 'Exterior' : 'Interior'}
+                <span class="stage-nav__hint">${stage.hint}</span>
+              </a>
+            `,
+          ).join('')}
+        </nav>
+      </header>
+
+      ${STAGES.map((stage) => renderStageSection(stage.id)).join('')}
 
       ${FOOTER}
     </main>
   `
-}
-
-// `isHome` activa el modo "sin scroll" de la portada (ver router.js/style.css).
-// No hay rutas reales: la URL nunca cambia, solo el contenido de #app.
-export const VIEWS = {
-  home: { render: renderHome, isHome: true },
-  exterior: { render: () => renderStage('exterior', { otherStage: 'interior' }), isHome: false },
-  interior: { render: () => renderStage('interior', { otherStage: 'exterior' }), isHome: false },
 }

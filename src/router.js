@@ -1,74 +1,16 @@
-import { VIEWS } from './views.js'
-// Animaciones retiradas a petición (ver AGENTS.md): el baile de chips de
-// género (genre-dance.js) y el tilt del cursor (tilt.js). Los módulos siguen
-// en el repo intactos por si se quieren reactivar; basta volver a importarlos
-// y llamarlos en mount(), como estaba antes.
-import { initPageMask, wipeTransition } from './page-transition.js'
-import { initStageBanner, updateStageBanner } from './stage-banner.js'
+import { renderLanding } from './views.js'
+import { initStageBanner } from './stage-banner.js'
 
-let currentViewKey = 'home'
-
-// Cada vista empieza siempre arriba del todo. En una SPA el navegador no
-// reinicia el scroll por su cuenta (como sí haría al cargar una página nueva),
-// así que al enlazar desde una zona ya bajada —p. ej. el botón "Interior" al
-// final del lineup exterior— la vista nueva heredaba el scroll de la anterior
-// y aparecía ya desplazada.
+// La web es una sola landing: se monta una vez y no hay navegación entre
+// vistas. Los enlaces de la cabecera son anclas (`#exterior`, `#interior`) que
+// resuelve el navegador con el scroll suave de `html`, sin JavaScript.
 //
-// El salto no se ve: wipeTransition() llama a mount() con la máscara verde
-// cubriendo la pantalla. Y tiene que ser un salto instantáneo, no animado:
-// `html` tiene `scroll-behavior: smooth` (style.css) y con eso window.scrollTo
-// sería un desplazamiento animado que seguiría viéndose al retirar la máscara
-// (se aterrizaría en la vista nueva a mitad del recorrido).
-//
-// Se desactiva un instante con un estilo inline (gana a la regla de la hoja) y
-// se restaura al momento. Ojo: hay que FORZAR el recálculo de estilos antes de
-// scrollear (leer el valor calculado); sin eso Chromium sigue leyendo el
-// `smooth` de la hoja y anima igual — medido con Playwright, justo después de
-// la llamada el scroll seguía en 772 en vez de 0. Con el recálculo forzado
-// salta instantáneo (0), que es lo que hace esta función.
-function resetScroll() {
-  const root = document.documentElement
-  const previous = root.style.scrollBehavior
-  root.style.scrollBehavior = 'auto'
-  void getComputedStyle(root).scrollBehavior
-  window.scrollTo(0, 0)
-  root.style.scrollBehavior = previous
-}
-
-function mount(viewKey) {
-  currentViewKey = viewKey
-  const view = VIEWS[viewKey]
-
-  document.querySelector('#app').innerHTML = view.render()
-
-  // Antes de updateStageBanner(): si no, la franja de escenario se calcularía
-  // con el scroll de la vista anterior y aparecería un instante para luego
-  // esconderse.
-  resetScroll()
-
-  document.documentElement.classList.toggle('page-home', view.isHome)
-  document.body.classList.toggle('page-home', view.isHome)
-
-  // Se vuelve a llamar en cada montaje: stage-banner selecciona elementos del
-  // DOM recién creado, no queda "enganchado" de la vista anterior.
-  updateStageBanner(viewKey)
-}
-
+// Aquí vivía el router de la SPA de tres vistas (portada + dos escenarios),
+// con transición de máscara diagonal (`page-transition.js`). Los módulos de
+// aquello siguen en el repo sin enganchar (ver AGENTS.md), por si se quiere
+// volver al modelo de vistas.
 export function initRouter() {
-  initPageMask()
+  document.querySelector('#app').innerHTML = renderLanding()
+
   initStageBanner()
-  mount('home')
-
-  // La URL no cambia nunca (sigue siendo una sola página de verdad, sin
-  // pushState ni rutas de mentira): solo cambia el contenido de #app.
-  document.body.addEventListener('click', (event) => {
-    const link = event.target.closest('a[data-view]')
-    if (!link || event.metaKey || event.ctrlKey || event.shiftKey) return
-
-    event.preventDefault()
-    const viewKey = link.dataset.view
-    if (viewKey === currentViewKey) return
-
-    wipeTransition(() => mount(viewKey))
-  })
 }

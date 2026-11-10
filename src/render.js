@@ -11,12 +11,13 @@ export const RETICLE_ICON = `
   </svg>
 `
 
-// Orbitron no cubre ni cirílico ni la Ø/ø nórdica, así que el navegador las
-// sustituye por una fuente de reserva a un tamaño distinto (p. ej. en NVЯR,
-// FØBIA, FLAMENKØ). Las envolvemos para achicarlas a mano. Ojo: la ø
-// minúscula (Flamenkø, Føbia) también cuenta, no solo la mayúscula.
+// Orbitron no cubre ni cirílico, ni la Ø/ø nórdica, ni el bullet •, así que el
+// navegador los sustituye por una fuente de reserva a un tamaño distinto (p.
+// ej. en NVЯR, FØBIA, FLAMENKØ, Will•Y). Los envolvemos para achicarlos a
+// mano. Ojo: la ø minúscula (Flamenkø, Føbia) también cuenta, no solo la
+// mayúscula.
 function renderName(name) {
-  return name.replace(/[ЯØø]/g, (char) => `<span class="glyph-fallback">${char}</span>`)
+  return name.replace(/[ЯØø•]/g, (char) => `<span class="glyph-fallback">${char}</span>`)
 }
 
 const INSTAGRAM_ICON = `
@@ -58,6 +59,34 @@ function renderArtists(artists) {
   return artists
     .map((artist) => renderNameWithInstagram(artist.name, artist.instagram))
     .join('<span class="lineup__b2b">b2b</span>')
+}
+
+// Cartel tipográfico de la cabecera (debajo del título): los artistas en
+// grande, mayúsculas y negrita, con tamaños y estilos alternados para que
+// parezca un cartel de fiesta y no una lista. El patrón es fijo (no aleatorio)
+// para que cada carga se vea igual: recorre estos diez y vuelve a empezar.
+const BILLING_PATTERN = [
+  { size: 'xl', style: 'solid' },
+  { size: 'md', style: 'outline' },
+  { size: 'sm', style: 'accent' },
+  { size: 'lg', style: 'solid' },
+  { size: 'md', style: 'wide' },
+  { size: 'xs', style: 'solid' },
+  { size: 'lg', style: 'outline' },
+  { size: 'sm', style: 'solid' },
+  { size: 'md', style: 'accent' },
+  { size: 'sm', style: 'wide' },
+]
+
+export function renderBilling(names) {
+  const items = names
+    .map((name, index) => {
+      const { size, style } = BILLING_PATTERN[index % BILLING_PATTERN.length]
+      return `<li class="billing__item billing__item--${size} billing__item--${style}">${renderName(name)}</li>`
+    })
+    .join('')
+
+  return `<ul class="billing">${items}</ul>`
 }
 
 const PLACEHOLDER_GENRES = new Set(['por confirmar'])

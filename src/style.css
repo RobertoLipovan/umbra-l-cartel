@@ -123,41 +123,10 @@ body {
   padding-inline: 1.5rem;
 }
 
-/* Portada: sin scroll nunca. El body se fija a 100vh y .cartel reparte
-   cabecera/pie con space-between en vez de depender de margin-bottom.
-   Solo se aplica a partir de cierto ancho: en móvil los chips y los botones
-   de escenario ocupan más filas (más alto), y forzar 100vh recortaba el
-   final del pie en vez de dejarlo simplemente fluir con scroll normal. */
-@media (min-width: 641px) {
-  html.page-home {
-    overflow: hidden;
-  }
-
-  body.page-home {
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  body.page-home .cartel {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  body.page-home .cartel__header {
-    margin-bottom: 0;
-  }
-}
-
-/* Se deja la anulación del transform por si se reactiva el tilt del cursor:
-   con él activo, la rotación de #app añadía overflow vertical residual en
-   móvil. Inofensiva mientras no haya transform inline. */
-@media (max-width: 640px) {
-  body.page-home #app {
-    transform: none !important;
-  }
-}
+/* Antes había aquí el modo "portada sin scroll" (`page-home` en <html>/<body>,
+   con 100vh y overflow:hidden). Al pasar a landing de una sola página con los
+   dos escenarios apilados ese modo sobraba y además impedía hacer scroll, así
+   que se retiró: la página fluye con scroll normal a cualquier ancho. */
 
 .cartel__header {
   position: relative;
@@ -261,6 +230,96 @@ body {
   font-size: 1.4rem;
   color: var(--accent);
   margin-right: 0.3rem;
+}
+
+/* --- Landing: los dos escenarios apilados, cada uno con su cabecera --- */
+
+/* Sin `scroll-margin-top` a propósito: al saltar a #exterior / #interior el
+   titular queda justo en el borde superior y la franja fija (stage-banner)
+   aparece en cuanto se pasa de él, sin taparlo. */
+.stage {
+  margin-top: 4.5rem;
+}
+
+.stage__header {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(198, 255, 26, 0.25);
+}
+
+.stage__hint {
+  margin: 0.5rem 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.stage__header .cartel__hours {
+  margin-top: 0.6rem;
+}
+
+/* --- Cartel tipográfico de la cabecera (sustituye a los chips de género) --- */
+
+.billing {
+  position: relative;
+  z-index: 1;
+  margin: 2.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.1rem 0.9rem;
+  font-family: 'Orbitron', 'Oswald', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1.02;
+}
+
+.billing__item {
+  display: inline-block;
+}
+
+.billing__item--xl {
+  font-size: clamp(2rem, 7.5vw, 3.7rem);
+}
+
+.billing__item--lg {
+  font-size: clamp(1.6rem, 5.2vw, 2.6rem);
+}
+
+.billing__item--md {
+  font-size: clamp(1.25rem, 3.6vw, 1.85rem);
+}
+
+.billing__item--sm {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+}
+
+.billing__item--xs {
+  font-size: clamp(0.85rem, 1.9vw, 1.05rem);
+}
+
+.billing__item--solid {
+  color: var(--fg);
+}
+
+.billing__item--accent {
+  color: var(--accent);
+}
+
+/* Contorno: relleno transparente + trazo. `-webkit-text-stroke` está
+   soportado en todos los navegadores actuales. */
+.billing__item--outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--fg);
+}
+
+.billing__item--wide {
+  letter-spacing: 0.12em;
+  color: var(--muted);
 }
 
 .genres {
