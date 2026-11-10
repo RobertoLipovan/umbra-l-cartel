@@ -60,12 +60,6 @@ export function renderLanding() {
         <h1 class="cartel__title">${EVENT.edition}</h1>
 
         ${renderBilling(billingNames())}
-
-        <button type="button" class="scroll-btn scroll-btn--down" aria-label="Bajar al cartel de horarios">
-          <svg width="22" height="22" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M10 4v12M4 10l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
       </header>
 
       <div class="stages">

@@ -139,10 +139,19 @@ body {
   position: relative;
   text-align: center;
   margin-bottom: 0;
-  /* Más aire abajo que arriba: ahí vive el botón de bajar, que va posicionado
-     en absoluto y no debe pisar el cartel de artistas. */
-  padding: 4rem 0 6.5rem;
-  min-height: 100dvh;
+  /* Más aire abajo que arriba: ahí vive el botón de bajar, que va fijo y no
+     debe pisar el cartel de artistas. */
+  padding: 4rem 0 5rem;
+  /* `lvh` (large viewport height) y NO `dvh`: en iOS Safari la altura del
+     viewport cambia al aparecer/ocultarse las barras del navegador. Con `dvh`
+     el cartel se quedaba corto en cuanto la barra se recogía y asomaba un
+     trozo del lineup por abajo. `lvh` es el alto máximo posible, así que el
+     cartel SIEMPRE cubre al menos lo que se ve y el lineup no asoma nunca.
+     Precio: con la barra visible el canto inferior del cartel queda detrás de
+     ella (es solo padding, el contenido va centrado) y por eso el botón de
+     bajar es `position: fixed`, no va pegado al canto del cartel. */
+  min-height: 100vh;
+  min-height: 100lvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -172,12 +181,16 @@ body {
   border-color: var(--accent);
 }
 
-/* Bajar: anclado al pie de la primera pantalla. */
+/* Los dos botones son `position: fixed` (los crea scroll-buttons.js y cuelgan
+   de <body>, ver el comentario del módulo) y respetan el área segura de iOS. */
 .scroll-btn--down {
-  position: absolute;
+  position: fixed;
   left: 50%;
-  bottom: 1.75rem;
+  bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
+  z-index: 400;
+  background: rgba(8, 11, 6, 0.82);
+  backdrop-filter: blur(4px);
   animation: scroll-btn-hint 2.4s ease-in-out infinite;
 }
 
@@ -199,13 +212,20 @@ body {
 .scroll-btn--up {
   position: fixed;
   right: 1.25rem;
-  bottom: 1.25rem;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
   z-index: 400;
   background: rgba(8, 11, 6, 0.82);
   backdrop-filter: blur(4px);
   opacity: 0;
   pointer-events: none;
   transform: translateY(0.6rem);
+}
+
+/* Mientras se ve el cartel manda el botón de bajar; al entrar en el lineup se
+   intercambian. */
+.scroll-btn--down.scroll-btn--hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .scroll-btn--up.scroll-btn--visible {
@@ -236,7 +256,7 @@ body {
 
 @media (max-width: 640px) {
   .cartel__header {
-    padding: 2rem 0 6rem;
+    padding: 2rem 0 4.5rem;
   }
 }
 

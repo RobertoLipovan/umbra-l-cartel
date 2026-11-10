@@ -100,7 +100,7 @@ La landing son **dos pantallas en el mismo documento**, no dos páginas:
 1. **El cartel** (`.cartel__header`): `min-height: 100dvh`, con el contenido centrado en vertical (`display: flex; flex-direction: column; justify-content: center`). Al entrar no se ve **nada** del lineup.
 2. **El lineup** (`.stages`): empieza justo en el pliegue, o sea al final de los 100dvh.
 
-`100dvh` y no `100vh` para que en móvil cuente el alto realmente visible (con `vh` el cartel quedaba más alto que la pantalla y asomaba el lineup, que es justo lo que se quería evitar).
+El alto del cartel es **`100lvh`** (con `100vh` de respaldo delante), **no `dvh`**: en iOS Safari el viewport cambia de alto al aparecer/ocultarse las barras del navegador, y con `dvh` el cartel se quedaba corto en cuanto la barra se recogía y se colaba un trozo del lineup por abajo. `lvh` es el alto **máximo** posible, así que el cartel siempre cubre al menos lo que se ve. El precio: con la barra del navegador visible, el canto inferior del cartel queda detrás de ella (es solo padding, el contenido va centrado), y por eso los botones de scroll son `position: fixed` y no van pegados al canto del cartel.
 
 Consecuencia para el CSS: **el padding vertical vive en las pantallas, no en el `body`** (`body { padding-block: 0 }`). Si estuviera en el `body`, la primera pantalla mediría `100dvh` + padding y el cartel quedaría descentrado.
 
@@ -108,9 +108,12 @@ Consecuencia para el CSS: **el padding vertical vive en las pantallas, no en el 
 
 El cambio de pantalla es **manual**: un botón para bajar y otro para subir. El scroll normal es libre, no hay nada que lo fuerce.
 
-- **Bajar**: `.scroll-btn--down`, en el HTML de la cabecera, `position: absolute` al pie del cartel. Lleva al inicio de `.stages`. Tiene una animación de "respiración" (bob de 4px); con `prefers-reduced-motion` se desactiva.
-- **Subir**: `.scroll-btn--up`, **lo crea el JS y cuelga de `<body>`**, no de `#app` — `#app` tiene `will-change: transform`, que lo convierte en containing block de sus descendientes `position: fixed` (misma razón que `.stage-banner`); dentro de `#app` el botón se iría con el scroll en vez de quedarse fijo. Aparece cuando `scrollY > altura del cartel * 0.5` y sube a `0`.
-- Ambos son `<button>` (no `<a href="#...">`) para no ensuciar la URL con hashes.
+- Los **dos** los crea el JS y cuelgan de **`<body>`**, no de `#app` — `#app` tiene `will-change: transform`, que lo convierte en containing block de sus descendientes `position: fixed` (misma razón que `.stage-banner`); dentro de `#app` se irían con el scroll en vez de quedarse fijos.
+- Son `position: fixed` los dos, y respetan `env(safe-area-inset-bottom)`.
+- **Bajar**: `.scroll-btn--down`, abajo centrado. Lleva al inicio de `.stages`. Lleva una animación de "respiración" (bob de 4px) que se desactiva con `prefers-reduced-motion`.
+- **Subir**: `.scroll-btn--up`, abajo a la derecha.
+- Se intercambian con un umbral único (`SHOW_AFTER_RATIO = 0.5` de la altura del cartel): arriba se ve el de bajar, en el lineup el de subir.
+- Son `<button>` (no `<a href="#...">`) para no ensuciar la URL con hashes.
 
 **Historial: lo que no funcionó.** Antes de los botones se intentó un "imán" que colocaba la página sola al soltar el scroll:
 
@@ -118,6 +121,10 @@ El cambio de pantalla es **manual**: un botón para bajar y otro para subir. El 
 - Con JS (`scroll-snap.js`, ya borrado): funcionaba, pero el salto forzado al soltar no terminaba de ir fino. Retirado a petición explícita ("no va fino el scroll automático, quítalo, y mejor pon botones").
 
 Si alguien vuelve a querer el automático, que lea esto antes: ya se probaron las dos vías.
+
+## Barra de estado en iOS
+
+`index.html` lleva `<meta name="theme-color" content="#0a0e06">` (y `color-scheme: dark`, que además está en `:root`). **No lo quites.** Sin `theme-color`, iOS Safari tiñe la barra de estado con el color del contenido que toca el borde superior; como la franja de escenario (`.stage-banner`, verde ácido) es `position: fixed; top: 0`, en cuanto aparecía al hacer scroll la barra de estado se quedaba verde de forma permanente. Con `theme-color` fijo, la barra usa siempre ese color oscuro.
 
 ## Cartel tipográfico de la cabecera
 
