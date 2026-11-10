@@ -1,8 +1,8 @@
 // Genera el PDF del cartel. Dos versiones, que es lo que ofrece el modal:
 //
-//   'grande'  → UNA página del tamaño exacto del cartel (sin márgenes ni
-//               recortes). Es el "póster": sirve para imprimir en grande (una
-//               copistería o una plotter aceptan un tamaño a medida).
+//   'grande'  → UNA página A1 (594 × 841 mm) con el cartel completo: arriba la
+//               cabecera con el nombre y los artistas y debajo el horario de
+//               los dos escenarios. Es el póster.
 //   'pequena' → A4 vertical, repartido en varias páginas cortando el cartel a
 //               lo alto. Es la versión "de casa": legible, en hojas normales.
 //               No se escala el cartel entero a una sola A4 porque quedaría
@@ -16,9 +16,11 @@
 
 const FONDO = '#050505'
 
-// Ancho de página A4 vertical (mm) y márgenes interiores.
+// Medidas de página en mm (vertical).
 const A4 = { ancho: 210, alto: 297 }
+const A1 = { ancho: 594, alto: 841 }
 const MARGEN_A4 = 6
+const MARGEN_A1 = 12
 
 // Escala de captura. 2 da buena nitidez con un peso de archivo razonable.
 const ESCALA = 2
@@ -64,18 +66,30 @@ async function capturarCartel() {
   }
 }
 
-// Una sola página con el tamaño real del cartel (px CSS → mm a 96 ppp).
-function paginaTamanoReal(jsPDF, imagen, anchoPx, altoPx) {
-  const anchoMm = (anchoPx / ESCALA / 96) * 25.4
-  const altoMm = (altoPx / ESCALA / 96) * 25.4
+// A1 vertical con el cartel entero (cabecera arriba, horario debajo) escalado
+// para que quepa completo, sin recortes, pegado al margen superior.
+//
+// El cartel es muy alto y estrecho (relación ~1:4), así que el que manda es el
+// alto: se escala hasta llenar el alto útil y queda una franja centrada
+// horizontalmente. Escalar por ancho lo sacaría de la página.
+function paginaA1(jsPDF, imagen, anchoPx, altoPx) {
+  const doc = new jsPDF({ unit: 'mm', format: 'a1', orientation: 'portrait' })
 
-  const doc = new jsPDF({
-    unit: 'mm',
-    format: [anchoMm, altoMm],
-    orientation: anchoMm > altoMm ? 'landscape' : 'portrait',
-  })
+  const anchoUtil = A1.ancho - MARGEN_A1 * 2
+  const altoUtil = A1.alto - MARGEN_A1 * 2
 
-  doc.addImage(imagen, 'JPEG', 0, 0, anchoMm, altoMm)
+  const escala = Math.min(anchoUtil / anchoPx, altoUtil / altoPx)
+  const anchoMm = anchoPx * escala
+  const altoMm = altoPx * escala
+
+  // El cartel es tan vertical que al escalarlo sobra muchísimo ancho a los
+  // lados. En vez de dejar dos franjas blancas, se pinta la hoja entera del
+  // mismo negro que el cartel: la imagen se funde con el fondo y parece un
+  // póster a sangre en vez de un recorte pegado en el centro.
+  doc.setFillColor(FONDO)
+  doc.rect(0, 0, A1.ancho, A1.alto, 'F')
+
+  doc.addImage(imagen, 'JPEG', (A1.ancho - anchoMm) / 2, MARGEN_A1, anchoMm, altoMm)
   return doc
 }
 
@@ -114,7 +128,7 @@ export async function imprimirCartel(version) {
   const doc =
     version === 'pequena'
       ? cortarEnA4(jsPDF, imagen, anchoPx, altoPx)
-      : paginaTamanoReal(jsPDF, imagen, anchoPx, altoPx)
+      : paginaA1(jsPDF, imagen, anchoPx, altoPx)
 
   doc.save(version === 'pequena' ? 'umbral-cartel-pequena.pdf' : 'umbral-cartel-grande.pdf')
 }
