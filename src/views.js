@@ -42,7 +42,7 @@ function renderStageSection(stageId) {
   return `
     <section class="stage" id="${stage.id}">
       <header class="stage__header">
-        <h2 class="cartel__stage" data-stage="${stage.id}">${stage.label}</h2>
+        <h2 class="cartel__stage">${stage.label}</h2>
         <p class="stage__hint">${stage.hint}</p>
         ${renderHoursLine(schedule)}
       </header>

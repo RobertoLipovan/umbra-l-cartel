@@ -38,11 +38,11 @@ Consecuencias que hay que respetar al editar el JSON:
 
 **Estado actual: el modal funciona, la impresión no está enganchada.** El botón OK no hace nada a propósito ("por ahora ok no hace nada").
 
-- **Botón** (`.print-btn`): icono de impresora, `position: fixed` arriba a la derecha, `z-index: 450` para quedar **por debajo** de la franja de escenario (500). Cuando la franja baja, el botón se aparta con `body:has(.stage-banner--visible) .print-btn { top: … }` en vez de quedar tapado.
+- **Botón** (`.print-btn`): icono de impresora, `position: fixed` arriba a la derecha, `z-index: 450`, respetando `env(safe-area-inset-top)`.
 - **Modal** (`src/print-modal.js`): `<dialog>` nativo con `showModal()`, así el foco queda atrapado, `Esc` cierra y el fondo deja de ser interactivo sin implementar nada. Se cierra con la ×, con `Esc` o con clic en el fondo (se comprueba `event.target === dialog`). Al cerrar, el foco vuelve al botón de la impresora.
-- **Opciones**: radios reales (`name="print-size"`, valores `grande` / `pequena`) ocultas visualmente pero focusables; la tarjeta se pinta con `input:checked + .print-option__body`, que funciona en todos los navegadores (nada de `:has()` aquí a propósito, aunque para el botón sí se use).
+- **Opciones**: radios reales (`name="print-size"`, valores `grande` / `pequena`) ocultas visualmente pero focusables; la tarjeta se pinta con `input:checked + .print-option__body`, que funciona en todos los navegadores (nada de `:has()` aquí a propósito).
 - **OK**: nace `disabled` y se habilita en cuanto hay una opción marcada. Hoy su `click` llama a `confirmarVersion()`, que **está vacía a propósito**.
-- Ni el botón ni el diálogo están en `views.js`: los crea el módulo y los cuelga de `<body>` (mismo motivo que `.stage-banner` y los botones de scroll — `#app` tiene `will-change: transform` y rompe los `position: fixed` de dentro).
+- Ni el botón ni el diálogo están en `views.js`: los crea el módulo y los cuelga de `<body>` (mismo motivo que los botones de scroll — `#app` tiene `will-change: transform` y rompe los `position: fixed` de dentro).
 
 ### Cuando se enchufe la impresión
 
@@ -88,17 +88,16 @@ Dos ajustes más, específicos de móvil (`max-width: 640px`), para que la porta
 - `body.page-home #app { transform: none !important }` anula la rotación del tilt (con `!important` porque `tilt.js` fija el transform inline) — la propia rotación, aunque sea de solo unos grados, ya añadía overflow vertical residual.
 - `body { padding-block: 2rem }` en vez de los `4rem` de desktop — con `4rem` (128px totales) el contenido de la portada se pasaba del alto de un móvil normal por ~36px; no es un bug del tilt, simplemente sobraba padding para esa pantalla.
 
-## Franja del nombre de escenario al hacer scroll
+## Franja del nombre de escenario — RETIRADA
 
-`src/stage-banner.js` muestra una franja verde fija arriba de toda la pantalla con "EXTERIOR" o "INTERIOR" según el escenario por el que vas leyendo, y la oculta cuando estás por encima del primer titular.
+Existió una franja verde fija arriba con "EXTERIOR" / "INTERIOR" según el escenario por el que ibas leyendo. **Se eliminó a petición** ("quita el indicador INTERIOR/EXTERIOR"): `stage-banner.js` está borrado, no queda ni el `<div>` ni el CSS ni el `data-stage` en los titulares.
 
-- El `<div class="stage-banner">` se crea **una sola vez** (`initStageBanner()`, llamado desde `initRouter()`) y cuelga de `<body>`, **no de `#app`**: si viviera dentro de `#app` heredaría cualquier `transform` de un ancestro como containing block y su `position: fixed` dejaría de fijarse al viewport real.
-- **La franja solo funciona si el viewport es su containing block.** Estuvo un tiempo sin verse nunca: un `perspective: 1200px` en `html` hacía de `<html>` containing block de todos los `position: fixed`, así que la franja se posicionaba en el `top: 0` del documento y se iba con el scroll (la clase `stage-banner--visible` se aplicaba bien y el transform era correcto, pero `getBoundingClientRect().y` era `-scrollY`). Si vuelve a "no verse", comprobar esto primero con Playwright: `banner.offsetParent` debe ser `null` (si devuelve `HTML` o `BODY`, hay un `transform`/`perspective`/`will-change` en un ancestro) y con `window.scrollTo(0, 600)` su `rect.y` debe seguir siendo `0`.
-- **La visibilidad se calcula con `getBoundingClientRect()` en un listener de `scroll` limitado a una vez por frame (`requestAnimationFrame`), no con `IntersectionObserver`.** Se probó primero con `IntersectionObserver` y en móvil, con scroll con inercia (fling) y la barra de direcciones ocultándose/mostrándose, llegó a reportar "visible" otra vez a mitad del gesto — la franja se veía solo un instante. Midiendo la posición real en cada frame el resultado es siempre el actual, sin depender de cuándo decide disparar el observer por debajo.
-- Con la landing hay **un `.cartel__stage` por escenario** (con `data-stage="exterior|interior"`). En cada frame se recorre la lista y gana **el último cuyo `top` ya pasó el umbral**, que es `banner.offsetHeight` (no `0`): al saltar a un ancla se aterriza con el titular exactamente en el borde y, por redondeos sub-píxel, comparar contra `0` no era fiable (la franja se quedaba en el escenario anterior).
-- Mostrar/ocultar es una transición CSS de `transform` (`translateY(-100%)` ↔ `translateY(0)`, 0.35s) en `.stage-banner`/`.stage-banner--visible` — se desliza hacia abajo para aparecer y hacia arriba para desaparecer, a petición explícita.
-- `z-index: 500`.
+Lo que sí sigue vigente y no hay que deshacer:
 
+- Los elementos `position: fixed` que cuelgan de `<body>` (botones de scroll, botón de imprimir) **solo se fijan al viewport si ningún ancestro tiene `transform`/`perspective`/`will-change`**. Por eso `html` no lleva `perspective` y `#app` no debe tener `will-change: transform` si algún día se le mete dentro algo fijo.
+- **La visibilidad de cosas al hacer scroll se mide con `getBoundingClientRect()` en cada frame con `requestAnimationFrame`, no con `IntersectionObserver`.** Se probó `IntersectionObserver` y en móvil, con scroll con inercia y la barra de direcciones ocultándose, reportaba estados intermedios falsos. Es la misma técnica que usan ahora los botones de scroll.
+
+## Modelo de vistas anterior (retirado)
 ## Modelo de vistas anterior (retirado)
 
 Todo esto ya no se usa; queda documentado porque explica decisiones que siguen en el CSS y porque hay código sin enganchar en el repo. Si algún día se vuelve al modelo de portada + dos escenarios:
@@ -122,7 +121,7 @@ Consecuencia para el CSS: **el padding vertical vive en las pantallas, no en el 
 
 El cambio de pantalla es **manual**: un botón para bajar y otro para subir. El scroll normal es libre, no hay nada que lo fuerce.
 
-- Los **dos** los crea el JS y cuelgan de **`<body>`**, no de `#app` — `#app` tiene `will-change: transform`, que lo convierte en containing block de sus descendientes `position: fixed` (misma razón que `.stage-banner`); dentro de `#app` se irían con el scroll en vez de quedarse fijos.
+- Los **dos** los crea el JS y cuelgan de **`<body>`**, no de `#app` — `#app` tiene `will-change: transform`, que lo convierte en containing block de sus descendientes `position: fixed` dentro de `#app` se irían con el scroll en vez de quedarse fijos.
 - Son `position: fixed` los dos, y respetan `env(safe-area-inset-bottom)`.
 - **Bajar**: `.scroll-btn--down`, abajo centrado. Lleva al inicio de `.stages`. Lleva una animación de "respiración" (bob de 4px) que se desactiva con `prefers-reduced-motion`.
 - **Subir**: `.scroll-btn--up`, abajo a la derecha.
@@ -138,7 +137,7 @@ Si alguien vuelve a querer el automático, que lea esto antes: ya se probaron la
 
 ## Barra de estado en iOS
 
-`index.html` lleva `<meta name="theme-color" content="#0a0e06">` (y `color-scheme: dark`, que además está en `:root`). **No lo quites.** Sin `theme-color`, iOS Safari tiñe la barra de estado con el color del contenido que toca el borde superior; como la franja de escenario (`.stage-banner`, verde ácido) es `position: fixed; top: 0`, en cuanto aparecía al hacer scroll la barra de estado se quedaba verde de forma permanente. Con `theme-color` fijo, la barra usa siempre ese color oscuro.
+`index.html` lleva `<meta name="theme-color" content="#0a0e06">` (y `color-scheme: dark`, que además está en `:root`). **No lo quites.** Sin `theme-color`, iOS Safari tiñe la barra de estado con el color del contenido que toca el borde superior. Fue lo que provocó que, con la antigua franja verde de escenario fija arriba, la barra se quedase verde para siempre. Con `theme-color` fijo, la barra usa siempre ese color oscuro y da igual lo que se pinte arriba.
 
 ## Cartel tipográfico de la cabecera
 

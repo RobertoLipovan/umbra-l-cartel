@@ -6,9 +6,8 @@
 //
 // Los dos botones se crean aquí y **cuelgan de `<body>`, no de `#app`**:
 // `#app` tiene `will-change: transform`, que lo convierte en containing block
-// de sus descendientes `position: fixed` (misma razón por la que
-// `.stage-banner` cuelga de `<body>`). Dentro de `#app` se irían con el scroll
-// en vez de quedarse fijos.
+// de sus descendientes `position: fixed`. Dentro de `#app` se irían con el
+// scroll en vez de quedarse fijos.
 //
 // Que sean `fixed` y no estén pegados al canto del cartel es a propósito: el
 // cartel mide `100lvh` (el alto máximo del viewport en iOS), así que su borde

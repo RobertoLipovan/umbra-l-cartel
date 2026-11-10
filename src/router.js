@@ -1,5 +1,4 @@
 import { renderLanding } from './views.js'
-import { initStageBanner } from './stage-banner.js'
 import { initScrollButtons } from './scroll-buttons.js'
 import { initPrintModal } from './print-modal.js'
 
@@ -14,7 +13,6 @@ import { initPrintModal } from './print-modal.js'
 export function initRouter() {
   document.querySelector('#app').innerHTML = renderLanding()
 
-  initStageBanner()
   initScrollButtons()
   initPrintModal()
 }

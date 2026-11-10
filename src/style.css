@@ -20,45 +20,13 @@
   transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-/* Franja fija con el nombre del escenario, visible solo mientras la frase
-   ".cartel__stage" está fuera de la pantalla (ver stage-banner.js). Cuelga
-   de <body>, igual que .page-mask, por la misma razón: dentro de #app
-   heredaría su `transform` (tilt del cursor) como containing block y dejaría
-   de fijarse al viewport real. */
-.stage-banner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 500;
-  padding: 0.9rem 1rem;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
-  font-family: 'Orbitron', 'Oswald', sans-serif;
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--bg);
-  background-color: var(--accent);
-  pointer-events: none;
-  transform: translateY(-100%);
-  transition: transform 0.35s ease;
-}
-
-.stage-banner--visible {
-  transform: translateY(0);
-}
-
 html {
   scroll-behavior: smooth;
   /* Aquí NO va `perspective`: igual que `transform`, `perspective` convierte
      al elemento en el "containing block" de sus descendientes
-     `position: fixed`. Con la perspectiva en <html>, .stage-banner y
-     .page-mask (que cuelgan de <body>) dejaban de fijarse al viewport y se
-     anclaban al documento entero: la franja de escenario iba con el scroll
-     (rect.y = -scrollY) y nunca se veía, y la máscara inflaba el alto de la
-     página (scroll fantasma). La perspectiva 3D del tilt vive ahora como
-     función del transform de #app (ver tilt.js). */
+     `position: fixed`. Con la perspectiva en <html>, los elementos fijos que
+     cuelgan de <body> (los botones de scroll, el de imprimir) dejaban de
+     fijarse al viewport y se anclaban al documento entero. */
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--accent) transparent;
@@ -234,7 +202,7 @@ body {
   position: fixed;
   top: calc(1rem + env(safe-area-inset-top, 0px));
   right: 1rem;
-  z-index: 450; /* por debajo de .stage-banner (500) */
+  z-index: 450;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -254,12 +222,6 @@ body {
 .print-btn:focus-visible {
   background: rgba(198, 255, 26, 0.12);
   border-color: var(--accent);
-}
-
-/* Cuando la franja de escenario baja, el botón se aparta para no quedar debajo
-   (la franja tiene z-index mayor). */
-body:has(.stage-banner--visible) .print-btn {
-  top: calc(3.75rem + env(safe-area-inset-top, 0px));
 }
 
 .print-modal {
@@ -496,9 +458,6 @@ body:has(.stage-banner--visible) .print-btn {
 
 /* --- Landing: los dos escenarios apilados, cada uno con su cabecera --- */
 
-/* Sin `scroll-margin-top` a propósito: al saltar a #exterior / #interior el
-   titular queda justo en el borde superior y la franja fija (stage-banner)
-   aparece en cuanto se pasa de él, sin taparlo. */
 .stage {
   margin-top: 4.5rem;
 }
