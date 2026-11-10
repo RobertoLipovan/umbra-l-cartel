@@ -46,10 +46,12 @@ Consecuencias que hay que respetar al editar el JSON:
 
 | Versión | Página | Archivo |
 |---|---|---|
-| `grande` | **Una sola página del tamaño exacto del cartel** (190 × 860 mm para el cartel actual). Es el póster: vale para copistería o plotter. | `umbral-cartel-grande.pdf` |
+| `grande` | **Una sola página A1** (594 × 841 mm) con el cartel arriba y el horario debajo, escalado para caber entero. Es el póster. | `umbral-cartel-grande.pdf` |
 | `pequena` | **A4 vertical, varias páginas** cortando el cartel a lo alto (4 ahora mismo). Es la versión de casa. | `umbral-cartel-pequena.pdf` |
 
 Por qué no se escala el cartel entero a una A4 en la versión pequeña: a 210 mm de ancho y 860 mm de alto real, meterlo en una hoja dejaría el texto a un tercio de tamaño, ilegible. Se corta en páginas, que es lo útil.
+
+**Ojo con el A1**: el cartel tiene una relación de aspecto ~1:4 (muy alto y estrecho) y un A1 es ~1:1,41, así que al escalarlo para que quepa entero manda el alto y el contenido queda como una columna de ~200 mm centrada en los 594 mm de ancho. Para que no parezcan dos franjas blancas, `paginaA1()` **pinta la hoja entera del mismo negro** (`doc.rect(..., 'F')` con `#050505`) y luego dibuja la imagen encima. Si se quiere llenar el ancho de verdad hay que cambiar el layout de impresión (p. ej. el horario a dos columnas y el cartel sin los 100lvh de aire) — no está hecho.
 
 Detalles de la generación:
 
