@@ -341,6 +341,12 @@ body {
   color: var(--muted);
 }
 
+.print-modal__error {
+  margin: 1rem 0 0;
+  font-size: 0.8rem;
+  color: #ff7a7a;
+}
+
 .print-modal__actions {
   margin-top: 1.5rem;
 }

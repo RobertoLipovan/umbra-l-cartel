@@ -34,29 +34,30 @@ Consecuencias que hay que respetar al editar el JSON:
 - **Cierre abierto**: `stage.closing` (p. ej. `Secret line up` a las 09:30) se pinta con `→` y sin hora de fin, reutilizando el estilo `.lineup__item--open`.
 - **Sin datos todavía**: `genres: ["Por confirmar"]` no aparece en los chips de género (`PLACEHOLDER_GENRES` en `render.js`) y en el lineup se pinta atenuado; `bpm: null` simplemente no pinta el chip de BPM; `tba: true` pinta "Por anunciar" y atenúa la fila entera.
 
-## Imprimir: botón de impresora + modal de tamaño
-
-**Estado actual: el modal funciona, la impresión no está enganchada.** El botón OK no hace nada a propósito ("por ahora ok no hace nada").
+## Imprimir: botón de impresora, modal de tamaño y generación del PDF
 
 - **Botón** (`.print-btn`): icono de impresora, `position: fixed` arriba a la derecha, `z-index: 450`, respetando `env(safe-area-inset-top)`.
 - **Modal** (`src/print-modal.js`): `<dialog>` nativo con `showModal()`, así el foco queda atrapado, `Esc` cierra y el fondo deja de ser interactivo sin implementar nada. Se cierra con la ×, con `Esc` o con clic en el fondo (se comprueba `event.target === dialog`). Al cerrar, el foco vuelve al botón de la impresora.
 - **Opciones**: radios reales (`name="print-size"`, valores `grande` / `pequena`) ocultas visualmente pero focusables; la tarjeta se pinta con `input:checked + .print-option__body`, que funciona en todos los navegadores (nada de `:has()` aquí a propósito).
-- **OK**: nace `disabled` y se habilita en cuanto hay una opción marcada. Hoy su `click` llama a `confirmarVersion()`, que **está vacía a propósito**.
+- **OK**: nace `disabled` y se habilita en cuanto hay una opción marcada. Al pulsarlo genera el PDF, bloquea el botón en "Generando…" (para que no se lance dos veces), lo descarga y cierra el modal. Si falla, deja el mensaje en `.print-modal__error` y no cierra.
 - Ni el botón ni el diálogo están en `views.js`: los crea el módulo y los cuelga de `<body>` (mismo motivo que los botones de scroll — `#app` tiene `will-change: transform` y rompe los `position: fixed` de dentro).
 
-### Cuando se enchufe la impresión
+### Las dos versiones (`src/print.js`, `imprimirCartel(version)`)
 
-El código que genera el PDF ya existe en **`src/print.js`** (`setupPrintButton()`), sin usar: captura `.cartel` con `html2canvas` (ignorando `.no-print`) y lo mete en **una sola página de `jsPDF`** con el tamaño exacto del contenido — nada de paginación automática tipo A4 (se probó con `html2pdf.js` y su reparto está pensado para documentos, no para algo largo y estrecho como este cartel). Descarga como `umbral3.pdf`.
+| Versión | Página | Archivo |
+|---|---|---|
+| `grande` | **Una sola página del tamaño exacto del cartel** (190 × 860 mm para el cartel actual). Es el póster: vale para copistería o plotter. | `umbral-cartel-grande.pdf` |
+| `pequena` | **A4 vertical, varias páginas** cortando el cartel a lo alto (4 ahora mismo). Es la versión de casa. | `umbral-cartel-pequena.pdf` |
 
-Lo que hay que hacer: en `confirmarVersion(version)` (en `print-modal.js`), borrar el `void version` y llamar a la generación pasando el tamaño (`grande` / `pequena`), que debería traducirse al menos en distinto `scale` de captura y/o tamaño de página.
+Por qué no se escala el cartel entero a una A4 en la versión pequeña: a 210 mm de ancho y 860 mm de alto real, meterlo en una hoja dejaría el texto a un tercio de tamaño, ilegible. Se corta en páginas, que es lo útil.
 
-Dos detalles que costó descubrir y no hay que deshacer:
-- El fondo oscuro vive en `<body>` (radial-gradient), así que antes de capturar se fuerza `background-color` inline en `.cartel` — si no, html2canvas lo captura con fondo blanco y el texto claro queda ilegible.
-- La imagen se exporta como **JPEG** (calidad 0.92), no PNG: el degradado de fondo comprime fatal sin pérdida (PNG daba >15 MB para este mismo cartel; JPEG da ~400 KB sin diferencia visible).
+Detalles de la generación:
 
-Dos detalles que costó descubrir y no hay que deshacer:
-- El fondo oscuro vive en `<body>` (radial-gradient), así que antes de capturar se fuerza `background-color` inline en `.cartel` — si no, html2canvas lo captura con fondo blanco y el texto claro queda ilegible.
-- La imagen se exporta como **JPEG** (calidad 0.92), no PNG: el degradado de fondo comprime fatal sin pérdida (PNG daba >15 MB para este mismo cartel; JPEG da ~400 KB sin diferencia visible).
+- `html2canvas` y `jsPDF` se cargan con **`import()` dinámico dentro de `print.js`**, así que el bundle inicial no los incluye: Vite los saca a chunks aparte (`html2canvas-*.js`, `jspdf.es.min-*.js`) que solo se descargan si alguien pulsa OK. No los importes arriba del archivo o volverán al bundle principal.
+- Se captura **`.cartel`** (no `body`) con `ignoreElements: el.classList.contains('no-print')`.
+- **El fondo oscuro vive en `<body>`** (radial-gradient) y `.cartel` es transparente, así que antes de capturar se fuerza `background-color: #050505` inline en `.cartel` y se restaura en `finally`. Sin eso el PDF sale con fondo blanco y el texto claro ilegible.
+- Se exporta como **JPEG (0.92)**, no PNG: el degradado comprime fatal sin pérdida (PNG daba >15 MB; JPEG ~560 KB sin diferencia visible).
+- Las páginas A4 se hacen dibujando **la misma imagen entera en cada página, desplazada `-i * altoUtil`** y dejando que jsPDF recorte. Sin huecos ni solapes, y sin la paginación automática de `html2pdf.js` (que sacaba una página en blanco con una miniatura diminuta).
 
 ## Baile de los chips de género — DESACTIVADO
 

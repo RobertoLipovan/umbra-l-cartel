@@ -8,11 +8,10 @@
 // `will-change: transform` y eso lo convierte en containing block de los
 // descendientes `position: fixed`.
 //
-// IMPORTANTE: por ahora el botón OK **no hace nada**, a petición explícita.
-// Se habilita en cuanto eliges una versión, para poder validar la interacción,
-// y el punto donde engancharía la impresión es `confirmarVersion()`. La
-// generación del PDF que ya existe (con html2canvas + jsPDF) está en
-// `src/print.js`, sin enganchar todavía.
+// El botón OK genera el PDF con `imprimirCartel()` de `src/print.js` (que carga
+// html2canvas y jsPDF en diferido, así no pesan en el bundle inicial) y lo
+// descarga. Mientras genera, el botón se bloquea y pasa a "Generando…" para
+// que no se pueda lanzar dos veces.
 
 const PRINTER_ICON = `
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -23,8 +22,8 @@ const PRINTER_ICON = `
 `
 
 const OPTIONS = [
-  { value: 'grande', label: 'Versión grande', desc: 'Cartel a tamaño completo' },
-  { value: 'pequena', label: 'Versión pequeña', desc: 'Mitad de tamaño' },
+  { value: 'grande', label: 'Versión grande', desc: 'Una página del tamaño real del cartel' },
+  { value: 'pequena', label: 'Versión pequeña', desc: 'Hojas A4, para imprimir en casa' },
 ]
 
 function renderOpciones() {
@@ -39,14 +38,6 @@ function renderOpciones() {
       </label>
     `,
   ).join('')
-}
-
-// Punto de enganche de la impresión. Hoy no hace nada a propósito; cuando se
-// implemente, debería llamar a la generación de PDF de `src/print.js` con el
-// tamaño elegido ('grande' | 'pequena').
-function confirmarVersion(version) {
-  // eslint-disable-next-line no-unused-vars
-  void version
 }
 
 export function initPrintModal() {
@@ -77,6 +68,8 @@ export function initPrintModal() {
       <div class="print-modal__options" role="radiogroup" aria-label="Tamaño de impresión">
         ${renderOpciones()}
       </div>
+
+      <p class="print-modal__error" role="alert" hidden></p>
 
       <div class="print-modal__actions">
         <button type="button" class="print-modal__ok" disabled>OK</button>
@@ -109,10 +102,31 @@ export function initPrintModal() {
     })
   })
 
-  ok.addEventListener('click', () => {
+  const error = dialog.querySelector('.print-modal__error')
+
+  ok.addEventListener('click', async () => {
     const elegida = radios.find((radio) => radio.checked)
-    if (!elegida) return
-    confirmarVersion(elegida.value)
+    if (!elegida || ok.disabled) return
+
+    // El import de print.js es diferido: así html2canvas y jsPDF no entran en
+    // el bundle inicial y solo se descargan si alguien imprime de verdad.
+    const textoOk = ok.textContent
+    ok.disabled = true
+    ok.textContent = 'Generando…'
+    error.hidden = true
+
+    try {
+      const { imprimirCartel } = await import('./print.js')
+      await imprimirCartel(elegida.value)
+      dialog.close()
+    } catch (fallo) {
+      console.error(fallo)
+      error.textContent = 'No se ha podido generar el PDF. Inténtalo otra vez.'
+      error.hidden = false
+    } finally {
+      ok.textContent = textoOk
+      ok.disabled = !radios.some((radio) => radio.checked)
+    }
   })
 
   // Al cerrar, el foco vuelve al botón que lo abrió (el nativo no siempre lo
