@@ -654,13 +654,24 @@ body {
 
 .cartel__footer {
   margin-top: 3rem;
+  /* Aire hasta el final de la página: sin esto el pie quedaba pegado al canto
+     inferior (el padding vertical del body se retiró al pasar a las dos
+     pantallas). Se suma el área segura de iOS para que no caiga bajo la barra
+     de gestos. */
   padding-top: 1.5rem;
+  padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.35em;
   font-size: 0.75rem;
   color: var(--muted);
   border-top: 1px solid rgba(198, 255, 26, 0.25);
+}
+
+@media (max-width: 640px) {
+  .cartel__footer {
+    padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 .print-button {
