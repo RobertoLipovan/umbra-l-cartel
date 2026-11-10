@@ -62,7 +62,9 @@ export function renderLanding() {
         ${renderBilling(billingNames())}
       </header>
 
-      ${STAGES.map((stage) => renderStageSection(stage.id)).join('')}
+      <div class="stages">
+        ${STAGES.map((stage) => renderStageSection(stage.id)).join('')}
+      </div>
 
       ${FOOTER}
     </main>

@@ -92,6 +92,11 @@ html {
   box-sizing: border-box;
 }
 
+/* Dos "pantallas" en el mismo documento: el cartel ocupa el viewport entero
+   (nada del lineup asoma al entrar) y el lineup empieza justo en el pliegue.
+   El imán que coloca la página en una u otra lo hace `src/scroll-snap.js` (el
+   `scroll-snap` de CSS se probó y en Chromium dejaba la página clavada sin
+   poder avanzar). */
 body {
   margin: 0;
   min-height: 100vh;
@@ -100,7 +105,6 @@ body {
   font-family: 'Oswald', system-ui, sans-serif;
   display: flex;
   justify-content: center;
-  padding-block: 4rem;
   overflow-x: hidden;
 }
 
@@ -111,11 +115,9 @@ body {
   will-change: transform;
 }
 
-@media (max-width: 640px) {
-  body {
-    padding-block: 2rem;
-  }
-}
+/* El padding vertical vive en las pantallas, no en el body: si estuviera en
+   el body, la primera pantalla mediría 100dvh + padding y el cartel quedaría
+   descentrado. Ver `.cartel__header` más abajo. */
 
 .cartel {
   width: 100%;
@@ -129,11 +131,39 @@ body {
    que se retiró: la página fluye con scroll normal a cualquier ancho. */
 
 /* Sin isotipo ni líneas diagonales (retirados a petición): la cabecera es
-   solo el nombre pequeño, el título grande y el cartel de artistas. */
+   solo el nombre pequeño, el título grande y el cartel de artistas.
+   Es la PRIMERA PANTALLA: como mínimo el alto del viewport, con el contenido
+   centrado, para que al entrar no se vea nada del lineup. `100dvh` (y no
+   `100vh`) para que en móvil cuente el viewport realmente visible. */
 .cartel__header {
   position: relative;
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 0;
+  padding-block: 4rem;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* SEGUNDA PANTALLA: el lineup empieza justo en el pliegue. También es punto
+   de imán, para que al bajar desde el cartel aterrice en el inicio del
+   cartel de horarios y no a media lista. */
+.stages {
+  padding-top: 2.5rem;
+  padding-bottom: 1rem;
+}
+
+/* El aire entre escenarios lo pone `.stage`, pero el primero no necesita
+   margen: ya lo separa el padding de `.stages` respecto al pliegue. */
+.stages > .stage:first-child {
+  margin-top: 0;
+}
+
+@media (max-width: 640px) {
+  .cartel__header {
+    padding-block: 2rem;
+  }
 }
 
 .cartel__kicker {

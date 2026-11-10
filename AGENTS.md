@@ -93,6 +93,25 @@ Todo esto ya no se usa; queda documentado porque explica decisiones que siguen e
 - `router.js` reseteaba el scroll en cada `mount()` (`resetScroll()`), porque en una SPA el navegador no lo reinicia solo. El salto tenía que ser **instantáneo**: con `scroll-behavior: smooth` en `html`, un `scrollTo(0,0)` normal se anima y se vería al retirar la máscara. Poner `scroll-behavior: auto` inline **no basta** sin forzar el recálculo de estilos (`void getComputedStyle(root).scrollBehavior`) antes del `scrollTo`.
 - La portada usaba la clase `page-home` en `<html>`/`<body>` para no tener scroll nunca (100vh + `overflow: hidden`). **Se eliminó del HTML y del CSS**: con la landing impedía hacer scroll y dejaba la página muerta.
 
+## Dos pantallas: cartel y lineup, con imán
+
+La landing son **dos pantallas en el mismo documento**, no dos páginas:
+
+1. **El cartel** (`.cartel__header`): `min-height: 100dvh`, con el contenido centrado en vertical (`display: flex; flex-direction: column; justify-content: center`). Al entrar no se ve **nada** del lineup.
+2. **El lineup** (`.stages`): empieza justo en el pliegue, o sea al final de los 100dvh.
+
+`100dvh` y no `100vh` para que en móvil cuente el alto realmente visible (con `vh` el cartel quedaba más alto que la pantalla y asomaba el lineup, que es justo lo que se quería evitar).
+
+El "imán" entre las dos lo hace **`src/scroll-snap.js`**, no CSS:
+
+- **No uses `scroll-snap-type` de CSS para esto.** Se probó primero (`y proximity` y `y mandatory` en `html`, con `scroll-snap-align: start` en las secciones) y en Chromium la página quedaba **clavada a 16px** sin dejarte avanzar: con secciones de 100vh el cálculo de snap posiciones se queda pinzado. Se descartó por eso, no por gusto.
+- Regla del imán: al terminar el gesto de scroll (`SETTLE_MS = 140ms` sin eventos) si la página está **entre** las dos pantallas (por debajo del cartel pero sin llegar al lineup), salta a la más cercana. Dentro del lineup **no se toca nada**, el scroll es libre.
+- Mientras corre el `scrollTo` suave programático llegan eventos de scroll, así que hay una bandera `programmatic` con liberación a los `RELEASE_MS = 800ms`; sin eso el imán se dispararía en bucle.
+- Se respeta `prefers-reduced-motion`: en ese caso el salto es instantáneo.
+- El borde entre pantallas se mide con `hero.getBoundingClientRect().bottom + window.scrollY`, no con un `100vh` hardcodeado, para que siga bien si el cartel crece (más artistas, más filas en móvil).
+
+Consecuencia para el CSS: **el padding vertical vive en las pantallas, no en el `body`** (`body { padding-block: 0 }`). Si estuviera en el `body`, la primera pantalla mediría `100dvh` + padding y el cartel quedaría descentrado.
+
 ## Cartel tipográfico de la cabecera
 
 Debajo del título principal va **la lista de artistas en grande**, tipo cartel de fiesta: mayúsculas, Orbitron negrita y **tamaños y estilos alternados**. Antes había ahí chips de género; se sustituyeron a petición explícita ("no hayan géneros, si no, artistas, en grande, en mayúscula, negrita, varía tamaños y estilos"). Los géneros siguen viéndose por set, dentro del lineup.
@@ -115,7 +134,7 @@ El scrollbar (`scrollbar-color` + `::-webkit-scrollbar-*`) y la selección de te
 Antes de dar por terminado un cambio visual:
 1. `npm run build` debe compilar sin errores.
 2. Si es posible, verifica visualmente el resultado. Este entorno no tiene un navegador integrado, pero suele haber `playwright-core` instalado globalmente junto con una build de Chromium cacheada (buscar en `~/.cache/ms-playwright/`), utilizable para tomar capturas de pantalla headless sin depender de un paquete del proyecto.
-3. Para esta landing en concreto, comprueba además: que las dos secciones (`#exterior`, `#interior`) existen y que las anclas de la cabecera saltan a ellas; que la franja de escenario cambia a INTERIOR al llegar abajo; que **la página hace scroll** (el fallo clásico es dejar `page-home` o un `overflow: hidden` heredado en `<html>`/`<body>`, y entonces todo parece "roto" porque nada se mueve); y que `/interior` y `/exterior` siguen devolviendo 302 a la raíz.
+3. Para esta landing en concreto, comprueba además: que al cargar el cartel ocupa el viewport entero y **no asoma nada del lineup**; que al hacer scroll y soltar entre las dos pantallas la página se coloca sola en una de ellas (imán) y que dentro del lineup el scroll es libre; que las dos secciones (`#exterior`, `#interior`) existen; que la franja de escenario cambia a INTERIOR al llegar abajo; que **la página hace scroll** (el fallo clásico es dejar `page-home` o un `overflow: hidden` heredado en `<html>`/`<body>`, y entonces todo parece "roto" porque nada se mueve); y que `/interior` y `/exterior` siguen devolviendo 302 a la raíz.
 
 ## Control de versiones
 
