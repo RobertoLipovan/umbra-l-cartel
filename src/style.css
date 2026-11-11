@@ -1016,6 +1016,18 @@ body {
   font-size: 0.62rem;
 }
 
+.print-poster .lineup__day {
+  /* Quitada la línea del día: con la del encabezado del escenario justo
+     encima quedaban dos rayas pegadas rodeando "SÁB, 14/11". */
+  border-bottom: none;
+  margin: 0.5rem 0 0.35rem;
+  padding-bottom: 0;
+}
+
+.print-poster .cartel__footer {
+  display: none;
+}
+
 .print-poster .lineup__ig {
   font-size: 0.46em;
   margin-left: 0.4em;
