@@ -11,13 +11,18 @@ export const RETICLE_ICON = `
   </svg>
 `
 
-// Orbitron no cubre ni cirílico, ni la Ø/ø nórdica, ni el bullet •, así que el
-// navegador los sustituye por una fuente de reserva a un tamaño distinto (p.
-// ej. en NVЯR, FØBIA, FLAMENKØ, Will•Y). Los envolvemos para achicarlos a
-// mano. Ojo: la ø minúscula (Flamenkø, Føbia) también cuenta, no solo la
-// mayúscula.
+// Orbitron no tiene Ø ni ø (comprobado midiendo el ancho del glifo: cae a la
+// fuente de reserva y se ve más pequeño y de otro estilo que el resto del
+// nombre). En vez de dejar que el navegador use otra fuente, se dibuja una O
+// de Orbitron y se le cruza una barra con CSS (`.o-slash::after`). Así el
+// carácter es idéntico al resto de letras.
+//
+// El cirílico Я y el bullet • sí se dejan al fallback, achicados: son casos
+// raros y no hay una forma limpia de fabricarlos.
 function renderName(name) {
-  return name.replace(/[ЯØø•]/g, (char) => `<span class="glyph-fallback">${char}</span>`)
+  return name
+    .replace(/[Øø]/g, () => '<span class="o-slash">O</span>')
+    .replace(/[Я•]/g, (char) => `<span class="glyph-fallback">${char}</span>`)
 }
 
 const INSTAGRAM_ICON = `

@@ -51,6 +51,56 @@ function escalaParaImpresion(anchoCss, altoCss) {
   return Math.max(Math.min(ideal, porLado, porArea), 1.5)
 }
 
+// Reparte el cartel en dos columnas para el póster:
+//   columna A → escenario exterior + interior hasta medianoche
+//   columna B → el resto del interior (la madrugada), con letra más grande
+//              porque es la parte importante de la fiesta
+//
+// Se hace manipulando el DOM en el momento de capturar y se deshace después
+// (devuelve la función de limpieza), así la web normal no cambia.
+function montarColumnasPoster(cartel) {
+  const stages = cartel.querySelector('.stages')
+  const exterior = cartel.querySelector('#exterior')
+  const interior = cartel.querySelector('#interior')
+  const lineup = interior && interior.querySelector('.lineup')
+  if (!stages || !exterior || !interior || !lineup) return null
+
+  const hijos = [...lineup.children]
+  // El corte va justo en el salto de día (la madrugada empieza con el
+  // encabezado "dom, 15/11").
+  const corte = hijos.findIndex(
+    (el) => el.classList.contains('lineup__day') && /dom|sáb|sab/i.test(el.textContent || '') && hijos.indexOf(el) > 0,
+  )
+  if (corte <= 0) return null
+
+  const colA = document.createElement('div')
+  colA.className = 'poster-col poster-col--a'
+  const colB = document.createElement('div')
+  colB.className = 'poster-col poster-col--b'
+
+  const continuacion = document.createElement('section')
+  continuacion.className = 'stage stage--cont'
+  const listaB = document.createElement('ul')
+  listaB.className = 'lineup'
+  hijos.slice(corte).forEach((el) => listaB.appendChild(el))
+  continuacion.appendChild(listaB)
+
+  stages.appendChild(colA)
+  stages.appendChild(colB)
+  colA.appendChild(exterior)
+  colA.appendChild(interior)
+  colB.appendChild(continuacion)
+
+  return () => {
+    hijos.slice(corte).forEach((el) => lineup.appendChild(el))
+    stages.appendChild(exterior)
+    stages.appendChild(interior)
+    continuacion.remove()
+    colA.remove()
+    colB.remove()
+  }
+}
+
 async function capturarCartel(opciones = {}) {
   const cartel = document.querySelector('.cartel')
   if (!cartel) throw new Error('No encuentro el cartel en la página')
@@ -58,6 +108,7 @@ async function capturarCartel(opciones = {}) {
   const fondoPrevio = cartel.style.backgroundColor
   const clasePrevia = cartel.className
   const anchoPrevio = cartel.style.width
+  let desmontarColumnas = null
 
   // El fondo oscuro vive en <body>; html2canvas captura el elemento aislado,
   // así que sin forzarlo aquí el PDF saldría con fondo transparente/blanco.
@@ -66,11 +117,13 @@ async function capturarCartel(opciones = {}) {
   try {
     if (opciones.poster) {
       cartel.classList.add('print-poster')
+      desmontarColumnas = montarColumnasPoster(cartel)
       // El alto depende del número de artistas. Se ajusta el ancho para que
       // la relación coincida con la de la hoja y no queden franjas vacías.
-      // Dos pasadas: al cambiar el ancho, los textos pueden reflowar.
+      // Varias pasadas: al cambiar el ancho los textos reflowan y el alto se
+      // mueve, así que hay que iterar hasta que deje de cambiar.
       void cartel.offsetWidth
-      for (let i = 0; i < 2; i += 1) {
+      for (let i = 0; i < 4; i += 1) {
         const alto = cartel.getBoundingClientRect().height
         if (!alto) break
         cartel.style.width = `${Math.round(alto * ASPECTO_A3)}px`
@@ -111,6 +164,7 @@ async function capturarCartel(opciones = {}) {
       escala,
     }
   } finally {
+    if (desmontarColumnas) desmontarColumnas()
     cartel.className = clasePrevia
     cartel.style.backgroundColor = fondoPrevio
     cartel.style.width = anchoPrevio

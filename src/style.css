@@ -805,6 +805,28 @@ body {
   font-size: 0.9em;
 }
 
+/* Ø y ø fabricados: una O de Orbitron con una barra cruzada. Orbitron no
+   tiene esos glifos y el fallback del navegador rompía la línea tipográfica
+   (se veía más pequeño y de otra familia). */
+.o-slash {
+  position: relative;
+  display: inline-block;
+}
+
+.o-slash::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -8%;
+  width: 116%;
+  height: 0.085em;
+  min-height: 2px;
+  background: currentColor;
+  border-radius: 999px;
+  transform: translateY(-50%) rotate(-20deg);
+  transform-origin: center;
+}
+
 .lineup__genres {
   grid-column: 2;
   font-size: 0.85rem;
@@ -877,7 +899,8 @@ body {
 
 .print-poster .cartel__header {
   min-height: auto;
-  padding: 0 0 1.25rem;
+  /* Aire alrededor de la parte superior: antes iba pegada al borde. */
+  padding: 2.25rem 2.5rem 2.75rem;
 }
 
 .print-poster .cartel__title {
@@ -890,17 +913,51 @@ body {
 }
 
 .print-poster .stages {
-  display: block;
-  padding: 0;
+  /* Dos columnas: A = exterior + interior hasta medianoche, B = madrugada */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  align-items: start;
+  padding: 0 2.5rem;
+}
+
+.print-poster .poster-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  min-width: 0;
+}
+
+/* La madrugada manda: letra más grande que en la otra columna. */
+.print-poster .stage--cont .lineup__name {
+  font-size: 1.35rem;
+  /* Sin saltos: con la letra grande el icono de Instagram se caía a la línea
+     de abajo y descuadraba la fila. */
+  white-space: nowrap;
+}
+
+.print-poster .stage--cont .lineup__time-range {
+  font-size: 1.05rem;
+}
+
+.print-poster .stage--cont .lineup__genres {
+  font-size: 0.82rem;
+}
+
+.print-poster .stage--cont .lineup__item {
+  padding: 0.55rem 0;
+  /* Tres columnas explícitas (hora | nombre+géneros | BPM). Con dos, el chip
+     de BPM caía en una columna implícita y se solapaba con el nombre. */
+  grid-template-columns: 6rem minmax(0, 1fr) auto;
+}
+
+.print-poster .stage--cont .lineup__bpm {
+  font-size: 0.72rem;
 }
 
 .print-poster .stage {
-  margin-top: 1.6rem;
-  width: 100%;
-}
-
-.print-poster .stage:first-child {
   margin-top: 0;
+  width: 100%;
 }
 
 .print-poster .stage__header {
