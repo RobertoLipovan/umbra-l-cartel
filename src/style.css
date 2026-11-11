@@ -1016,11 +1016,12 @@ body {
   font-size: 0.62rem;
 }
 
-.print-poster .lineup__day {
-  /* Quitada la línea del día: con la del encabezado del escenario justo
-     encima quedaban dos rayas pegadas rodeando "SÁB, 14/11". */
+.print-poster .lineup__day,
+.print-poster .lineup__day:first-child {
+  /* Quitada la línea del día (la del encabezado del escenario ya hace de
+     separador) y con aire suficiente para que la raya no roce el texto. */
   border-bottom: none;
-  margin: 0.5rem 0 0.35rem;
+  margin: 1.1rem 0 0.45rem;
   padding-bottom: 0;
 }
 
