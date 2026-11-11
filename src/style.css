@@ -856,146 +856,112 @@ body {
 }
 
 /* ============================================================
-   Layout especial para impresión A1 horizontal (print-a1)
+   Layout especial para impresión A3 horizontal (print-a3)
    Se aplica temporalmente al capturar para la versión "grande".
-   Dos columnas: Exterior a la izquierda, Interior a la derecha.
+   Una sola columna apaisada que aprovecha el ancho de 420 mm.
 ============================================================ */
 
-.print-a1 {
-  /* El contenedor principal pasa a ancho completo para A1 horizontal */
+.print-a3 {
   max-width: none;
   width: 100%;
   padding-inline: 0;
 }
 
-.print-a1 .cartel__header {
-  /* Cabecera ancha: ocupa todo el ancho, el billing se expande */
+.print-a3 .cartel__header {
   padding-inline: clamp(2rem, 3vw, 4rem);
 }
 
-.print-a1 .billing {
-  /* El billing ocupa todo el ancho disponible, items más grandes */
-  justify-content: space-between;
-  gap: 0.75rem 1.5rem;
-  margin-top: 2.5rem;
-}
-
-.print-a1 .billing__item {
-  /* Nombres más grandes para que se lean en A1 */
-  font-size: clamp(1.8rem, 2.5vw, 2.8rem);
-}
-
-.print-a1 .stages {
-  /* DOS COLUMNAS: Exterior a la izquierda, Interior a la derecha */
+.print-a3 .stages {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: clamp(2rem, 4vw, 4rem);
-  padding-top: 3rem;
-  padding-bottom: 2rem;
+  gap: clamp(1.5rem, 3vw, 3rem);
+  padding: 2.5rem 0 1.5rem;
   align-items: start;
 }
 
-/* Cada escenario ocupa su columna */
-.print-a1 .stage {
+.print-a3 .stage {
   margin-top: 0;
   width: 100%;
 }
 
-.print-a1 .stage__header {
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(198, 255, 26, 0.25);
+.print-a3 .stage__header {
+  padding-bottom: 1.2rem;
 }
 
-.print-a1 .stage__hint {
-  font-size: 0.85rem;
-  letter-spacing: 0.25em;
+.print-a3 .cartel__stage {
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
 }
 
-.print-a1 .stage__header .cartel__hours {
-  margin-top: 0.8rem;
+.print-a3 .stage__hint {
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
 }
 
-.print-a1 .stage__header .cartel__hours-number {
-  font-size: 1.8rem;
+.print-a3 .stage__header .cartel__hours {
+  margin-top: 0.5rem;
 }
 
-.print-a1 .cartel__stage {
-  font-size: 1.2rem;
-  letter-spacing: 0.25em;
-  margin-bottom: 0.5rem;
+.print-a3 .stage__header .cartel__hours-number {
+  font-size: 1.3rem;
 }
 
-.print-a1 .lineup {
-  font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+.print-a3 .lineup {
+  font-size: 0.9rem;
 }
 
-.print-a1 .lineup__item {
-  padding: 0.85rem 0;
+.print-a3 .lineup__item {
+  padding: 0.65rem 0;
   grid-template-columns: auto 1fr auto;
-  column-gap: 1rem;
+  column-gap: 0.8rem;
 }
 
-.print-a1 .lineup__time-range {
-  font-size: 1rem;
+.print-a3 .lineup__time-range {
+  font-size: 0.9rem;
 }
 
-.print-a1 .lineup__duration {
-  font-size: 0.85rem;
-}
-
-.print-a1 .lineup__name {
-  font-size: clamp(1.1rem, 1.5vw, 1.35rem);
-}
-
-.print-a1 .lineup__genres {
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-}
-
-.print-a1 .lineup__bpm {
+.print-a3 .lineup__duration {
   font-size: 0.75rem;
-  padding: 0.2rem 0.6rem;
 }
 
-.print-a1 .lineup__b2b {
-  font-size: 0.5em;
+.print-a3 .lineup__name {
+  font-size: clamp(0.95rem, 1.3vw, 1.15rem);
 }
 
-.print-a1 .lineup__item--open .lineup__time-range,
-.print-a1 .lineup__item--open .lineup__genres {
-  font-size: 1rem;
+.print-a3 .lineup__genres {
+  font-size: 0.75rem;
 }
 
-/* Footer: solo el enlace a GitHub, centrado */
-.print-a1 .cartel__footer {
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(198, 255, 26, 0.25);
-  text-align: center;
+.print-a3 .lineup__bpm {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
 }
 
-.print-a1 .foot {
-  justify-content: center;
-  margin-top: 0;
+.print-a3 .lineup__b2b {
+  font-size: 0.45em;
+}
+
+.print-a3 .lineup__item--open .lineup__time-range,
+.print-a3 .lineup__item--open .lineup__genres {
+  font-size: 0.9rem;
+}
+
+.print-a3 .cartel__footer {
+  margin-top: 2rem;
   padding-top: 1.5rem;
+  font-size: 0.65rem;
 }
 
-.print-a1 .foot__link {
-  font-size: 0.75rem;
-}
-
-/* Quitar elementos que no tienen sentido en el póster A1 */
-.print-a1 .stage-nav,
-.print-a1 .cartel__scroll,
-.print-a1 .print-btn,
-.print-a1 .stage-banner {
+.print-a3 .stage-nav,
+.print-a3 .cartel__scroll,
+.print-a3 .print-btn,
+.print-a3 .stage-banner {
   display: none !important;
 }
 
-/* En móvil (vista previa del layout), forzar una columna */
-@media (max-width: 900px) {
-  .print-a1 .stages {
+@media (max-width: 700px) {
+  .print-a3 .stages {
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 2rem;
   }
 }

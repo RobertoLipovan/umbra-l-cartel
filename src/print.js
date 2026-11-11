@@ -1,9 +1,8 @@
 // Genera el PDF del cartel. Dos versiones, que es lo que ofrece el modal:
 //
-//   'grande'  → UNA página A1 **horizontal** (841 × 594 mm) con el cartel
+//   'grande'  → UNA página A3 **horizontal** (420 × 297 mm) con el cartel
 //               reorganizado: cabecera ancha y los dos escenarios en dos
-//               columnas, para que el texto se lea grande y no quede espacio
-//               muerto.
+//               columnas. Es el póster.
 //   'pequena' → A4 vertical, repartido en varias páginas cortando el cartel a
 //               lo alto. Es la versión "de casa": legible, en hojas normales.
 //               No se escala el cartel entero a una sola A4 porque quedaría
@@ -17,13 +16,13 @@
 
 const FONDO = '#050505'
 
-// Medidas de página en mm.
+// Medidas de página en mm (horizontal/landscape).
 const A4 = { ancho: 210, alto: 297 }
-const A1 = { ancho: 841, alto: 594 } // A1 horizontal (landscape)
+const A3 = { ancho: 420, alto: 297 }  // A3 horizontal (landscape)
 const MARGEN_A4 = 6
-const MARGEN_A1 = 12
+const MARGEN_A3 = 10
 
-// Escala de captura. 2 da buena nitidez con un peso de archivo razonable.
+// Escala de captura.
 const ESCALA = 2
 
 function esperarFotograma() {
@@ -34,17 +33,13 @@ async function capturarCartel(opciones = {}) {
   const cartel = document.querySelector('.cartel')
   if (!cartel) throw new Error('No encuentro el cartel en la página')
 
-  // El fondo oscuro vive en <body> (radial-gradient) y .cartel en sí es
-  // transparente: html2canvas captura el elemento aislado, así que sin forzar
-  // aquí un fondo el PDF sale blanco y el texto claro queda ilegible.
   const fondoPrevio = cartel.style.backgroundColor
   cartel.style.backgroundColor = FONDO
 
-  // Para la versión A1 aplicamos un layout especial: dos columnas.
-  const clasePrintA1 = 'print-a1'
+  const clasePrintA3 = 'print-a3'
   const clasePrevia = cartel.className
-  if (opciones.layoutA1) {
-    cartel.classList.add(clasePrintA1)
+  if (opciones.layoutA3) {
+    cartel.classList.add(clasePrintA3)
   }
 
   try {
@@ -53,7 +48,6 @@ async function capturarCartel(opciones = {}) {
       import('jspdf'),
     ])
 
-    // Un frame para que el navegador aplique el layout y el fondo.
     await esperarFotograma()
 
     const canvas = await html2canvas(cartel, {
@@ -63,13 +57,9 @@ async function capturarCartel(opciones = {}) {
       ignoreElements: (el) => el.classList.contains('no-print'),
     })
 
-    // Restaurar clases y fondo.
     cartel.className = clasePrevia
     cartel.style.backgroundColor = ''
 
-    // JPEG en vez de PNG: el degradado de fondo comprime muchísimo peor sin
-    // pérdida (PNG salía por encima de 15 MB para este mismo cartel; JPEG da
-    // unos cientos de KB sin diferencia visible a esta calidad).
     const imagen = canvas.toDataURL('image/jpeg', 0.92)
 
     return { jsPDF, imagen, anchoPx: canvas.width, altoPx: canvas.height }
@@ -80,21 +70,22 @@ async function capturarCartel(opciones = {}) {
   }
 }
 
-// A1 horizontal (841 × 594 mm): la imagen ya viene con el layout de dos
-// columnas, así que la centramos y la escalamos para llenar la hoja.
-function paginaA1(jsPDF, imagen, anchoPx, altoPx) {
-  // jsPDF 4.x tiene bug con A1 landscape: los formatos estándar A0-A10 están hardcoded a portrait.
-  // Workaround: crear doc sin formato estándar y forzar pageSize en points.
+// A3 horizontal (420 × 297 mm): la imagen ya viene con el layout de dos
+// columnas (.print-a3), así que la centramos y la escalamos para llenar.
+function paginaA3(jsPDF, imagen, anchoPx, altoPx) {
   const doc = new jsPDF({ unit: 'pt' })
-  doc.internal.pageSize.width = 841 * 72 / 25.4
-  doc.internal.pageSize.height = 594 * 72 / 25.4
+  // Forzar tamaño A3 landscape a mano (jsPDF hardcodea A3 a portrait).
+  const anchoPt = A3.ancho * 72 / 25.4
+  const altoPt = A3.alto * 72 / 25.4
+  doc.internal.pageSize.width = anchoPt
+  doc.internal.pageSize.height = altoPt
   if (doc.internal.pages && doc.internal.pages[0]) {
-    doc.internal.pages[0].width = 841 * 72 / 25.4
-    doc.internal.pages[0].height = 594 * 72 / 25.4
+    doc.internal.pages[0].width = anchoPt
+    doc.internal.pages[0].height = altoPt
   }
 
-  const anchoUtil = A1.ancho - MARGEN_A1 * 2
-  const altoUtil = A1.alto - MARGEN_A1 * 2
+  const anchoUtil = A3.ancho - MARGEN_A3 * 2
+  const altoUtil = A3.alto - MARGEN_A3 * 2
 
   const escala = Math.min(anchoUtil / anchoPx, altoUtil / altoPx)
   const anchoMm = anchoPx * escala
@@ -102,12 +93,13 @@ function paginaA1(jsPDF, imagen, anchoPx, altoPx) {
 
   // Fondo negro a sangre.
   doc.setFillColor(FONDO)
-  doc.rect(0, 0, A1.ancho, A1.alto, 'F')
+  doc.rect(0, 0, A3.ancho, A3.alto, 'F')
 
-  doc.addImage(imagen, 'JPEG', (A1.ancho - anchoMm) / 2, (A1.alto - altoMm) / 2, anchoMm, altoMm)
+  doc.addImage(imagen, 'JPEG', (A3.ancho - anchoMm) / 2, (A3.alto - altoMm) / 2, anchoMm, altoMm)
   return doc
 }
 
+// A4 vertical en varias páginas.
 function cortarEnA4(jsPDF, imagen, anchoPx, altoPx) {
   const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' })
 
@@ -136,13 +128,13 @@ function cortarEnA4(jsPDF, imagen, anchoPx, altoPx) {
 
 export async function imprimirCartel(version) {
   const { jsPDF, imagen, anchoPx, altoPx } = await capturarCartel({
-    layoutA1: version === 'grande',
+    layoutA3: version === 'grande',
   })
 
   const doc =
     version === 'pequena'
       ? cortarEnA4(jsPDF, imagen, anchoPx, altoPx)
-      : paginaA1(jsPDF, imagen, anchoPx, altoPx)
+      : paginaA3(jsPDF, imagen, anchoPx, altoPx)
 
   doc.save(version === 'pequena' ? 'umbral-cartel-pequena.pdf' : 'umbral-cartel-grande.pdf')
 }

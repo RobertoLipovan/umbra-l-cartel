@@ -22,7 +22,7 @@ const PRINTER_ICON = `
 `
 
 const OPTIONS = [
-  { value: 'grande', label: 'Versión grande', desc: 'Póster A1, 594 × 841 mm' },
+  { value: 'grande', label: 'Versión grande', desc: 'Póster A3, 420 × 297 mm' },
   { value: 'pequena', label: 'Versión pequeña', desc: 'Hojas A4, para imprimir en casa' },
 ]
 
