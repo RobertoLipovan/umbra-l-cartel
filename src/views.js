@@ -8,15 +8,15 @@ import { renderBilling, renderLineup, renderHoursLine } from './render.js'
 // (en el lineup sí aparecen, atenuados, para que se vea el hueco).
 const PLACEHOLDER_NAMES = new Set(['TBA', 'Sorpresa'])
 
-function billingNames() {
-  const seen = new Set()
-  const names = []
+function billingArtistas() {
+  const vistos = new Set()
+  const artistas = []
   for (const dj of djs) {
-    if (PLACEHOLDER_NAMES.has(dj.name) || seen.has(dj.name)) continue
-    seen.add(dj.name)
-    names.push(dj.name)
+    if (PLACEHOLDER_NAMES.has(dj.name) || vistos.has(dj.name)) continue
+    vistos.add(dj.name)
+    artistas.push({ name: dj.name, instagram: dj.instagram })
   }
-  return names
+  return artistas
 }
 
 const FOOTER = `
@@ -59,7 +59,7 @@ export function renderLanding() {
         <p class="cartel__kicker">${EVENT.name}</p>
         <h1 class="cartel__title">${EVENT.edition}</h1>
 
-        ${renderBilling(billingNames())}
+        ${renderBilling(billingArtistas())}
       </header>
 
       <div class="stages">

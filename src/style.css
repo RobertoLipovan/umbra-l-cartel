@@ -797,6 +797,25 @@ body {
   font-size: 0.9em;
 }
 
+/* El nombre del artista es enlace a su Instagram (si tiene). Se queda con el
+   color y el estilo del nombre; solo cambia al pasar el ratón. */
+.billing__link,
+.lineup__name-link {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.billing__link:hover,
+.billing__link:focus-visible {
+  opacity: 0.65;
+}
+
+.lineup__name-link:hover,
+.lineup__name-link:focus-visible {
+  color: var(--accent);
+}
+
 /* Ø y ø fabricados: una O de Orbitron con una barra cruzada. Orbitron no
    tiene esos glifos y el fallback del navegador rompía la línea tipográfica
    (se veía más pequeño y de otra familia). */

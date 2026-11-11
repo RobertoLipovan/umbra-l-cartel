@@ -25,8 +25,16 @@ function renderName(name) {
     .replace(/[Я•]/g, (char) => `<span class="glyph-fallback">${char}</span>`)
 }
 
-// El Instagram se muestra como texto (@usuario) subrayado, no como icono: se
-// lee de un vistazo a quién estás siguiendo y ocupa menos que un logo.
+// Envuelve un trozo de HTML en un enlace a Instagram (o lo deja igual si el
+// artista no tiene cuenta).
+function wrapInstagram(html, instagram, djName, clase) {
+  if (!instagram) return html
+  const handle = instagram.replace(/^@/, '')
+  return `<a class="${clase}" href="https://instagram.com/${handle}" target="_blank" rel="noopener noreferrer" aria-label="Instagram de ${djName}">${html}</a>`
+}
+
+// El Instagram se muestra como texto (@usuario), no como icono: se lee de un
+// vistazo a quién estás siguiendo y ocupa menos que un logo.
 function renderInstagramLink(instagram, djName) {
   if (!instagram) return ''
   const handle = instagram.replace(/^@/, '')
@@ -37,7 +45,8 @@ function renderInstagramLink(instagram, djName) {
 // al lado quedaba pegado al nombre y competía con él (y en el póster se
 // solapaba con el chip de BPM).
 function renderNameWithInstagram(name, instagram) {
-  return `${renderInstagramLink(instagram, name)}${renderName(name)}`
+  const nombre = wrapInstagram(renderName(name), instagram, name, 'lineup__name-link')
+  return `${renderInstagramLink(instagram, name)}${nombre}`
 }
 
 // Un set puede tener varios artistas (B2B): "Deif b2b Will•Y".
@@ -64,11 +73,12 @@ const BILLING_PATTERN = [
   { size: 'sm', style: 'wide' },
 ]
 
-export function renderBilling(names) {
-  const items = names
-    .map((name, index) => {
+export function renderBilling(artistas) {
+  const items = artistas
+    .map(({ name, instagram }, index) => {
       const { size, style } = BILLING_PATTERN[index % BILLING_PATTERN.length]
-      return `<li class="billing__item billing__item--${size} billing__item--${style}">${renderName(name)}</li>`
+      const contenido = wrapInstagram(renderName(name), instagram, name, 'billing__link')
+      return `<li class="billing__item billing__item--${size} billing__item--${style}">${contenido}</li>`
     })
     .join('')
 
@@ -144,14 +154,14 @@ export function renderLineup(schedule, { id, closing = [] } = {}) {
   // Cierre con hora de fin abierta (secret line up, b2b hasta que paren...).
   const closingRows = closing
     .map(
-      ({ start, label, note }) => `
+      ({ start, label, note, instagram }) => `
         ${renderDayHeading(start)}
         <li class="lineup__item lineup__item--open">
           <span class="lineup__time">
             <span class="lineup__time-range">${formatTime(start)} →</span>
             <span class="lineup__duration">${note || 'Indefinido'}</span>
           </span>
-          <span class="lineup__name">${renderName(label)}</span>
+          <span class="lineup__name">${renderNameWithInstagram(label, instagram)}</span>
           <span class="lineup__genres">Hasta el cierre</span>
         </li>
       `,
