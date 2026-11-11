@@ -3,26 +3,22 @@
 //   'grande'  → UNA página A3 **vertical** (297 × 420 mm) con el cartel
 //               entero apilado: cabecera, escenario exterior y escenario
 //               interior. Es el póster.
-//   'pequena' → A4 vertical, repartido en varias páginas cortando el cartel a
-//               lo alto. Es la versión "de casa": legible, en hojas normales.
+//   'pequena' → el MISMO póster, en una sola hoja A4 vertical. Solo cambia el
+//               tamaño del papel, no el diseño.
 //
 // Nada de html2pdf.js: su paginación automática está pensada para documentos
 // tipo A4 y con un elemento largo y estrecho como este sacaba una página en
-// blanco con una miniatura diminuta arriba. El reparto en páginas lo hacemos
-// aquí, dibujando la misma imagen desplazada en cada página y dejando que
-// jsPDF recorte (ver `cortarEnA4`).
+// blanco con una miniatura diminuta arriba.
 
 const FONDO = '#050505'
 
 // Medidas de página en mm.
-const A4 = { ancho: 210, alto: 297 }
-const A3 = { ancho: 297, alto: 420 } // A3 vertical (portrait)
-const MARGEN_A4 = 6
-const MARGEN_A3 = 8
+const A3 = { ancho: 297, alto: 420, margen: 8 } // A3 vertical (portrait)
+const A4 = { ancho: 210, alto: 297, margen: 6 } // A4 vertical: misma hoja, más pequeña
 
 // Relación de aspecto que debe tener el bloque capturado para llenar la hoja
 // sin dejar franjas vacías.
-const ASPECTO_A3 = A3.ancho / A3.alto
+const ASPECTO = A3.ancho / A3.alto // 1/raíz(2): igual para A3 y A4 vertical
 
 // Resolución objetivo al imprimir en A3: 300 ppp es el estándar de calidad.
 const PPP_OBJETIVO = 300
@@ -31,9 +27,6 @@ const PPP_OBJETIVO = 300
 // (especialmente en móvil) y html2canvas falla sin decir por qué.
 const MAX_LADO_PX = 8192
 const MAX_AREA_PX = 16_000_000
-
-// Escala de captura para la versión pequeña (A4), donde no hace falta tanto.
-const ESCALA_A4 = 2
 
 function esperarFotograma() {
   return new Promise((resolve) => requestAnimationFrame(() => resolve()))
@@ -126,7 +119,7 @@ async function capturarCartel(opciones = {}) {
       for (let i = 0; i < 4; i += 1) {
         const alto = cartel.getBoundingClientRect().height
         if (!alto) break
-        cartel.style.width = `${Math.round(alto * ASPECTO_A3)}px`
+        cartel.style.width = `${Math.round(alto * ASPECTO)}px`
         void cartel.offsetWidth
       }
     }
@@ -139,9 +132,7 @@ async function capturarCartel(opciones = {}) {
     await esperarFotograma()
 
     const medidas = cartel.getBoundingClientRect()
-    const escala = opciones.poster
-      ? escalaParaImpresion(medidas.width, medidas.height)
-      : ESCALA_A4
+    const escala = escalaParaImpresion(medidas.width, medidas.height)
 
     const canvas = await html2canvas(cartel, {
       backgroundColor: FONDO,
@@ -171,29 +162,29 @@ async function capturarCartel(opciones = {}) {
   }
 }
 
-// A3 vertical (297 × 420 mm). La imagen ya viene con la relación correcta
+// Página única con el póster: la imagen ya viene con la relación correcta
 // (.print-poster + ancho calculado), así que se centra y se escala.
 //
 // OJO con las unidades: el documento se crea en **mm** y jsPDF guarda el
 // pageSize interno en la unidad del documento, así que se fija en mm. Mezclar
 // valores en mm con un documento en pt fue el bug que dejaba el cartel
 // diminuto pegado a una esquina de la hoja.
-function paginaA3(jsPDF, imagen, anchoPx, altoPx) {
+function paginaPoster(jsPDF, imagen, anchoPx, altoPx, hoja) {
   const doc = new jsPDF({
     unit: 'mm',
-    format: [A3.ancho, A3.alto],
+    format: [hoja.ancho, hoja.alto],
     orientation: 'portrait',
   })
 
-  doc.internal.pageSize.width = A3.ancho
-  doc.internal.pageSize.height = A3.alto
+  doc.internal.pageSize.width = hoja.ancho
+  doc.internal.pageSize.height = hoja.alto
   if (doc.internal.pages && doc.internal.pages[0]) {
-    doc.internal.pages[0].width = A3.ancho
-    doc.internal.pages[0].height = A3.alto
+    doc.internal.pages[0].width = hoja.ancho
+    doc.internal.pages[0].height = hoja.alto
   }
 
-  const anchoUtil = A3.ancho - MARGEN_A3 * 2
-  const altoUtil = A3.alto - MARGEN_A3 * 2
+  const anchoUtil = hoja.ancho - hoja.margen * 2
+  const altoUtil = hoja.alto - hoja.margen * 2
 
   const escala = Math.min(anchoUtil / anchoPx, altoUtil / altoPx)
   const anchoMm = anchoPx * escala
@@ -201,48 +192,25 @@ function paginaA3(jsPDF, imagen, anchoPx, altoPx) {
 
   // Fondo negro a sangre: así no queda ni un borde blanco.
   doc.setFillColor(FONDO)
-  doc.rect(0, 0, A3.ancho, A3.alto, 'F')
+  doc.rect(0, 0, hoja.ancho, hoja.alto, 'F')
 
   doc.addImage(
     imagen,
     'JPEG',
-    (A3.ancho - anchoMm) / 2,
-    (A3.alto - altoMm) / 2,
+    (hoja.ancho - anchoMm) / 2,
+    (hoja.alto - altoMm) / 2,
     anchoMm,
     altoMm,
   )
   return doc
 }
 
-// A4 vertical en varias páginas: la imagen se dibuja entera en cada página,
-// desplazada hacia arriba lo que ocupa una página, y jsPDF recorta lo que cae
-// fuera. Así cada hoja muestra su franja sin huecos ni solapes.
-function cortarEnA4(jsPDF, imagen, anchoPx, altoPx) {
-  const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' })
-
-  const anchoUtil = A4.ancho - MARGEN_A4 * 2
-  const altoUtil = A4.alto - MARGEN_A4 * 2
-
-  const anchoMm = anchoUtil
-  const altoMm = (altoPx / anchoPx) * anchoMm
-
-  const paginas = Math.max(1, Math.ceil(altoMm / altoUtil))
-
-  for (let i = 0; i < paginas; i += 1) {
-    if (i > 0) doc.addPage()
-    doc.addImage(imagen, 'JPEG', MARGEN_A4, MARGEN_A4 - i * altoUtil, anchoMm, altoMm)
-  }
-
-  return doc
-}
-
 export async function imprimirCartel(version) {
-  const esPoster = version !== 'pequena'
-  const { jsPDF, imagen, anchoPx, altoPx } = await capturarCartel({ poster: esPoster })
+  // Las dos versiones son el MISMO póster; solo cambia el tamaño de la hoja.
+  const esGrande = version !== 'pequena'
+  const { jsPDF, imagen, anchoPx, altoPx } = await capturarCartel({ poster: true })
 
-  const doc = esPoster
-    ? paginaA3(jsPDF, imagen, anchoPx, altoPx)
-    : cortarEnA4(jsPDF, imagen, anchoPx, altoPx)
+  const doc = paginaPoster(jsPDF, imagen, anchoPx, altoPx, esGrande ? A3 : A4)
 
-  doc.save(esPoster ? 'umbral-cartel-grande.pdf' : 'umbral-cartel-pequena.pdf')
+  doc.save(esGrande ? 'umbral-cartel-grande.pdf' : 'umbral-cartel-pequena.pdf')
 }
