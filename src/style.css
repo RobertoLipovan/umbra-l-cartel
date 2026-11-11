@@ -856,123 +856,123 @@ body {
 }
 
 /* ============================================================
-   Layout especial para impresión A3 horizontal (print-a3)
+   Layout especial para el póster A3 vertical (print-poster)
    Se aplica temporalmente al capturar para la versión "grande".
 
-   El ancho se FIJA en px (no depende del viewport) para que el PDF salga
-   igual desde cualquier pantalla. Y la cabecera pierde los 100lvh de la
-   landing: en pantalla ese aire queda bien, pero en un PDF de 297 mm de
-   alto se comía un tercio de la hoja y dejaba franjas negras a los lados.
-   Objetivo: que el bloque capturado tenga una relación ~1,4:1, la del A3
-   apaisado, para que llene la página.
+   Dos cosas importantes:
+   - El ancho lo fija el JS (`print.js`) para que la relación del bloque sea
+     la del A3 vertical (0,707) y no queden franjas vacías en la hoja.
+   - La cabecera pierde los 100lvh de la landing: ese aire queda bien en
+     pantalla, pero en un papel de 420 mm se comía media hoja.
+
+   Todo va en una sola columna apilada (exterior arriba, interior debajo),
+   que es lo que encaja en una hoja vertical.
 ============================================================ */
 
-.print-a3 {
+.print-poster {
   max-width: none;
-  width: 1400px;
+  width: 900px; /* punto de partida; el JS lo recalcula para clavar el aspecto */
   padding-inline: 0;
 }
 
-.print-a3 .cartel__header {
+.print-poster .cartel__header {
   min-height: auto;
-  padding: 0 2rem 1rem;
+  padding: 0 0 1.25rem;
 }
 
-.print-a3 .cartel__title {
-  font-size: 3rem;
+.print-poster .cartel__title {
+  font-size: 2.6rem;
 }
 
-.print-a3 .billing {
-  margin-top: 1.2rem;
+.print-poster .billing {
+  margin-top: 1rem;
+  gap: 0.45rem 1rem;
 }
 
-.print-a3 .stages {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2.5rem;
-  padding: 1.5rem 2rem 1rem;
-  align-items: start;
+.print-poster .stages {
+  display: block;
+  padding: 0;
 }
 
-.print-a3 .stage {
-  margin-top: 0;
+.print-poster .stage {
+  margin-top: 1.6rem;
   width: 100%;
 }
 
-.print-a3 .stage__header {
-  padding-bottom: 0.9rem;
+.print-poster .stage:first-child {
+  margin-top: 0;
 }
 
-.print-a3 .cartel__stage {
+.print-poster .stage__header {
+  padding-bottom: 0.75rem;
+}
+
+.print-poster .cartel__stage {
   font-size: 1.05rem;
   letter-spacing: 0.2em;
   margin-top: 0;
 }
 
-.print-a3 .stage__hint {
+.print-poster .stage__hint {
   font-size: 0.75rem;
   letter-spacing: 0.2em;
+  margin-top: 0.3rem;
+}
+
+.print-poster .stage__header .cartel__hours {
   margin-top: 0.35rem;
 }
 
-.print-a3 .stage__header .cartel__hours {
-  margin-top: 0.4rem;
-}
-
-.print-a3 .stage__header .cartel__hours-number {
+.print-poster .stage__header .cartel__hours-number {
   font-size: 1.2rem;
 }
 
-.print-a3 .lineup {
+.print-poster .lineup__item {
+  padding: 0.42rem 0;
+  grid-template-columns: 6.5rem 1fr auto;
+  column-gap: 0.75rem;
+}
+
+.print-poster .lineup__time-range {
   font-size: 0.85rem;
 }
 
-.print-a3 .lineup__item {
-  padding: 0.5rem 0;
-  grid-template-columns: auto 1fr auto;
-  column-gap: 0.8rem;
-}
-
-.print-a3 .lineup__time-range {
-  font-size: 0.85rem;
-}
-
-.print-a3 .lineup__duration {
+.print-poster .lineup__duration {
   font-size: 0.7rem;
 }
 
-.print-a3 .lineup__name {
-  font-size: 1.05rem;
+.print-poster .lineup__name {
+  font-size: 1.15rem;
 }
 
-.print-a3 .lineup__genres {
-  font-size: 0.72rem;
+.print-poster .lineup__genres {
+  font-size: 0.75rem;
 }
 
-.print-a3 .lineup__bpm {
-  font-size: 0.66rem;
-  padding: 0.12rem 0.45rem;
+.print-poster .lineup__bpm {
+  font-size: 0.68rem;
+  padding: 0.12rem 0.5rem;
 }
 
-.print-a3 .lineup__b2b {
+.print-poster .lineup__b2b {
   font-size: 0.45em;
 }
 
-.print-a3 .lineup__item--open .lineup__time-range,
-.print-a3 .lineup__item--open .lineup__genres {
+.print-poster .lineup__item--open .lineup__time-range,
+.print-poster .lineup__item--open .lineup__genres {
   font-size: 0.85rem;
 }
 
-.print-a3 .cartel__footer {
+.print-poster .cartel__footer {
   margin-top: 1.5rem;
   padding-top: 1rem;
   padding-bottom: 0;
   font-size: 0.62rem;
 }
 
-.print-a3 .stage-nav,
-.print-a3 .cartel__scroll,
-.print-a3 .print-btn,
-.print-a3 .stage-banner {
+.print-poster .stage-nav,
+.print-poster .cartel__scroll,
+.print-poster .print-btn,
+.print-poster .stage-banner {
   display: none !important;
 }

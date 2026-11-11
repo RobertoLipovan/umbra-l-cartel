@@ -3,9 +3,10 @@ import { buildSchedule, resolveTime } from './schedule.js'
 import { renderBilling, renderLineup, renderHoursLine } from './render.js'
 
 // Nombres del cartel de cabecera: una vez cada uno, en el orden en que salen
-// (exterior y luego interior). 'TBA' no es un artista, es un hueco por
-// anunciar, así que no se pinta como nombre.
-const PLACEHOLDER_NAMES = new Set(['TBA'])
+// (exterior y luego interior). Ni 'TBA' ni 'Sorpresa' son artistas: son
+// huecos por anunciar, así que no se pintan como nombre grande arriba
+// (en el lineup sí aparecen, atenuados, para que se vea el hueco).
+const PLACEHOLDER_NAMES = new Set(['TBA', 'Sorpresa'])
 
 function billingNames() {
   const seen = new Set()
