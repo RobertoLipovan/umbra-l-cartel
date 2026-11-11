@@ -469,8 +469,8 @@ body {
 }
 
 .stage__header {
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(198, 255, 26, 0.25);
+  /* Sin borde: la raya la pone el encabezado del día. */
+  padding-bottom: 1.4rem;
 }
 
 .stage__hint {
@@ -714,7 +714,7 @@ body {
 }
 
 .lineup__day:first-child {
-  margin-top: 0;
+  margin-top: 0.6rem;
 }
 
 .lineup__item {
@@ -950,7 +950,7 @@ body {
 }
 
 .print-poster .stage__header {
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
 }
 
 .print-poster .cartel__stage {
@@ -1018,11 +1018,7 @@ body {
 
 .print-poster .lineup__day,
 .print-poster .lineup__day:first-child {
-  /* Quitada la línea del día (la del encabezado del escenario ya hace de
-     separador) y con aire suficiente para que la raya no roce el texto. */
-  border-bottom: none;
-  margin: 1.1rem 0 0.45rem;
-  padding-bottom: 0;
+  margin: 0.7rem 0 0.4rem;
 }
 
 .print-poster .cartel__footer {
