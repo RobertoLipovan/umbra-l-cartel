@@ -22,6 +22,9 @@ const A3 = { ancho: 420, alto: 297 }  // A3 horizontal (landscape)
 const MARGEN_A4 = 6
 const MARGEN_A3 = 10
 
+// Relación de aspecto que debe tener el bloque capturado para llenar la hoja.
+const ASPECTO_A3 = A3.ancho / A3.alto
+
 // Escala de captura.
 const ESCALA = 2
 
@@ -38,8 +41,22 @@ async function capturarCartel(opciones = {}) {
 
   const clasePrintA3 = 'print-a3'
   const clasePrevia = cartel.className
+  const anchoPrevio = cartel.style.width
   if (opciones.layoutA3) {
     cartel.classList.add(clasePrintA3)
+    // El layout de impresión fija un ancho base, pero el alto depende del
+    // número de artistas del cartel. Para que el PDF llene la hoja A3 hay que
+    // ajustar el ancho a la relación 1,41:1 que pide la página; si no, el
+    // bloque entra por alto y sobran dos franjas negras a los lados.
+    // Se itera dos veces porque al ensanchar el bloque los textos pueden
+    // ocupar menos líneas y cambiar el alto.
+    void cartel.offsetWidth
+    for (let i = 0; i < 2; i += 1) {
+      const altoActual = cartel.getBoundingClientRect().height
+      if (!altoActual) break
+      cartel.style.width = `${Math.round(altoActual * ASPECTO_A3)}px`
+      void cartel.offsetWidth
+    }
   }
 
   try {
@@ -59,6 +76,7 @@ async function capturarCartel(opciones = {}) {
 
     cartel.className = clasePrevia
     cartel.style.backgroundColor = ''
+    cartel.style.width = anchoPrevio
 
     const imagen = canvas.toDataURL('image/jpeg', 0.92)
 
@@ -66,22 +84,29 @@ async function capturarCartel(opciones = {}) {
   } catch (e) {
     cartel.className = clasePrevia
     cartel.style.backgroundColor = ''
+    cartel.style.width = anchoPrevio
     throw e
   }
 }
 
 // A3 horizontal (420 × 297 mm): la imagen ya viene con el layout de dos
 // columnas (.print-a3), así que la centramos y la escalamos para llenar.
+//
+// OJO con las unidades: el documento se crea en **mm** y el pageSize interno
+// de jsPDF se guarda en la unidad del documento, así que se fija en mm
+// (420 × 297), NO en puntos. Mezclar mm al dibujar con un doc en pt fue
+// justo el bug que dejaba el cartel diminuto en una esquina de la hoja.
 function paginaA3(jsPDF, imagen, anchoPx, altoPx) {
-  const doc = new jsPDF({ unit: 'pt' })
-  // Forzar tamaño A3 landscape a mano (jsPDF hardcodea A3 a portrait).
-  const anchoPt = A3.ancho * 72 / 25.4
-  const altoPt = A3.alto * 72 / 25.4
-  doc.internal.pageSize.width = anchoPt
-  doc.internal.pageSize.height = altoPt
+  const doc = new jsPDF({ unit: 'mm', format: [A3.ancho, A3.alto], orientation: 'landscape' })
+
+  // jsPDF hardcodea los formatos con nombre (a3 = portrait), pero con un
+  // array de formato respeta el orden dado. Forzamos además el pageSize
+  // interno por si la versión lo normaliza.
+  doc.internal.pageSize.width = A3.ancho
+  doc.internal.pageSize.height = A3.alto
   if (doc.internal.pages && doc.internal.pages[0]) {
-    doc.internal.pages[0].width = anchoPt
-    doc.internal.pages[0].height = altoPt
+    doc.internal.pages[0].width = A3.ancho
+    doc.internal.pages[0].height = A3.alto
   }
 
   const anchoUtil = A3.ancho - MARGEN_A3 * 2
@@ -91,11 +116,18 @@ function paginaA3(jsPDF, imagen, anchoPx, altoPx) {
   const anchoMm = anchoPx * escala
   const altoMm = altoPx * escala
 
-  // Fondo negro a sangre.
+  // Fondo negro a sangre (coordenadas en mm, igual que el documento).
   doc.setFillColor(FONDO)
   doc.rect(0, 0, A3.ancho, A3.alto, 'F')
 
-  doc.addImage(imagen, 'JPEG', (A3.ancho - anchoMm) / 2, (A3.alto - altoMm) / 2, anchoMm, altoMm)
+  doc.addImage(
+    imagen,
+    'JPEG',
+    (A3.ancho - anchoMm) / 2,
+    (A3.alto - altoMm) / 2,
+    anchoMm,
+    altoMm,
+  )
   return doc
 }
 

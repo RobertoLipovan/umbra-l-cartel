@@ -858,24 +858,39 @@ body {
 /* ============================================================
    Layout especial para impresión A3 horizontal (print-a3)
    Se aplica temporalmente al capturar para la versión "grande".
-   Una sola columna apaisada que aprovecha el ancho de 420 mm.
+
+   El ancho se FIJA en px (no depende del viewport) para que el PDF salga
+   igual desde cualquier pantalla. Y la cabecera pierde los 100lvh de la
+   landing: en pantalla ese aire queda bien, pero en un PDF de 297 mm de
+   alto se comía un tercio de la hoja y dejaba franjas negras a los lados.
+   Objetivo: que el bloque capturado tenga una relación ~1,4:1, la del A3
+   apaisado, para que llene la página.
 ============================================================ */
 
 .print-a3 {
   max-width: none;
-  width: 100%;
+  width: 1400px;
   padding-inline: 0;
 }
 
 .print-a3 .cartel__header {
-  padding-inline: clamp(2rem, 3vw, 4rem);
+  min-height: auto;
+  padding: 0 2rem 1rem;
+}
+
+.print-a3 .cartel__title {
+  font-size: 3rem;
+}
+
+.print-a3 .billing {
+  margin-top: 1.2rem;
 }
 
 .print-a3 .stages {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: clamp(1.5rem, 3vw, 3rem);
-  padding: 2.5rem 0 1.5rem;
+  gap: 2.5rem;
+  padding: 1.5rem 2rem 1rem;
   align-items: start;
 }
 
@@ -885,56 +900,58 @@ body {
 }
 
 .print-a3 .stage__header {
-  padding-bottom: 1.2rem;
+  padding-bottom: 0.9rem;
 }
 
 .print-a3 .cartel__stage {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   letter-spacing: 0.2em;
+  margin-top: 0;
 }
 
 .print-a3 .stage__hint {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   letter-spacing: 0.2em;
+  margin-top: 0.35rem;
 }
 
 .print-a3 .stage__header .cartel__hours {
-  margin-top: 0.5rem;
+  margin-top: 0.4rem;
 }
 
 .print-a3 .stage__header .cartel__hours-number {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
 }
 
 .print-a3 .lineup {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .print-a3 .lineup__item {
-  padding: 0.65rem 0;
+  padding: 0.5rem 0;
   grid-template-columns: auto 1fr auto;
   column-gap: 0.8rem;
 }
 
 .print-a3 .lineup__time-range {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .print-a3 .lineup__duration {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
 }
 
 .print-a3 .lineup__name {
-  font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+  font-size: 1.05rem;
 }
 
 .print-a3 .lineup__genres {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
 }
 
 .print-a3 .lineup__bpm {
-  font-size: 0.7rem;
-  padding: 0.15rem 0.5rem;
+  font-size: 0.66rem;
+  padding: 0.12rem 0.45rem;
 }
 
 .print-a3 .lineup__b2b {
@@ -943,13 +960,14 @@ body {
 
 .print-a3 .lineup__item--open .lineup__time-range,
 .print-a3 .lineup__item--open .lineup__genres {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .print-a3 .cartel__footer {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  font-size: 0.65rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  padding-bottom: 0;
+  font-size: 0.62rem;
 }
 
 .print-a3 .stage-nav,
@@ -957,11 +975,4 @@ body {
 .print-a3 .print-btn,
 .print-a3 .stage-banner {
   display: none !important;
-}
-
-@media (max-width: 700px) {
-  .print-a3 .stages {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
 }
