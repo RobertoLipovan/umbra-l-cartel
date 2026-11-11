@@ -769,35 +769,27 @@ body {
   letter-spacing: 0.02em;
 }
 
-.lineup__instagram {
-  display: inline-flex;
-  position: relative;
-  top: -0.08em;
-  vertical-align: middle;
-  margin-left: 0.5rem;
+/* Usuario de Instagram: encima del nombre, en su propia línea, en la
+   monoespaciada y más pequeño para no competir con el nombre del artista. */
+.lineup__ig {
+  display: block;
+  margin-bottom: 0.18em;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.5em;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
   color: var(--muted);
+  /* Sin subrayado: con la monoespaciada pequeña no se leía bien (y los
+     guiones bajos de @__deif__ se confundían con la línea). Se reconoce como
+     enlace por la @ y por el verde al pasar el ratón. */
+  text-decoration: none;
   transition: color 0.2s ease;
 }
 
-.lineup__instagram:hover {
+.lineup__ig:hover,
+.lineup__ig:focus-visible {
   color: var(--accent);
-}
-
-/* Nombres de dos palabras: el icono va al final si cabe en una línea, o
-   pegado a la primera palabra si el nombre se parte en dos (ver
-   renderNameWithInstagram en render.js). */
-.lineup__instagram--mobile {
-  display: none;
-}
-
-@media (max-width: 480px) {
-  .lineup__instagram--desktop {
-    display: none;
-  }
-
-  .lineup__instagram--mobile {
-    display: inline-flex;
-  }
 }
 
 .glyph-fallback {
@@ -930,10 +922,7 @@ body {
 
 /* La madrugada manda: letra más grande que en la otra columna. */
 .print-poster .stage--cont .lineup__name {
-  font-size: 1.35rem;
-  /* Sin saltos: con la letra grande el icono de Instagram se caía a la línea
-     de abajo y descuadraba la fila. */
-  white-space: nowrap;
+  font-size: 1.2rem;
 }
 
 .print-poster .stage--cont .lineup__time-range {
@@ -945,7 +934,7 @@ body {
 }
 
 .print-poster .stage--cont .lineup__item {
-  padding: 0.55rem 0;
+  padding: 0.5rem 0;
   /* Tres columnas explícitas (hora | nombre+géneros | BPM). Con dos, el chip
      de BPM caía en una columna implícita y se solapaba con el nombre. */
   grid-template-columns: 6rem minmax(0, 1fr) auto;
@@ -999,7 +988,7 @@ body {
 }
 
 .print-poster .lineup__name {
-  font-size: 1.15rem;
+  font-size: 0.98rem;
 }
 
 .print-poster .lineup__genres {
@@ -1025,6 +1014,11 @@ body {
   padding-top: 1rem;
   padding-bottom: 0;
   font-size: 0.62rem;
+}
+
+.print-poster .lineup__ig {
+  font-size: 0.46em;
+  margin-left: 0.4em;
 }
 
 .print-poster .stage-nav,

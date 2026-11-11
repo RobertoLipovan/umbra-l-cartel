@@ -25,38 +25,19 @@ function renderName(name) {
     .replace(/[Я•]/g, (char) => `<span class="glyph-fallback">${char}</span>`)
 }
 
-const INSTAGRAM_ICON = `
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2" />
-    <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="2" />
-    <circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" />
-  </svg>
-`
-
-function renderInstagramLink(instagram, djName, variant) {
+// El Instagram se muestra como texto (@usuario) subrayado, no como icono: se
+// lee de un vistazo a quién estás siguiendo y ocupa menos que un logo.
+function renderInstagramLink(instagram, djName) {
   if (!instagram) return ''
   const handle = instagram.replace(/^@/, '')
-  const className = variant ? `lineup__instagram lineup__instagram--${variant}` : 'lineup__instagram'
-  return `<a class="${className}" href="https://instagram.com/${handle}" target="_blank" rel="noopener noreferrer" aria-label="Instagram de ${djName}">${INSTAGRAM_ICON}</a>`
+  return `<a class="lineup__ig" href="https://instagram.com/${handle}" target="_blank" rel="noopener noreferrer" aria-label="Instagram de ${djName}">@${handle}</a>`
 }
 
-// En nombres de una palabra el icono simplemente va al final. En nombres de
-// dos palabras hace falta cubrir dos casos con CSS (ver .lineup__instagram--*):
-// en pantallas anchas cabe todo en una línea ("ANN BLACKSMITH [icono]"), pero
-// en pantallas estrechas el nombre se parte en dos líneas y, si el icono
-// sigue al final, cae solo en la segunda línea. Por eso se renderizan dos
-// copias del enlace (una tras la primera palabra, otra tras el nombre
-// completo) y una media query en el CSS decide cuál mostrar.
+// El usuario va SIEMPRE encima del nombre del artista, en su propia línea:
+// al lado quedaba pegado al nombre y competía con él (y en el póster se
+// solapaba con el chip de BPM).
 function renderNameWithInstagram(name, instagram) {
-  const spaceIndex = name.indexOf(' ')
-  if (spaceIndex === -1) return `${renderName(name)}${renderInstagramLink(instagram, name)}`
-  if (!instagram) return renderName(name)
-
-  const first = renderName(name.slice(0, spaceIndex))
-  const rest = renderName(name.slice(spaceIndex))
-  const mobileLink = renderInstagramLink(instagram, name, 'mobile')
-  const desktopLink = renderInstagramLink(instagram, name, 'desktop')
-  return `${first}${mobileLink}${rest}${desktopLink}`
+  return `${renderInstagramLink(instagram, name)}${renderName(name)}`
 }
 
 // Un set puede tener varios artistas (B2B): "Deif b2b Will•Y".
