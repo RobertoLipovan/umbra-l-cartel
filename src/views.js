@@ -21,8 +21,7 @@ function billingNames() {
 
 const FOOTER = `
   <footer class="cartel__footer">
-    ✕ Desert Music Unity ✕
-    <!-- botón "Imprimir cartel" desactivado por ahora, ver src/print.js -->
+    <!-- Aquí iba "✕ Desert Music Unity ✕", retirado a petición (nov 2026). -->
   </footer>
 `
 
