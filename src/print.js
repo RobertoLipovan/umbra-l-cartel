@@ -107,6 +107,15 @@ async function capturarCartel(opciones = {}) {
   // así que sin forzarlo aquí el PDF saldría con fondo transparente/blanco.
   cartel.style.backgroundColor = FONDO
 
+  // El cartel en vivo tacha los sets ya pinchados; en papel eso no tiene
+  // sentido (se imprime para colgarlo), así que se quita durante la captura y
+  // se vuelve a aplicar después.
+  const estadosPrevios = [...cartel.querySelectorAll('[data-estado]')].map((el) => [
+    el,
+    el.getAttribute('data-estado'),
+  ])
+  for (const [el] of estadosPrevios) el.removeAttribute('data-estado')
+
   try {
     if (opciones.poster) {
       cartel.classList.add('print-poster')
@@ -155,6 +164,8 @@ async function capturarCartel(opciones = {}) {
       escala,
     }
   } finally {
+    for (const [el, estado] of estadosPrevios) el.setAttribute('data-estado', estado)
+    window.dispatchEvent(new Event('live:refresh'))
     if (desmontarColumnas) desmontarColumnas()
     cartel.className = clasePrevia
     cartel.style.backgroundColor = fondoPrevio

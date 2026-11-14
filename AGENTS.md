@@ -153,6 +153,30 @@ Debajo del título principal va **la lista de artistas en grande**, tipo cartel 
 
 `renderGenres()` / `uniqueGenres()` y las clases `.genres*` en `style.css` **siguen en el repo sin usar** por si se quieren recuperar los chips.
 
+## Estado en vivo (tachado + "AHORA")
+
+`src/live.js` compara la hora actual con los `Date` que ya resuelve
+`schedule.js` y pone `data-estado` en cada `.lineup__item`:
+
+| `data-estado` | Cuándo | Cómo se ve |
+|---|---|---|
+| `pasado` | `ahora >= end` | fila al 40% y **nombre tachado** |
+| `ahora` | `start <= ahora < end` | barra verde a la izquierda, fondo tenue, nombre en acento y pastilla **AHORA** |
+| (sin atributo) | futuro | normal |
+
+- Se refresca cada **30 s** (`setInterval`) y a demanda con el evento
+  `live:refresh`.
+- El cierre (`closing`, sin `end`) queda en `ahora` en cuanto empieza: es
+  "hasta el cierre", no tiene fin.
+- **La comparación es absoluta**, no local: los `Date` del cartel ya llevan el
+  desfase del evento (`+01:00`), así que un visitante en otro país ve el mismo
+  "ahora" del evento.
+- **La impresión NO lleva el estado**: `print.js` quita los `data-estado` antes
+  de capturar y los restaura (más `live:refresh`) en el `finally`. Un póster
+  impreso a mitad de fiesta no debe salir tachado.
+- El cartel tipográfico de la cabecera **no** se tacha: un artista puede tocar
+  dos veces (Leks), así que ahí no hay un "ya ha pinchado" único.
+
 ## Diseño
 
 Paleta e identidad tomadas de un branding real (logo tipo retícula/mira, negro + verde ácido `#c6ff1a`, tipografía Orbitron para títulos y Oswald para el resto). Si tienes acceso al archivo de fuente original del branding, esa es una mejora pendiente frente a la aproximación actual con Google Fonts.

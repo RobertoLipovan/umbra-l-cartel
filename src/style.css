@@ -732,6 +732,76 @@ body {
   border-bottom-color: rgba(198, 255, 26, 0.4);
 }
 
+/* --- Estado en vivo (src/live.js) ------------------------------------------
+   data-estado="pasado"  → ya ha pinchado: tachado y atenuado.
+   data-estado="ahora"   → está sonando: barra verde, fondo tenue y pastilla. */
+
+.lineup__item {
+  position: relative;
+  transition: opacity 0.3s ease, background 0.3s ease;
+}
+
+.lineup__live {
+  display: none;
+  align-self: flex-start;
+  margin-top: 0.3rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #0a0e06;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  animation: live-pulse 2s ease-in-out infinite;
+}
+
+.lineup__item[data-estado="ahora"] {
+  /* El padding + margen negativo deja sitio a la barra sin mover el texto
+     respecto a las demás filas. */
+  padding-left: 0.7rem;
+  margin-left: -0.7rem;
+  background: linear-gradient(90deg, rgba(198, 255, 26, 0.1), transparent 55%);
+}
+
+.lineup__item[data-estado="ahora"]::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--accent);
+}
+
+.lineup__item[data-estado="ahora"] .lineup__live {
+  display: inline-block;
+}
+
+.lineup__item[data-estado="ahora"] .lineup__name {
+  color: var(--accent);
+}
+
+.lineup__item[data-estado="pasado"] {
+  opacity: 0.4;
+}
+
+.lineup__item[data-estado="pasado"] .lineup__name,
+.lineup__item[data-estado="pasado"] .lineup__name-link,
+.lineup__item[data-estado="pasado"] .lineup__ig {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  text-decoration-color: currentColor;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lineup__live { animation: none; }
+}
+
 .lineup__item--open .lineup__time-range,
 .lineup__item--open .lineup__genres {
   color: var(--accent);

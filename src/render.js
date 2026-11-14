@@ -138,10 +138,12 @@ export function renderLineup(schedule, { id, closing = [] } = {}) {
     .map(
       (slot) => `
         ${renderDayHeading(slot.start)}
-        <li class="lineup__item${slot.tba ? ' lineup__item--tba' : ''}">
+        <li class="lineup__item${slot.tba ? ' lineup__item--tba' : ''}"
+            data-inicio="${slot.start.toISOString()}" data-fin="${slot.end.toISOString()}">
           <span class="lineup__time">
             <span class="lineup__time-range">${formatTime(slot.start)}–${formatTime(slot.end)}</span>
             <span class="lineup__duration">${formatDuration(slot.start, slot.end)}</span>
+            <span class="lineup__live">AHORA</span>
           </span>
           <span class="lineup__name">${renderArtists(slot.artists)}</span>
           ${renderGenresCell(slot.genres, slot)}
@@ -156,10 +158,11 @@ export function renderLineup(schedule, { id, closing = [] } = {}) {
     .map(
       ({ start, label, note, instagram }) => `
         ${renderDayHeading(start)}
-        <li class="lineup__item lineup__item--open">
+        <li class="lineup__item lineup__item--open" data-inicio="${start.toISOString()}">
           <span class="lineup__time">
             <span class="lineup__time-range">${formatTime(start)} →</span>
             <span class="lineup__duration">${note || 'Indefinido'}</span>
+            <span class="lineup__live">AHORA</span>
           </span>
           <span class="lineup__name">${renderNameWithInstagram(label, instagram)}</span>
           <span class="lineup__genres">Hasta el cierre</span>
