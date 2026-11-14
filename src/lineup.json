@@ -10,11 +10,11 @@
     {
       "id": "exterior",
       "label": "Escenario exterior",
-      "hint": "15:00 — 18:00 sáb",
+      "hint": "16:00 — 19:00 sáb",
       "sets": [
         {
-          "start": "15:00",
-          "end": "16:00",
+          "start": "16:00",
+          "end": "17:00",
           "artists": [
             {
               "name": "Leks",
@@ -31,8 +31,8 @@
           ]
         },
         {
-          "start": "16:00",
-          "end": "17:00",
+          "start": "17:00",
+          "end": "18:00",
           "artists": [
             {
               "name": "Perry",
@@ -48,8 +48,8 @@
           ]
         },
         {
-          "start": "17:00",
-          "end": "18:00",
+          "start": "18:00",
+          "end": "19:00",
           "artists": [
             {
               "name": "Sorpresa"
@@ -66,11 +66,11 @@
     {
       "id": "interior",
       "label": "Escenario interior",
-      "hint": "18:00 — 09:30",
+      "hint": "19:00 — 10:30",
       "sets": [
         {
-          "start": "18:00",
-          "end": "19:00",
+          "start": "19:00",
+          "end": "20:00",
           "artists": [
             {
               "name": "Eiren",
@@ -87,8 +87,8 @@
           ]
         },
         {
-          "start": "19:00",
-          "end": "20:00",
+          "start": "20:00",
+          "end": "21:00",
           "artists": [
             {
               "name": "Deif",
@@ -107,8 +107,8 @@
           ]
         },
         {
-          "start": "20:00",
-          "end": "21:00",
+          "start": "21:00",
+          "end": "22:00",
           "artists": [
             {
               "name": "Cardan"
@@ -124,8 +124,8 @@
           ]
         },
         {
-          "start": "21:00",
-          "end": "22:00",
+          "start": "22:00",
+          "end": "23:00",
           "artists": [
             {
               "name": "Nøt"
@@ -141,8 +141,8 @@
           ]
         },
         {
-          "start": "22:00",
-          "end": "23:00",
+          "start": "23:00",
+          "end": "00:00",
           "artists": [
             {
               "name": "Flamenkø",
@@ -159,8 +159,8 @@
           ]
         },
         {
-          "start": "23:00",
-          "end": "00:00",
+          "start": "00:00",
+          "end": "01:00",
           "artists": [
             {
               "name": "Føbia",
@@ -176,8 +176,8 @@
           ]
         },
         {
-          "start": "00:30",
-          "end": "01:30",
+          "start": "01:30",
+          "end": "02:30",
           "artists": [
             {
               "name": "Zaii",
@@ -194,8 +194,8 @@
           ]
         },
         {
-          "start": "01:30",
-          "end": "02:30",
+          "start": "02:30",
+          "end": "03:30",
           "artists": [
             {
               "name": "Romaniko",
@@ -203,8 +203,7 @@
             }
           ],
           "genres": [
-            "Acidcore",
-            "Mental"
+            "TEKNO • ACIDCORE • MENTAL"
           ],
           "bpm": [
             160,
@@ -212,8 +211,8 @@
           ]
         },
         {
-          "start": "02:30",
-          "end": "03:30",
+          "start": "03:30",
+          "end": "04:30",
           "artists": [
             {
               "name": "Leks",
@@ -230,8 +229,8 @@
           ]
         },
         {
-          "start": "03:30",
-          "end": "04:30",
+          "start": "04:30",
+          "end": "05:30",
           "artists": [
             {
               "name": "Senda",
@@ -248,8 +247,8 @@
           ]
         },
         {
-          "start": "04:30",
-          "end": "05:30",
+          "start": "05:30",
+          "end": "06:30",
           "artists": [
             {
               "name": "K-Bry",
@@ -266,8 +265,8 @@
           ]
         },
         {
-          "start": "05:30",
-          "end": "06:30",
+          "start": "06:30",
+          "end": "07:30",
           "artists": [
             {
               "name": "Emege",
@@ -283,8 +282,8 @@
           ]
         },
         {
-          "start": "06:30",
-          "end": "07:30",
+          "start": "07:30",
+          "end": "08:30",
           "artists": [
             {
               "name": "Driwish",
@@ -300,8 +299,8 @@
           ]
         },
         {
-          "start": "07:30",
-          "end": "08:30",
+          "start": "08:30",
+          "end": "09:30",
           "artists": [
             {
               "name": "NVRR",
@@ -317,8 +316,8 @@
           ]
         },
         {
-          "start": "08:30",
-          "end": "09:30",
+          "start": "09:30",
+          "end": "10:30",
           "artists": [
             {
               "name": "0nia",
@@ -337,7 +336,7 @@
       ],
       "closing": [
         {
-          "start": "09:30",
+          "start": "10:30",
           "label": "Eiren",
           "note": "Secret line up",
           "instagram": "@eiren.lf"
