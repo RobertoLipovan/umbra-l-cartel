@@ -177,6 +177,23 @@ Debajo del título principal va **la lista de artistas en grande**, tipo cartel 
 - El cartel tipográfico de la cabecera **no** se tacha: un artista puede tocar
   dos veces (Leks), así que ahí no hay un "ya ha pinchado" único.
 
+## Degradado verde animado
+
+Todo lo que va en verde ácido (kicker, horas, franja del día, rangos horarios,
+BPM, nombres de acento del cartel, pastilla AHORA y botón OK del modal) lleva un
+`linear-gradient` de verdes que se desplaza con `@keyframes verde-flujo`
+(2,2 s texto, 1,7 s relleno).
+
+- **Texto:** `background-clip: text` + `-webkit-text-fill-color: transparent`.
+  Si añades un elemento verde nuevo y quieres el efecto, mételo en la lista de
+  selectores del bloque final de `style.css`; si solo cambias el `color` no se
+  anima.
+- **Relleno** (badge, botón): misma animación pero sin `background-clip`.
+- El degradado empieza y acaba en `#c6ff1a` para que el bucle no dé un salto.
+- `prefers-reduced-motion` desactiva la animación (el degradado se queda fijo).
+- Los iconos SVG (`.scroll-btn`, `.print-btn`) usan `currentColor`: no se les
+  puede poner degradado sin convertirlos a máscara. Se quedan en verde plano.
+
 ## Diseño
 
 Paleta e identidad tomadas de un branding real (logo tipo retícula/mira, negro + verde ácido `#c6ff1a`, tipografía Orbitron para títulos y Oswald para el resto). Si tienes acceso al archivo de fuente original del branding, esa es una mejora pendiente frente a la aproximación actual con Google Fonts.

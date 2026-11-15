@@ -1125,3 +1125,83 @@ body {
 .print-poster .stage-banner {
   display: none !important;
 }
+
+/* --- Degradado verde animado ----------------------------------------------
+   Todo lo que iba en verde ácido pasa a un degradado de verdes que se desplaza
+   rápido. Dos variantes: texto (background-clip) y relleno (badge/botón).
+   El degradado empieza y acaba en el mismo color para que el bucle no salte. */
+
+@keyframes verde-flujo {
+  from { background-position: 0% 50%; }
+  to   { background-position: 300% 50%; }
+}
+
+.cartel__kicker,
+.cartel__hours-number,
+.billing__item--accent,
+.cartel__scroll,
+.lineup__day,
+.lineup__time-range,
+.lineup__bpm,
+.lineup__item--open .lineup__genres,
+.lineup__item[data-estado="ahora"] .lineup__name,
+.lineup__item[data-estado="ahora"] .lineup__name-link {
+  background-image: linear-gradient(
+    100deg,
+    #c6ff1a 0%,
+    #4dff9d 20%,
+    #eaff6b 40%,
+    #6fffd0 60%,
+    #c6ff1a 100%
+  );
+  background-size: 300% 100%;
+  background-repeat: repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: verde-flujo 2.2s linear infinite;
+}
+
+.lineup__live,
+.print-modal__ok {
+  background-image: linear-gradient(
+    100deg,
+    #c6ff1a 0%,
+    #4dff9d 20%,
+    #eaff6b 40%,
+    #6fffd0 60%,
+    #c6ff1a 100%
+  );
+  background-size: 300% 100%;
+  animation: verde-flujo 1.7s linear infinite;
+}
+
+.lineup__item[data-estado="ahora"]::before {
+  background-image: linear-gradient(180deg, #c6ff1a, #6fffd0, #c6ff1a);
+  background-size: 100% 300%;
+  animation: verde-flujo-v 2s linear infinite;
+}
+
+@keyframes verde-flujo-v {
+  from { background-position: 50% 0%; }
+  to   { background-position: 50% 300%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cartel__kicker,
+  .cartel__hours-number,
+  .billing__item--accent,
+  .cartel__scroll,
+  .lineup__day,
+  .lineup__time-range,
+  .lineup__bpm,
+  .lineup__item--open .lineup__genres,
+  .lineup__item[data-estado="ahora"] .lineup__name,
+  .lineup__item[data-estado="ahora"] .lineup__name-link,
+  .lineup__live,
+  .print-modal__ok,
+  .lineup__item[data-estado="ahora"]::before {
+    animation: none;
+  }
+}
