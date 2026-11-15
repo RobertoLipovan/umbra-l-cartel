@@ -2,6 +2,16 @@
   --bg: #050505;
   --fg: #f2f4ee;
   --accent: #c6ff1a;
+  /* Degradado del acento (ver "Degradado verde animado"). En variable para
+     poder aplicarlo también a la O de la Ø, que es un span aparte. */
+  --verde-grad: linear-gradient(
+    100deg,
+    #c6ff1a 0%,
+    #8aff5a 22%,
+    #e8ff7a 44%,
+    #9dffa0 66%,
+    #c6ff1a 100%
+  );
   --muted: #888c86;
   color-scheme: dark;
 }
@@ -1146,14 +1156,7 @@ body {
 .lineup__item--open .lineup__genres,
 .lineup__item[data-estado="ahora"] .lineup__name,
 .lineup__item[data-estado="ahora"] .lineup__name-link {
-  background-image: linear-gradient(
-    100deg,
-    #c6ff1a 0%,
-    #8aff5a 22%,
-    #e8ff7a 44%,
-    #9dffa0 66%,
-    #c6ff1a 100%
-  );
+  background-image: var(--verde-grad);
   background-size: 300% 100%;
   background-repeat: repeat;
   -webkit-background-clip: text;
@@ -1165,14 +1168,7 @@ body {
 
 .lineup__live,
 .print-modal__ok {
-  background-image: linear-gradient(
-    100deg,
-    #c6ff1a 0%,
-    #8aff5a 22%,
-    #e8ff7a 44%,
-    #9dffa0 66%,
-    #c6ff1a 100%
-  );
+  background-image: var(--verde-grad);
   background-size: 300% 100%;
   animation: verde-flujo 1.7s linear infinite;
 }
@@ -1254,4 +1250,33 @@ body {
 .lineup__item[data-estado="ahora"] .lineup__name .o-slash::after,
 .lineup__item[data-estado="ahora"] .lineup__name-link .o-slash::after {
   background: var(--accent);
+}
+
+/* La Ø es un <span> con una O y una barra. El degradado del contenedor deja
+   `color: transparent` heredado, y como el span no tiene fondo propio su glifo
+   no se pinta (en Chromium se ve, en Firefox/WebKit desaparece y solo queda la
+   barra). Se le aplica el mismo degradado para que tenga algo que recortar. */
+.cartel__kicker .o-slash,
+.cartel__hours-number .o-slash,
+.billing__item--accent .o-slash,
+.lineup__day .o-slash,
+.lineup__time-range .o-slash,
+.lineup__bpm .o-slash,
+.lineup__item[data-estado="ahora"] .lineup__name .o-slash,
+.lineup__item[data-estado="ahora"] .lineup__name-link .o-slash {
+  background-image: var(--verde-grad);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: verde-flujo 2.2s linear infinite;
+}
+
+/* En la captura del PDF vuelve al verde plano, como el resto. */
+.cartel.sin-degradado .o-slash {
+  background-image: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  -webkit-text-fill-color: currentColor !important;
+  animation: none !important;
 }

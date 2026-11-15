@@ -197,10 +197,12 @@ BPM, nombres de acento del cartel, pastilla AHORA y botón OK del modal) lleva u
   capturar: ese bloque (al final de `style.css`) devuelve el verde plano y quita
   las animaciones. Si añades un elemento verde nuevo al degradado, mételo
   también en `.cartel.sin-degradado …` o desaparecerá del PDF.
-- Ojo con la **Ø**: su barra (`.o-slash::after`) se pinta con `currentColor`, y
-  el degradado deja `color: transparent`. Hay una regla explícita para que la
-  barra siga siendo `var(--accent)` dentro de los elementos con degradado; si
-  no, "FØBIA" se lee "FOBIA".
+- Ojo con la **Ø**, que da dos problemas distintos: la `O` es un `<span>` y el
+  degradado del contenedor le deja `color: transparent` heredado; como el span
+  no tenía fondo, su glifo **no se pintaba** y solo quedaba la barra (visible en
+  Firefox/WebKit, no en Chromium). Se le aplica el mismo `--verde-grad`. Y la
+  barra (`.o-slash::after`) usa `currentColor`, así que necesita su propio
+  `var(--accent)`. Las dos reglas están al final de `style.css`.
 - Los iconos SVG (`.scroll-btn`, `.print-btn`) usan `currentColor`: no se les
   puede poner degradado sin convertirlos a máscara. Se quedan en verde plano.
 
