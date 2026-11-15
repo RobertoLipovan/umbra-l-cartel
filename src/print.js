@@ -107,6 +107,12 @@ async function capturarCartel(opciones = {}) {
   // así que sin forzarlo aquí el PDF saldría con fondo transparente/blanco.
   cartel.style.backgroundColor = FONDO
 
+  // html2canvas no implementa `background-clip: text`: con el degradado
+  // animado, todo el texto verde saldría con `-webkit-text-fill-color:
+  // transparent` → invisible en el PDF. Durante la captura se vuelve al verde
+  // plano (ver `.sin-degradado` en style.css).
+  cartel.classList.add('sin-degradado')
+
   // El cartel en vivo tacha los sets ya pinchados; en papel eso no tiene
   // sentido (se imprime para colgarlo), así que se quita durante la captura y
   // se vuelve a aplicar después.
@@ -164,6 +170,7 @@ async function capturarCartel(opciones = {}) {
       escala,
     }
   } finally {
+    cartel.classList.remove('sin-degradado')
     for (const [el, estado] of estadosPrevios) el.setAttribute('data-estado', estado)
     window.dispatchEvent(new Event('live:refresh'))
     if (desmontarColumnas) desmontarColumnas()

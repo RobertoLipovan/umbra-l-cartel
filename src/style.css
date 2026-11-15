@@ -1205,3 +1205,39 @@ body {
     animation: none;
   }
 }
+
+/* --- Modo captura (PDF) ----------------------------------------------------
+   html2canvas no soporta background-clip:text, así que durante la captura el
+   degradado se sustituye por el verde plano. Lo activa print.js añadiendo
+   `.sin-degradado` al `.cartel`. */
+
+.cartel.sin-degradado .cartel__kicker,
+.cartel.sin-degradado .cartel__hours-number,
+.cartel.sin-degradado .billing__item--accent,
+.cartel.sin-degradado .cartel__scroll,
+.cartel.sin-degradado .lineup__day,
+.cartel.sin-degradado .lineup__time-range,
+.cartel.sin-degradado .lineup__bpm,
+.cartel.sin-degradado .lineup__item--open .lineup__genres,
+.cartel.sin-degradado .lineup__item[data-estado="ahora"] .lineup__name,
+.cartel.sin-degradado .lineup__item[data-estado="ahora"] .lineup__name-link {
+  background-image: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  -webkit-text-fill-color: currentColor !important;
+  color: var(--accent) !important;
+  animation: none !important;
+}
+
+.cartel.sin-degradado .lineup__live,
+.cartel.sin-degradado .print-modal__ok {
+  background-image: none !important;
+  background-color: var(--accent) !important;
+  animation: none !important;
+}
+
+.cartel.sin-degradado .lineup__item[data-estado="ahora"]::before {
+  background-image: none !important;
+  background-color: var(--accent) !important;
+  animation: none !important;
+}

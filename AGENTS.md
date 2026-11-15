@@ -191,6 +191,12 @@ BPM, nombres de acento del cartel, pastilla AHORA y botón OK del modal) lleva u
 - **Relleno** (badge, botón): misma animación pero sin `background-clip`.
 - El degradado empieza y acaba en `#c6ff1a` para que el bucle no dé un salto.
 - `prefers-reduced-motion` desactiva la animación (el degradado se queda fijo).
+- ⚠️ **html2canvas no soporta `background-clip: text`.** Con el degradado, el
+  texto verde sale en el PDF con `-webkit-text-fill-color: transparent` →
+  **invisible**. Por eso `print.js` añade `.sin-degradado` al `.cartel` antes de
+  capturar: ese bloque (al final de `style.css`) devuelve el verde plano y quita
+  las animaciones. Si añades un elemento verde nuevo al degradado, mételo
+  también en `.cartel.sin-degradado …` o desaparecerá del PDF.
 - Los iconos SVG (`.scroll-btn`, `.print-btn`) usan `currentColor`: no se les
   puede poner degradado sin convertirlos a máscara. Se quedan en verde plano.
 
