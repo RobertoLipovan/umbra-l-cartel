@@ -1241,3 +1241,17 @@ body {
   background-color: var(--accent) !important;
   animation: none !important;
 }
+
+/* La barra de la Ø (`.o-slash::after`) se pinta con `currentColor`, y el
+   degradado deja `color: transparent` en el contenedor: sin esto el trazo
+   desaparece y "FØBIA" se lee "FOBIA". Se le da el verde del acento. */
+.cartel__kicker .o-slash::after,
+.cartel__hours-number .o-slash::after,
+.billing__item--accent .o-slash::after,
+.lineup__day .o-slash::after,
+.lineup__time-range .o-slash::after,
+.lineup__bpm .o-slash::after,
+.lineup__item[data-estado="ahora"] .lineup__name .o-slash::after,
+.lineup__item[data-estado="ahora"] .lineup__name-link .o-slash::after {
+  background: var(--accent);
+}
