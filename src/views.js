@@ -34,10 +34,19 @@ function renderStageSection(stageId) {
 
   // Cierre con hora de fin abierta (secret line up): se resuelve igual que los
   // sets, pero solo se usa la hora de inicio.
-  const closing = (stage.closing || []).map((slot) => ({
-    ...slot,
-    start: resolveTime(slot.start, EVENT),
-  }))
+  // El cierre puede tener hora de fin (`end`) o quedarse abierto ("→").
+  // Ojo: si el cierre empieza de madrugada y acaba a media tarde, la regla de
+  // `nextDayBefore` resuelve el fin como del día del evento y sale negativo
+  // (-20h). Se corrige sumando un día cuando el fin cae antes del inicio.
+  const closing = (stage.closing || []).map((slot) => {
+    const start = resolveTime(slot.start, EVENT)
+    let end
+    if (slot.end) {
+      end = resolveTime(slot.end, EVENT)
+      if (end <= start) end = new Date(end.getTime() + 24 * 60 * 60 * 1000)
+    }
+    return { ...slot, start, ...(end ? { end } : {}) }
+  })
 
   return `
     <section class="stage" id="${stage.id}">

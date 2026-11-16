@@ -156,12 +156,18 @@ export function renderLineup(schedule, { id, closing = [] } = {}) {
   // Cierre con hora de fin abierta (secret line up, b2b hasta que paren...).
   const closingRows = closing
     .map(
-      ({ start, label, note, instagram }) => `
+      ({ start, end, label, note, instagram }) => `
         ${renderDayHeading(start)}
-        <li class="lineup__item lineup__item--open" data-inicio="${start.toISOString()}">
+        <li class="lineup__item lineup__item--open" data-inicio="${start.toISOString()}"${
+          end ? ` data-fin="${end.toISOString()}"` : ''
+        }>
           <span class="lineup__time">
-            <span class="lineup__time-range">${formatTime(start)} →</span>
-            <span class="lineup__duration">${note || 'Indefinido'}</span>
+            <span class="lineup__time-range">${
+              end ? `${formatTime(start)}–${formatTime(end)}` : `${formatTime(start)} →`
+            }</span>
+            <span class="lineup__duration">${
+              end ? formatDuration(start, end) : note || 'Indefinido'
+            }</span>
             <span class="lineup__live">AHORA</span>
           </span>
           <span class="lineup__name">${renderNameWithInstagram(label, instagram)}</span>
